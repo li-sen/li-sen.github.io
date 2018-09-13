@@ -2,30 +2,30 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on Li Sen</title>
-    <link>https://zqHero.github.io/tags/</link>
+    <link>https://li-sen.github.io/tags/</link>
     <description>Recent content in Tags on Li Sen</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
     <lastBuildDate>Wed, 12 Sep 2018 18:13:28 +0800</lastBuildDate>
     
-	<atom:link href="https://zqHero.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://li-sen.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Tag1</title>
-      <link>https://zqHero.github.io/tags/tag1/</link>
+      <link>https://li-sen.github.io/tags/tag1/</link>
       <pubDate>Wed, 12 Sep 2018 18:13:28 +0800</pubDate>
       
-      <guid>https://zqHero.github.io/tags/tag1/</guid>
+      <guid>https://li-sen.github.io/tags/tag1/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Tag2</title>
-      <link>https://zqHero.github.io/tags/tag2/</link>
+      <link>https://li-sen.github.io/tags/tag2/</link>
       <pubDate>Wed, 12 Sep 2018 18:13:28 +0800</pubDate>
       
-      <guid>https://zqHero.github.io/tags/tag2/</guid>
+      <guid>https://li-sen.github.io/tags/tag2/</guid>
       <description></description>
     </item>
     
