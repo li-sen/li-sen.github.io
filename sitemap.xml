@@ -8,6 +8,10 @@
   </url>
   
   <url>
+    <loc>https://li-sen.github.io/search/placeholder/</loc>
+  </url>
+  
+  <url>
     <loc>https://li-sen.github.io/categories/</loc>
     <priority>0</priority>
   </url>
@@ -31,13 +35,18 @@
   </url>
   
   <url>
-    <loc>https://li-sen.github.io/tags/</loc>
+    <loc>https://li-sen.github.io/search/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://li-sen.github.io/categories/servermesh/</loc>
     <lastmod>2018-06-04T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://li-sen.github.io/categories/tech/</loc>
+    <loc>https://li-sen.github.io/tags/</loc>
     <lastmod>2018-06-04T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
