@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on Lisen Blog</title>
-    <link>/tags/</link>
+    <link>https://li-sen.github.io/tags/</link>
     <description>Recent content in Tags on Lisen Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Mon, 04 Jun 2018 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://li-sen.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Istio</title>
-      <link>/tags/istio/</link>
+      <link>https://li-sen.github.io/tags/istio/</link>
       <pubDate>Mon, 04 Jun 2018 00:00:00 +0000</pubDate>
       
-      <guid>/tags/istio/</guid>
+      <guid>https://li-sen.github.io/tags/istio/</guid>
       <description></description>
     </item>
     
