@@ -169,9 +169,7 @@
 <li><a href="#流程示意图">流程示意图</a></li>
 <li><a href="#生成证书">生成证书</a></li>
 <li><a href="#新增cm">新增cm</a></li>
-</ul></li>
-<li><a href="#deploy引用">deploy引用</a>
-<ul>
+<li><a href="#deploy引用">deploy引用</a></li>
 <li><a href="#修改svc增加443端口">修改svc增加443端口</a></li>
 </ul></li>
 </ul>
@@ -225,7 +223,7 @@ kubectl create configmap traefik-conf --from-file=traefik.toml -n kube-system
 kubectl get cm -n kube-system
 </code></pre>
 
-<h1 id="deploy引用">deploy引用</h1>
+<h2 id="deploy引用">deploy引用</h2>
 
 <pre><code class="language-yaml">kind: Deployment
 apiVersion: apps/v1beta1
