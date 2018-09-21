@@ -13,19 +13,19 @@
     
     <item>
       <title>traefik配置https</title>
-      <link>https://li-sen.github.io/post/hugo-integrated-gitment-plugin/</link>
+      <link>https://li-sen.github.io/post/blog-wiki/hugo-integrated-gitment-plugin/</link>
       <pubDate>Thu, 20 Sep 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://li-sen.github.io/post/hugo-integrated-gitment-plugin/</guid>
+      <guid>https://li-sen.github.io/post/blog-wiki/hugo-integrated-gitment-plugin/</guid>
       <description>目前所有的访问都已经转向https了，大势所趋，ssl重要性这里不细说了；我这里是client到traefik加密，后端还是http，有更高</description>
     </item>
     
     <item>
       <title>traefik配置https</title>
-      <link>https://li-sen.github.io/post/hugo-integrated-gitment-plugin/</link>
+      <link>https://li-sen.github.io/post/blog-wiki/hugo-integrated-gitment-plugin/</link>
       <pubDate>Thu, 20 Sep 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://li-sen.github.io/post/hugo-integrated-gitment-plugin/</guid>
+      <guid>https://li-sen.github.io/post/blog-wiki/hugo-integrated-gitment-plugin/</guid>
       <description>目前所有的访问都已经转向https了，大势所趋，ssl重要性这里不细说了；我这里是client到traefik加密，后端还是http，有更高</description>
     </item>
     
