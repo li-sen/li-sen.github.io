@@ -166,150 +166,71 @@
 <ul>
 <li>
 <ul>
-<li><a href="#流程示意图">流程示意图</a></li>
+<li><a href="#部署jenkins-slave">部署jenkins slave</a></li>
+</ul></li>
+<li><a href="#获取初始密码">获取初始密码</a></li>
+<li><a href="#后续步骤跟传统安装一样-按推荐下一步就行-插件安装也按默认推荐-这里省略了">后续步骤跟传统安装一样，按推荐下一步就行（插件安装也按默认推荐），这里省略了。</a>
+<ul>
 <li><a href="#生成证书">生成证书</a></li>
-<li><a href="#新增cm">新增cm</a></li>
-<li><a href="#deploy引用">deploy引用</a></li>
-<li><a href="#修改svc增加443端口">修改svc增加443端口</a></li>
 </ul></li>
 </ul>
 </nav>
 		
 		
 
-<p>目前所有的访问都已经转向https了，大势所趋，ssl重要性这里不细说了；我这里是client到traefik加密，后端还是http，有更高要求的时候再来进步优化，先满足功能再说。
-&gt; traefik http部署我这里省略，详细可参考<a href="https://github.com/gjmzj/kubeasz">kubeasz</a>中的ingress部分。</p>
+<p>kubernetes ci/cd 开源实现有很多，传统的有霸主jenkins、后起之秀drone、Spinnaker、gitlab-ci以及jenkins-kubernetes衍生版jenkins X等；不可否认后起之秀们有性能优势、云原生跟kubernetes结合很好，他们都能很好的完成ci/cd的工作，但论产品的功能性、成熟度、稳定性包括生态跟jenkins比不是一个级别，ci/cd 是企业devops的关键一环，它还应该包括代码质量管理(sonar)、codereview以及相关的自动化测试环节，综合下来后起之秀们目前还是小玩具而已，jenkins在Pipeline加持下依然是不二之选。</p>
 
-<h2 id="流程示意图">流程示意图</h2>
+<blockquote>
+<ol>
+<li>先说下我这里的技术栈dubbo+springboot，nexus gradle编译打包，大家可以根据自己的实际情况进行适当修改即可。</li>
+<li>在代码库中增加一个Jenkinsfile 结合BlueOcean插件实现，dev、test环境会定时扫描然后直接部署，master会有一个确认步骤，同意后才能进行发布。</li>
+<li>此次部署有持久化存储需求，请自行解决，或参考我之前的ceph文档。</li>
+</ol>
+</blockquote>
 
-<pre><code class="language-bash">client ---https---&gt; traefik ---http---&gt; svc (本文)
-client ---https---&gt; traefik ---https---&gt; svc
+<h2 id="部署jenkins-slave">部署jenkins slave</h2>
+
+<pre><code class="language-bash">
 </code></pre>
+
+<ol>
+<li>创建namespace
+<code>bash
+kubectl create -f ns.yaml
+</code></li>
+<li>创建ceph-key
+<code>bash
+kubectl create secret generic ceph-storageclass-secret --type=&quot;kubernetes.io/rbd&quot; --from-literal=key='AQAnpk1bPFWCBc1xBzNNWJVcfyCrhWDA==' --namespace=kube-ops
+</code></li>
+<li>创建sa
+<code>bash
+kubectl create -f jenkins-rbac.yaml
+</code></li>
+<li>创建statefulset
+<code>bash
+kubectl create -f jenkins-statefulset.yaml
+</code></li>
+<li>创建svc
+<code>bash
+kubectl create -f jenkins-svc.yaml
+</code></li>
+
+<li><p>安装jenkins
+```bash</p>
+
+<h1 id="获取初始密码">获取初始密码</h1>
+
+<p>kubectl exec -it jenkins-0 /bin/bash -n kube-ops
+jenkins@jenkins-0:/$ cat /var/jenkins_home/secrets/initialAdminPassword</p>
+
+<h1 id="后续步骤跟传统安装一样-按推荐下一步就行-插件安装也按默认推荐-这里省略了">后续步骤跟传统安装一样，按推荐下一步就行（插件安装也按默认推荐），这里省略了。</h1></li>
+</ol>
+
+<p>```
+&gt; 1. Jenkins URL需要设置为: <a href="http://jenkins.kube-ops.svc.cluster.local:8080/">http://jenkins.kube-ops.svc.cluster.local:8080/</a> 不然slave pod 无法连接master
+&gt; 1. 插件的需另外安装Blue Ocean、kubernetes 两个插件 这里我就不截图了。</p>
 
 <h2 id="生成证书">生成证书</h2>
-
-<pre><code class="language-bash"># 私钥
-openssl genrsa -out rsa_private_key.pem 2048
-
-# 生成公钥
-openssl rsa -in rsa_private_key.pem -pubout -out rsa_public_key.pem
-
-openssl req -new -out ca-req.csr -key rsa_private_key.pem
-
-openssl x509 -req -in ca-req.csr -out ca-cert.pem -signkey rsa_private_key.pem -days 3650
-</code></pre>
-
-<h2 id="新增cm">新增cm</h2>
-
-<pre><code class="language-bash"># 配置traefik-cert cm
-kubectl create secret generic traefik-cert --from-file=rsa_private_key.pem --from-file=ca-cert.pem -n kube-system
-# 配置traefik.toml
-[root@by-deploy01 ingress]# cat traefik.toml
-defaultEntryPoints = [&quot;http&quot;,&quot;https&quot;]
-[entryPoints]
-  [entryPoints.http]
-  address = &quot;:80&quot;
-    [entryPoints.http.redirect]
-    entryPoint = &quot;https&quot;
-  [entryPoints.https]
-  address = &quot;:443&quot;
-    [entryPoints.https.tls]
-      [[entryPoints.https.tls.certificates]]
-      certFile = &quot;/opt/k8s/ssl/ca-cert.pem&quot;
-      keyFile = &quot;/opt/k8s/ssl/rsa_private_key.pem&quot;
-
-# 配置traefik-conf cm
-kubectl create configmap traefik-conf --from-file=traefik.toml -n kube-system
-kubectl get cm -n kube-system
-</code></pre>
-
-<h2 id="deploy引用">deploy引用</h2>
-
-<pre><code class="language-yaml">kind: Deployment
-apiVersion: apps/v1beta1
-metadata:
-  name: traefik-ingress-controller
-  namespace: kube-system
-  labels:
-    k8s-app: traefik-ingress-lb
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      k8s-app: traefik-ingress-lb
-  template:
-    metadata:
-      labels:
-        k8s-app: traefik-ingress-lb
-        name: traefik-ingress-lb
-    spec:
-      serviceAccountName: traefik-ingress-controller
-      terminationGracePeriodSeconds: 60
-      containers:
-      - image: traefik:v1.6
-        imagePullPolicy: IfNotPresent
-        name: traefik-ingress-lb
-        args:
-        - --configFile=/opt/k8s/conf/traefik.toml
-        - --web
-        - --kubernetes
-        volumeMounts:
-        - mountPath: &quot;/opt/k8s/ssl/&quot;
-          name: &quot;ssl&quot;
-        - mountPath: &quot;/opt/k8s/conf/&quot;
-          name: &quot;config&quot;
-        ports:
-        - name: http
-          containerPort: 80
-        - name: https
-          containerPort: 443
-        - name: admin
-          containerPort: 8080
-      volumes:
-      - name: ssl
-        secret:
-          secretName: traefik-cert
-      - name: config
-        configMap:
-          name: traefik-conf
-          
-# 生效
-  kubectl apply -f traefik_deploy.yaml
-</code></pre>
-
-<h2 id="修改svc增加443端口">修改svc增加443端口</h2>
-
-<pre><code class="language-yaml">kind: Service
-apiVersion: v1
-metadata:
-  name: traefik-ingress-service
-  namespace: kube-system
-spec:
-  selector:
-    k8s-app: traefik-ingress-lb
-  ports:
-    - protocol: TCP
-      # 该端口为 traefik ingress-controller的服务端口
-      port: 80
-      # 集群hosts文件中设置的 NODE_PORT_RANGE 作为 NodePort的可用范围
-      # 从默认20000~40000之间选一个可用端口，让ingress-controller暴露给外部的访问
-      nodePort: 23455
-      name: web
-    - protocol: TCP
-      port: 443
-      name: https
-      nodePort: 23456
-    - protocol: TCP
-      # 该端口为 traefik 的管理WEB界面
-      port: 8080
-      name: admin
-  type: NodePort
-
-# 生效
-  kubectl apply -f traefik_svc.yaml
-</code></pre>
-
-<p>至此配置完成可以用浏览器测试下！</p>
 
 
                 <hr>
