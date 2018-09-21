@@ -8,7 +8,21 @@
   </url>
   
   <url>
+    <loc>https://li-sen.github.io/blog-wiki/readme/</loc>
+  </url>
+  
+  <url>
+    <loc>https://li-sen.github.io/post/readme/</loc>
+  </url>
+  
+  <url>
     <loc>https://li-sen.github.io/search/placeholder/</loc>
+  </url>
+  
+  <url>
+    <loc>https://li-sen.github.io/blog-wiki/</loc>
+    <lastmod>2018-09-09T00:00:00+00:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
@@ -23,6 +37,16 @@
   </url>
   
   <url>
+    <loc>https://li-sen.github.io/tags/kubernetes/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://li-sen.github.io/categories/kubernetes/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://li-sen.github.io/</loc>
     <lastmod>2018-09-09T00:00:00+00:00</lastmod>
     <priority>0</priority>
@@ -30,7 +54,6 @@
   
   <url>
     <loc>https://li-sen.github.io/post/</loc>
-    <lastmod>2018-09-09T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -49,6 +72,10 @@
     <loc>https://li-sen.github.io/tags/</loc>
     <lastmod>2018-09-09T00:00:00+00:00</lastmod>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://li-sen.github.io/blog-wiki/hugo-integrated-gitment-plugin/</loc>
   </url>
   
 </urlset>
