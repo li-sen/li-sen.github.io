@@ -174,7 +174,6 @@
 <ul>
 <li>
 <ul>
-<li><a href="#这里说明下master高可用网络通信-多master使用slb是为了解决api-server的高可用-api-server是为master外部相关应用-kubectl-kubelet等-服务的-master上的cm-scheduler其实是只跟本机的api-server-监听地址一般为127-0-0-1-内网ip-通信-跟slb没有通信需求-并且多master中通过内部ip通信竞选只有一个cm和scheduler是生效可用-其他的节点为备用">这里说明下master高可用网络通信：多master使用slb是为了解决api-server的高可用，api-server是为master外部相关应用(kubectl、kubelet等)服务的，master上的cm、scheduler其实是只跟本机的api-server(监听地址一般为127.0.0.1/内网ip)通信，跟slb没有通信需求，并且多master中通过内部ip通信竞选只有一个cm和scheduler是生效可用，其他的节点为备用。</a></li>
 <li><a href="#关于阿里云slb">关于阿里云slb</a></li>
 <li><a href="#服务器规划">服务器规划</a></li>
 <li><a href="#阿里云slb">阿里云slb</a></li>
@@ -219,7 +218,7 @@
 <blockquote>
 <p>这是本人参照开源项目kubeasz（<a href="https://github.com/gjmzj/kubeasz">项目地址</a>），在阿里云vpc环境使用slb搭建的一套3*master+3*node的高可用k8s集群，这并不是一份完整的k8s安装文档，这里只是记录使用kubeasz搭建集群关键步骤以及需要注意的点，完整的请参考源项目，命令操作时建议使用screen进行操作，以免网络问题造成操作失败。</p>
 
-<h2 id="这里说明下master高可用网络通信-多master使用slb是为了解决api-server的高可用-api-server是为master外部相关应用-kubectl-kubelet等-服务的-master上的cm-scheduler其实是只跟本机的api-server-监听地址一般为127-0-0-1-内网ip-通信-跟slb没有通信需求-并且多master中通过内部ip通信竞选只有一个cm和scheduler是生效可用-其他的节点为备用">这里说明下master高可用网络通信：多master使用slb是为了解决api-server的高可用，api-server是为master外部相关应用(kubectl、kubelet等)服务的，master上的cm、scheduler其实是只跟本机的api-server(监听地址一般为127.0.0.1/内网ip)通信，跟slb没有通信需求，并且多master中通过内部ip通信竞选只有一个cm和scheduler是生效可用，其他的节点为备用。</h2>
+<p>这里说明下master高可用网络通信：多master使用slb是为了解决api-server的高可用，api-server是为master外部相关应用(kubectl、kubelet等)服务的，master上的cm、scheduler其实是只跟本机的api-server(监听地址一般为127.0.0.1/内网ip)通信，跟slb没有通信需求，并且多master中通过内部ip通信竞选只有一个cm和scheduler是生效可用，其他的节点为备用。</p>
 </blockquote>
 
 <h2 id="关于阿里云slb">关于阿里云slb</h2>
@@ -357,12 +356,12 @@
 
 <tr>
 <td>docker</td>
-<td>18.03.0-ce</td>
+<td>17.03.2-ce</td>
 </tr>
 
 <tr>
 <td>network</td>
-<td>calico v3.0</td>
+<td>calico v3.1.3</td>
 </tr>
 </tbody>
 </table>
