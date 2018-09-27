@@ -166,12 +166,18 @@
 <ul>
 <li>
 <ul>
+<li>
+<ul>
 <li><a href="#部署jenkins-slave">部署jenkins slave</a></li>
+</ul></li>
 </ul></li>
 <li><a href="#获取初始密码">获取初始密码</a></li>
 <li><a href="#后续步骤跟传统安装一样-按推荐下一步就行-插件安装也按默认推荐-这里省略了">后续步骤跟传统安装一样，按推荐下一步就行（插件安装也按默认推荐），这里省略了。</a>
 <ul>
+<li>
+<ul>
 <li><a href="#生成证书">生成证书</a></li>
+</ul></li>
 </ul></li>
 </ul>
 </nav>
@@ -188,7 +194,7 @@
 </ol>
 </blockquote>
 
-<h2 id="部署jenkins-slave">部署jenkins slave</h2>
+<h3 id="部署jenkins-slave">部署jenkins slave</h3>
 
 <pre><code class="language-bash">
 </code></pre>
@@ -230,7 +236,7 @@ jenkins@jenkins-0:/$ cat /var/jenkins_home/secrets/initialAdminPassword</p>
 &gt; 1. Jenkins URL需要设置为: <a href="http://jenkins.kube-ops.svc.cluster.local:8080/">http://jenkins.kube-ops.svc.cluster.local:8080/</a> 不然slave pod 无法连接master
 &gt; 1. 插件的需另外安装Blue Ocean、kubernetes 两个插件 这里我就不截图了。</p>
 
-<h2 id="生成证书">生成证书</h2>
+<h3 id="生成证书">生成证书</h3>
 
 
                 <hr>
