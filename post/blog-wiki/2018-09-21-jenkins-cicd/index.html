@@ -189,16 +189,24 @@
 
 <h3 id="部署jenkins-slave">部署jenkins slave</h3>
 
-<pre><code class="language-bash">1. 创建namespace
+<pre><code class="language-bash">git clone https://github.com/li-sen/jenkins-cicd-on-kubernetes.git
+cd jenkins-cicd-on-kubernetes
+
+1. 创建namespace
 kubectl create -f ns.yaml
+
 2. 创建ceph-key
-kubectl create secret generic ceph-storageclass-secret --type=&quot;kubernetes.io/rbd&quot; --from-literal=key='AQAnpk1bPFWCBc1xBzNNWJVcfyCrhWDA==' --namespace=kube-ops
+kubectl create secret generic ceph-storageclass-secret --type=&quot;kubernetes.io/rbd&quot; --from-literal=key='AQWCBc1xBzNNWJVcfyCrhWDA==' --namespace=kube-ops
+
 3. 创建sa
 kubectl create -f jenkins-rbac.yaml
+
 4. 创建statefulset
 kubectl create -f jenkins-statefulset.yaml
+
 5. 创建svc
 kubectl create -f jenkins-svc.yaml
+
 6. 安装jenkins
 # 获取初始密码
 kubectl exec -it jenkins-0 /bin/bash -n kube-ops
