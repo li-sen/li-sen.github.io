@@ -169,13 +169,6 @@
 <li>
 <ul>
 <li><a href="#部署jenkins-slave">部署jenkins slave</a></li>
-</ul></li>
-</ul></li>
-<li><a href="#获取初始密码">获取初始密码</a></li>
-<li><a href="#后续步骤跟传统安装一样-按推荐下一步就行-插件安装也按默认推荐-这里省略了">后续步骤跟传统安装一样，按推荐下一步就行（插件安装也按默认推荐），这里省略了。</a>
-<ul>
-<li>
-<ul>
 <li><a href="#生成证书">生成证书</a></li>
 </ul></li>
 </ul></li>
@@ -196,42 +189,29 @@
 
 <h3 id="部署jenkins-slave">部署jenkins slave</h3>
 
-<ol>
-<li>创建namespace
-<code>bash
+<pre><code class="language-bash">1. 创建namespace
 kubectl create -f ns.yaml
-</code></li>
-<li>创建ceph-key
-<code>bash
+2. 创建ceph-key
 kubectl create secret generic ceph-storageclass-secret --type=&quot;kubernetes.io/rbd&quot; --from-literal=key='AQAnpk1bPFWCBc1xBzNNWJVcfyCrhWDA==' --namespace=kube-ops
-</code></li>
-<li>创建sa
-<code>bash
+3. 创建sa
 kubectl create -f jenkins-rbac.yaml
-</code></li>
-<li>创建statefulset
-<code>bash
+4. 创建statefulset
 kubectl create -f jenkins-statefulset.yaml
-</code></li>
-<li>创建svc
-<code>bash
+5. 创建svc
 kubectl create -f jenkins-svc.yaml
-</code></li>
+6. 安装jenkins
+# 获取初始密码
+kubectl exec -it jenkins-0 /bin/bash -n kube-ops
+jenkins@jenkins-0:/$ cat /var/jenkins_home/secrets/initialAdminPassword
+# 后续步骤跟传统安装一样，按推荐下一步就行（插件安装也按默认推荐），这里省略了。
+</code></pre>
 
-<li><p>安装jenkins
-```bash</p>
-
-<h1 id="获取初始密码">获取初始密码</h1>
-
-<p>kubectl exec -it jenkins-0 /bin/bash -n kube-ops
-jenkins@jenkins-0:/$ cat /var/jenkins_home/secrets/initialAdminPassword</p>
-
-<h1 id="后续步骤跟传统安装一样-按推荐下一步就行-插件安装也按默认推荐-这里省略了">后续步骤跟传统安装一样，按推荐下一步就行（插件安装也按默认推荐），这里省略了。</h1></li>
+<blockquote>
+<ol>
+<li>Jenkins URL需要设置为: <a href="http://jenkins.kube-ops.svc.cluster.local:8080/">http://jenkins.kube-ops.svc.cluster.local:8080/</a> 不然slave pod 无法连接master</li>
+<li>插件的需另外安装Blue Ocean、kubernetes 两个插件 这里我就不截图了。</li>
 </ol>
-
-<p>```
-&gt; 1. Jenkins URL需要设置为: <a href="http://jenkins.kube-ops.svc.cluster.local:8080/">http://jenkins.kube-ops.svc.cluster.local:8080/</a> 不然slave pod 无法连接master
-&gt; 1. 插件的需另外安装Blue Ocean、kubernetes 两个插件 这里我就不截图了。</p>
+</blockquote>
 
 <h3 id="生成证书">生成证书</h3>
 
