@@ -177,8 +177,10 @@
 		
 		
 
-<p>目前所有的访问都已经转向https了，大势所趋，ssl重要性这里不细说了；我这里是client到traefik加密，后端还是http，有更高要求的时候再来进步优化，先满足功能再说。
-&gt; traefik http部署我这里省略，详细可参考<a href="https://github.com/gjmzj/kubeasz">kubeasz</a>中的ingress部分。</p>
+<p>目前所有的访问都已经转向https了，大势所趋，ssl重要性这里不细说了；我这里是client到traefik加密，后端还是http，有更高要求的时候再来进步优化，先满足功能再说。</p>
+
+<blockquote>
+<p>traefik http部署我这里省略，详细可参考<a href="https://github.com/gjmzj/kubeasz">kubeasz</a>中的ingress部分。</p>
 
 <h2 id="流程示意图">流程示意图</h2>
 
@@ -187,6 +189,9 @@ client ---https---&gt; traefik ---https---&gt; svc
 </code></pre>
 
 <h2 id="生成证书">生成证书</h2>
+
+<p>我这里使用私签证书</p>
+</blockquote>
 
 <pre><code class="language-bash"># 私钥
 openssl genrsa -out rsa_private_key.pem 2048
