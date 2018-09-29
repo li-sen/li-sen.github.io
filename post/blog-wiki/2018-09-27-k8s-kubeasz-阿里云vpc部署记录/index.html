@@ -198,7 +198,7 @@
 <li><a href="#插件">插件</a></li>
 <li><a href="#一步安装">一步安装</a></li>
 <li><a href="#验证集群功能">验证集群功能</a></li>
-<li><a href="#harbor">harbor</a></li>
+<li><a href="#harbor-参考后续高可用部署">harbor (参考后续高可用部署)</a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -867,9 +867,10 @@ kubectl config use-context default --kubeconfig=dashboard.kubeconfig
 
 <p>用生成的 dashboard.kubeconfig 登录 Dashboard。</p>
 
-<h3 id="harbor">harbor</h3>
+<h3 id="harbor-参考后续高可用部署">harbor (参考后续高可用部署)</h3>
 
-<pre><code class="language-bash">wget https://storage.googleapis.com/harbor-releases/release-1.6.0/harbor-offline-installer-v1.6.0.tgz
+<pre><code class="language-bash"># 我本地访问不了，翻墙解决
+wget https://storage.googleapis.com/harbor-releases/release-1.6.0/harbor-offline-installer-v1.6.0.tgz
 vim /etc/ansible/roles/harbor/defaults/main.yml
 # harbor version
 HARBOR_VER: &quot;v1.6.0&quot;
