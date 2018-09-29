@@ -186,8 +186,10 @@
 <li><a href="#在deploy节点安装及准备ansible">在deploy节点安装及准备ansible</a></li>
 <li><a href="#在deploy节点配置免密码登陆">在deploy节点配置免密码登陆</a></li>
 </ul></li>
-<li><a href="#kubeasz配置">kubeasz配置</a>
+<li><a href="#kubeasz配置">kubeasz配置</a></li>
+<li><a href="#开始安装k8s">开始安装k8s</a>
 <ul>
+<li><a href="#prepare">prepare</a></li>
 <li><a href="#etcd">etcd</a></li>
 <li><a href="#docker">docker</a></li>
 <li><a href="#master">master</a></li>
@@ -549,33 +551,34 @@ base_dir=&quot;/etc/ansible&quot;
 </code></pre></li>
 
 <li><p>配置hosts文件、ssh-key
-为了后续部署方便，建议还是配置好/etc/hosts文件、ssh-key，分发都所有节点。
-``` bash
-vim  /etc/hosts</p></li>
+为了后续部署方便，建议还是配置好/etc/hosts文件、ssh-key，分发都所有节点。</p></li>
 </ul>
 
-<p>127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
-::1         localhost localhost.localdomain localhost6 localhost6.localdomain6</p>
+<pre><code class="language-bash">vim  /etc/hosts
 
-<p>172.16.68.13 k8s-lb01
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+
+172.16.68.13 k8s-lb01
 172.16.68.12 k8s-deploy01
 172.16.68.11 k8s-master01
 172.16.68.10 k8s-master02
 172.16.68.9 k8s-master03
 172.16.68.8 k8s-node01
 172.16.68.7 k8s-node02
-172.16.68.6 k8s-node03</p>
+172.16.68.6 k8s-node03
 
-<p>ansible all  -m copy  -a &lsquo;src=/etc/hosts dest=/etc/hosts&rsquo;
-ansible all -m copy -a &lsquo;src=/root/.ssh/authorized_keys dest=/root/.ssh/authorized_keys&rsquo;</p>
+ansible all  -m copy  -a 'src=/etc/hosts dest=/etc/hosts'
+ansible all -m copy -a 'src=/root/.ssh/authorized_keys dest=/root/.ssh/authorized_keys'
+</code></pre>
 
-<pre><code>
-## 开始安装k8s
-如果你对集群安装流程不熟悉，请阅读项目首页 **安装步骤** 讲解后分步安装，并对 **每步都进行验证**  
+<h2 id="开始安装k8s">开始安装k8s</h2>
 
-### prepare
-``` bash
-cd /etc/ansible/
+<p>如果你对集群安装流程不熟悉，请阅读项目首页 <strong>安装步骤</strong> 讲解后分步安装，并对 <strong>每步都进行验证</strong></p>
+
+<h3 id="prepare">prepare</h3>
+
+<pre><code class="language-bash">cd /etc/ansible/
 # 注释epel安装，ecs默认自带
 vim /etc/ansible/roles/prepare/tasks/centos.yml
 #- name: 添加EPEL仓库
