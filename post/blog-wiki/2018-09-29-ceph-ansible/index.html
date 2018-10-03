@@ -182,27 +182,6 @@
 <li><a href="#安装">安装</a></li>
 </ul></li>
 </ul></li>
-<li><a href="#dev-sdc">- /dev/sdc</a></li>
-<li><a href="#dev-sdd">- /dev/sdd</a></li>
-<li><a href="#dev-sde">- /dev/sde</a></li>
-<li><a href="#dev-sdf">- /dev/sdf</a></li>
-<li><a href="#dev-sdf-1">- /dev/sdf</a></li>
-<li><a href="#dev-sdf-2">- /dev/sdf</a></li>
-<li><a href="#dev-sdg">- /dev/sdg</a></li>
-<li><a href="#dev-sdg-1">- /dev/sdg</a></li>
-<li><a href="#dev-sdg-2">- /dev/sdg</a></li>
-<li><a href="#注释不需要的组件">注释不需要的组件</a>
-<ul>
-<li><a href="#vim-site-yml">vim site.yml</a></li>
-</ul></li>
-<li><a href="#defines-deployment-design-and-assigns-role-to-server-groups">Defines deployment design and assigns role to server groups</a></li>
-<li><a href="#agents">- agents</a></li>
-<li><a href="#rgws">- rgws</a></li>
-<li><a href="#nfss">- nfss</a></li>
-<li><a href="#restapis">- restapis</a></li>
-<li><a href="#rbdmirrors">- rbdmirrors</a></li>
-<li><a href="#iscsigws">- iscsigws</a></li>
-<li><a href="#iscsi-gws-for-backward-compatibility-only">- iscsi-gws # for backward compatibility only!</a></li>
 </ul>
 </nav>
 		
@@ -317,32 +296,33 @@ cd ceph-ansible-3.1.7
 </code></pre>
 
 <ul>
-<li>开始安装
-```bash
-cp group_vars/all.yml.sample group_vars/all.yml
-cp group_vars/osds.yml.sample group_vars/osds.yml
-cp site.yml.sample site.yml</li>
+<li>开始安装</li>
 </ul>
 
-<p>vim group_vars/all.yml</p>
+<pre><code class="language-bash">cp group_vars/all.yml.sample group_vars/all.yml
+cp group_vars/osds.yml.sample group_vars/osds.yml
+cp site.yml.sample site.yml
 
-<p>ceph_origin: repository
+
+vim group_vars/all.yml
+
+ceph_origin: repository
 ceph_repository: community
-ceph_mirror: <a href="http://mirrors.aliyun.com/ceph">http://mirrors.aliyun.com/ceph</a>
-ceph_stable_key: <a href="http://mirrors.aliyun.com/ceph/keys/release.asc">http://mirrors.aliyun.com/ceph/keys/release.asc</a>
+ceph_mirror: http://mirrors.aliyun.com/ceph
+ceph_stable_key: http://mirrors.aliyun.com/ceph/keys/release.asc
 ceph_stable_release: luminous
-ceph_stable_repo: &ldquo;{{ ceph_mirror }}/rpm-{{ ceph_stable_release }}&rdquo;</p>
+ceph_stable_repo: &quot;{{ ceph_mirror }}/rpm-{{ ceph_stable_release }}&quot;
 
-<p>fsid: 54d55c64-d458-4208-9592-36ce881cbcb7 ##通过uuidgen生成
-generate_fsid: false</p>
+fsid: 54d55c64-d458-4208-9592-36ce881cbcb7 ##通过uuidgen生成
+generate_fsid: false
 
-<p>cephx: true</p>
+cephx: true
 
-<p>public_network: 172.16.64.0/20
+public_network: 172.16.64.0/20
 cluster_network: 172.16.64.0/20
-monitor_interface: eth0</p>
+monitor_interface: eth0
 
-<p>ceph_conf_overrides:
+ceph_conf_overrides:
     global:
       rbd_default_features: 7
       auth cluster required: cephx
@@ -355,131 +335,108 @@ monitor_interface: eth0</p>
       osd pool default pg num: 128
       osd pool default pgp num: 128
       max open files: 131072
-      osd_deep_scrub_randomize_ratio: 0.01</p>
+      osd_deep_scrub_randomize_ratio: 0.01
 
-<pre><code>mgr:
-  mgr modules: dashboard
+    mgr:
+      mgr modules: dashboard
 
-mon:
-  mon_allow_pool_delete: true
+    mon:
+      mon_allow_pool_delete: true
 
-client:
-  rbd_cache: true
-  rbd_cache_size: 335544320
-  rbd_cache_max_dirty: 134217728
-  rbd_cache_max_dirty_age: 10
+    client:
+      rbd_cache: true
+      rbd_cache_size: 335544320
+      rbd_cache_max_dirty: 134217728
+      rbd_cache_max_dirty_age: 10
 
-osd:
-  osd mkfs type: xfs
-  osd mount options xfs: &quot;rw,noexec,nodev,noatime,nodiratime,nobarrier&quot;
-  ms_bind_port_max: 7100
-  osd_client_message_size_cap: 2147483648
-  osd_crush_update_on_start: true
-  osd_deep_scrub_stride: 131072
-  osd_disk_threads: 4
-  osd_map_cache_bl_size: 128
-  osd_max_object_name_len: 256
-  osd_max_object_namespace_len: 64
-  osd_max_write_size: 1024
-  osd_op_threads: 8
+    osd:
+      osd mkfs type: xfs
+      osd mount options xfs: &quot;rw,noexec,nodev,noatime,nodiratime,nobarrier&quot;
+      ms_bind_port_max: 7100
+      osd_client_message_size_cap: 2147483648
+      osd_crush_update_on_start: true
+      osd_deep_scrub_stride: 131072
+      osd_disk_threads: 4
+      osd_map_cache_bl_size: 128
+      osd_max_object_name_len: 256
+      osd_max_object_namespace_len: 64
+      osd_max_write_size: 1024
+      osd_op_threads: 8
 
-  osd_recovery_op_priority: 1
-  osd_recovery_max_active: 1
-  osd_recovery_max_single_start: 1
-  osd_recovery_max_chunk: 1048576
-  osd_recovery_threads: 1
-  osd_max_backfills: 4
-  osd_scrub_begin_hour: 23
-  osd_scrub_end_hour: 7
+      osd_recovery_op_priority: 1
+      osd_recovery_max_active: 1
+      osd_recovery_max_single_start: 1
+      osd_recovery_max_chunk: 1048576
+      osd_recovery_threads: 1
+      osd_max_backfills: 4
+      osd_scrub_begin_hour: 23
+      osd_scrub_end_hour: 7
+      
+     # bluestore block create: true
+     # bluestore block db size: 73014444032
+     # bluestore block db create: true
+     # bluestore block wal size: 107374182400
+     # bluestore block wal create: true
 
- # bluestore block create: true
- # bluestore block db size: 73014444032
- # bluestore block db create: true
- # bluestore block wal size: 107374182400
- # bluestore block wal create: true
-</code></pre>
 
-<p>vim group_vars/osds.yml
+vim group_vars/osds.yml
 devices:
   - /dev/vdc
   - /dev/vdd
   - /dev/vde
 osd_scenario: collocated
-osd_objectstore: bluestore</p>
+osd_objectstore: bluestore
 
-<p>#osd_scenario: non-collocated
+#osd_scenario: non-collocated
 #osd_objectstore: bluestore
-#devices:</p>
+#devices:
+#  - /dev/sdc
+#  - /dev/sdd
+#  - /dev/sde
+#dedicated_devices:
+#  - /dev/sdf
+#  - /dev/sdf
+#  - /dev/sdf
+#bluestore_wal_devices:
+#  - /dev/sdg
+#  - /dev/sdg
+#  - /dev/sdg
+#
+#monitor_address: 192.168.66.125
 
-<h1 id="dev-sdc">- /dev/sdc</h1>
 
-<h1 id="dev-sdd">- /dev/sdd</h1>
+# 注释不需要的组件
+vim site.yml
+---
+# Defines deployment design and assigns role to server groups
 
-<h1 id="dev-sde">- /dev/sde</h1>
+- hosts:
+  - mons
+#  - agents
+  - osds
+  - mdss
+#  - rgws
+#  - nfss
+#  - restapis
+#  - rbdmirrors
+  - clients
+  - mgrs
+#  - iscsigws
+#  - iscsi-gws # for backward compatibility only!
 
-<p>#dedicated_devices:</p>
 
-<h1 id="dev-sdf">- /dev/sdf</h1>
+ansible-playbook -i hosts site.yml
 
-<h1 id="dev-sdf-1">- /dev/sdf</h1>
+</code></pre>
 
-<h1 id="dev-sdf-2">- /dev/sdf</h1>
-
-<p>#bluestore_wal_devices:</p>
-
-<h1 id="dev-sdg">- /dev/sdg</h1>
-
-<h1 id="dev-sdg-1">- /dev/sdg</h1>
-
-<h1 id="dev-sdg-2">- /dev/sdg</h1>
-
-<p>#
-#monitor_address: 192.168.66.125</p>
-
-<h1 id="注释不需要的组件">注释不需要的组件</h1>
-
-<h2 id="vim-site-yml">vim site.yml</h2>
-
-<h1 id="defines-deployment-design-and-assigns-role-to-server-groups">Defines deployment design and assigns role to server groups</h1>
+<p>至此ceph部署完成，登陆ceph节点检查状态。
+&gt; ceph-ansible极大的提升工作效率，并且很好的减少人为的手工操作失误，解放劳动力的利器！</p>
 
 <ul>
-<li><p>hosts:</p>
-
-<ul>
-<li><p>mons</p>
-
-<h1 id="agents">- agents</h1></li>
-
-<li><p>osds</p></li>
-
-<li><p>mdss</p>
-
-<h1 id="rgws">- rgws</h1>
-
-<h1 id="nfss">- nfss</h1>
-
-<h1 id="restapis">- restapis</h1>
-
-<h1 id="rbdmirrors">- rbdmirrors</h1></li>
-
-<li><p>clients</p></li>
-
-<li><p>mgrs</p>
-
-<h1 id="iscsigws">- iscsigws</h1>
-
-<h1 id="iscsi-gws-for-backward-compatibility-only">- iscsi-gws # for backward compatibility only!</h1></li>
-</ul></li>
+<li>清空集群</li>
 </ul>
 
-<p>ansible-playbook -i hosts site.yml</p>
-
-<pre><code>至此ceph部署完成，登陆ceph节点检查状态。
-&gt; ceph-ansible极大的提升工作效率，并且很好的减少人为的手工操作失误，解放劳动力的利器！
-
-- 清空集群
-```bash
-cp infrastructure-playbooks/purge-cluster.yml purge-cluster.yml # 必须copy到项目根目录下
+<pre><code class="language-bash">cp infrastructure-playbooks/purge-cluster.yml purge-cluster.yml # 必须copy到项目根目录下
 ansible-playbook -i hosts purge-cluster.yml
 </code></pre>
 
