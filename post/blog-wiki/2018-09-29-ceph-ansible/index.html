@@ -180,6 +180,7 @@
 <li><a href="#ansible安装">ansible安装</a></li>
 <li><a href="#免密登录配置-略">免密登录配置 (略)</a></li>
 <li><a href="#安装">安装</a></li>
+<li><a href="#ceph">ceph</a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -260,48 +261,47 @@ tar xf v3.1.7.tar.gz
 cd ceph-ansible-3.1.7
 </code></pre></li>
 
-<li><p>host变量</p></li>
+<li><p>host变量
+```bash
+vim hosts</p></li>
 </ul>
 
-<pre><code class="language-bash">[root@k8s-deploy01 ceph-ansible-3.1.7]# cat hosts
-### ceph
-[mons]
+<h3 id="ceph">ceph</h3>
+
+<p>[mons]
 172.16.68.11
 172.16.68.10
-172.16.68.9
+172.16.68.9</p>
 
-[osds]
+<p>[osds]
 172.16.68.11
 172.16.68.10
-172.16.68.9
+172.16.68.9</p>
 
-[mgrs]
+<p>[mgrs]
 172.16.68.11
 172.16.68.10
-172.16.68.9
+172.16.68.9</p>
 
-[mdss]
+<p>[mdss]
 172.16.68.11
 172.16.68.10
-172.16.68.9
+172.16.68.9</p>
 
-[clients]
+<p>[clients]
 172.16.68.11
 172.16.68.10
 172.16.68.9
 172.16.68.8
 172.16.68.7
-172.16.68.6
-</code></pre>
+172.16.68.6</p>
 
-<ul>
-<li>开始安装</li>
-</ul>
-
-<pre><code class="language-bash">cp group_vars/all.yml.sample group_vars/all.yml
+<pre><code>
+- 开始安装
+```bash
+cp group_vars/all.yml.sample group_vars/all.yml
 cp group_vars/osds.yml.sample group_vars/osds.yml
 cp site.yml.sample site.yml
-
 
 vim group_vars/all.yml
 
@@ -435,12 +435,12 @@ ansible-playbook -i hosts site.yml
 </blockquote>
 
 <ul>
-<li>清空集群</li>
-</ul>
-
-<pre><code class="language-bash">cp infrastructure-playbooks/purge-cluster.yml purge-cluster.yml # 必须copy到项目根目录下
+<li>清空集群
+<code>bash
+cp infrastructure-playbooks/purge-cluster.yml purge-cluster.yml # 必须copy到项目根目录下
 ansible-playbook -i hosts purge-cluster.yml
-</code></pre>
+</code></li>
+</ul>
 
 
                 <hr>
