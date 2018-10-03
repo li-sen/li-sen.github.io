@@ -432,15 +432,15 @@ ansible-playbook -i hosts site.yml
 
 <p>至此ceph部署完成，登陆ceph节点检查状态。</p>
 
-<blockquote>
-<p>ceph-ansible极大的提升工作效率，并且很好的减少人为的手工操作失误，解放劳动力的利器！</p>
-</blockquote>
-
 <h4 id="清空集群">清空集群</h4>
 
 <pre><code class="language-bash">cp infrastructure-playbooks/purge-cluster.yml purge-cluster.yml # 必须copy到项目根目录下
 ansible-playbook -i hosts purge-cluster.yml
 </code></pre>
+
+<blockquote>
+<p>ceph-ansible极大的提升工作效率，并且很好的减少人为的手工操作失误，解放劳动力的利器！</p>
+</blockquote>
 
 
                 <hr>
