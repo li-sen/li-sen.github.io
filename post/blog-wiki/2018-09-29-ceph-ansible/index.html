@@ -8,14 +8,14 @@
     <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
-    <meta name="description" content="traefik配置https">
+    <meta name="description" content="ceph-ansible部署">
     
     <meta name="keyword"  content="李森, Lisen, 李森的博客, Lisen Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice">
     <link rel="shortcut icon" href="https://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/blog/favicon.ico">
 
-    <title>traefik配置https-李森的博客 | Lisen Blog</title>
+    <title>ceph-ansible部署-李森的博客 | Lisen Blog</title>
 
-    <link rel="canonical" href="https://li-sen.github.io/post/blog-wiki/2018-09-20-traefik%E9%85%8D%E7%BD%AEhttps/">
+    <link rel="canonical" href="https://li-sen.github.io/post/blog-wiki/2018-09-29-ceph-ansible/">
 
     <link rel="stylesheet" href="https://li-sen.github.io/css/iDisqus.min.css"/>
 	
@@ -133,14 +133,18 @@
                 <div class="post-heading">
                     <div class="tags">
                        
-                       <a class="tag" href="/tags/kubernetes" title="kubernetes">
-                           kubernetes
+                       <a class="tag" href="/tags/ceph" title="ceph">
+                           ceph
+                        </a>
+                        
+                       <a class="tag" href="/tags/ansible" title="ansible">
+                           ansible
                         </a>
                         
                     </div>
-                    <h1>traefik配置https</h1>
+                    <h1>ceph-ansible部署</h1>
                     <h2 class="subheading"></h2>
-                    <span  class="meta">Posted by     &#34;李森&#34; on Thursday, September 20, 2018
+                    <span  class="meta">Posted by     &#34;李森&#34; on Saturday, September 29, 2018
                         
                     </span>
                 </div>
@@ -170,170 +174,323 @@
 <ul>
 <li>
 <ul>
-<li><a href="#流程示意图">流程示意图</a></li>
-<li><a href="#生成证书">生成证书</a></li>
-<li><a href="#新增cm">新增cm</a></li>
-<li><a href="#deploy引用">deploy引用</a></li>
-<li><a href="#修改svc增加443端口">修改svc增加443端口</a></li>
+<li>
+<ul>
+<li><a href="#环境说明">环境说明</a></li>
+<li><a href="#ansible安装">ansible安装</a></li>
+<li><a href="#免密登录配置-略">免密登录配置 (略)</a></li>
+<li><a href="#安装">安装</a></li>
 </ul></li>
+</ul></li>
+<li><a href="#dev-sdc">- /dev/sdc</a></li>
+<li><a href="#dev-sdd">- /dev/sdd</a></li>
+<li><a href="#dev-sde">- /dev/sde</a></li>
+<li><a href="#dev-sdf">- /dev/sdf</a></li>
+<li><a href="#dev-sdf-1">- /dev/sdf</a></li>
+<li><a href="#dev-sdf-2">- /dev/sdf</a></li>
+<li><a href="#dev-sdg">- /dev/sdg</a></li>
+<li><a href="#dev-sdg-1">- /dev/sdg</a></li>
+<li><a href="#dev-sdg-2">- /dev/sdg</a></li>
+<li><a href="#注释不需要的组件">注释不需要的组件</a>
+<ul>
+<li><a href="#vim-site-yml">vim site.yml</a></li>
+</ul></li>
+<li><a href="#defines-deployment-design-and-assigns-role-to-server-groups">Defines deployment design and assigns role to server groups</a></li>
+<li><a href="#agents">- agents</a></li>
+<li><a href="#rgws">- rgws</a></li>
+<li><a href="#nfss">- nfss</a></li>
+<li><a href="#restapis">- restapis</a></li>
+<li><a href="#rbdmirrors">- rbdmirrors</a></li>
+<li><a href="#iscsigws">- iscsigws</a></li>
+<li><a href="#iscsi-gws-for-backward-compatibility-only">- iscsi-gws # for backward compatibility only!</a></li>
 </ul>
 </nav>
 		
 		
 
-<p>目前所有的访问都已经转向https了，大势所趋，ssl重要性这里不细说了；我这里是client到traefik加密，后端还是http，有更高要求的时候再来进步优化，先满足功能再说。</p>
+<p>ceph 不用多介绍了，之前都是使用ceph-deploy方式部署，感觉比较繁琐，不过ceph官方有ansible部署支持，刚好要新环境就用起来。</p>
+
+<h3 id="环境说明">环境说明</h3>
+
+<table>
+<thead>
+<tr>
+<th>hostname</th>
+<th>ip</th>
+<th>role</th>
+<th>os</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>k8s-deploy01</td>
+<td>172.16.68.12</td>
+<td>admin/deploy</td>
+<td>centos_7.5_x64/4.18.11-1.el7.elrepo.x86_64</td>
+</tr>
+
+<tr>
+<td>k8s-master01</td>
+<td>172.16.68.11</td>
+<td>mon/osd/mgr</td>
+<td>centos_7.5_x64/4.18.11-1.el7.elrepo.x86_64</td>
+</tr>
+
+<tr>
+<td>k8s-master02</td>
+<td>172.16.68.10</td>
+<td>mon/osd/mgr</td>
+<td>centos_7.5_x64/4.18.11-1.el7.elrepo.x86_64</td>
+</tr>
+
+<tr>
+<td>k8s-master03</td>
+<td>172.16.68.9</td>
+<td>mon/osd/mgr</td>
+<td>centos_7.5_x64/4.18.11-1.el7.elrepo.x86_64</td>
+</tr>
+</tbody>
+</table>
 
 <blockquote>
-<p>traefik http部署我这里省略，详细可参考<a href="https://github.com/gjmzj/kubeasz">kubeasz</a>中的ingress部分。</p>
+<p>建议系统内核升级到4.x，不然容易出各种问题，不要给自己找不必要的麻烦，内核升级可参考我之前的文档。</p>
 </blockquote>
 
-<h2 id="流程示意图">流程示意图</h2>
+<h3 id="ansible安装">ansible安装</h3>
 
-<pre><code class="language-bash">client ---https---&gt; traefik ---http---&gt; svc (本文)
-client ---https---&gt; traefik ---https---&gt; svc
+<pre><code class="language-bash">pip install ansible==2.4.2
 </code></pre>
-
-<h2 id="生成证书">生成证书</h2>
 
 <blockquote>
-<p>我这里使用私签证书</p>
+<p>严格按照官方文档的要求来，ansible版本过新或旧都会有各种报错。
+<a href="http://docs.ceph.com/ceph-ansible/stable-3.0/index.html#ansible-on-rhel-and-centos">ceph-ansible官方安装文档</a></p>
 </blockquote>
 
-<pre><code class="language-bash"># 私钥
-openssl genrsa -out rsa_private_key.pem 2048
+<h3 id="免密登录配置-略">免密登录配置 (略)</h3>
 
-# 生成公钥
-openssl rsa -in rsa_private_key.pem -pubout -out rsa_public_key.pem
+<p>可参考之前ceph-deploy</p>
 
-openssl req -new -out ca-req.csr -key rsa_private_key.pem
+<h3 id="安装">安装</h3>
 
-openssl x509 -req -in ca-req.csr -out ca-cert.pem -signkey rsa_private_key.pem -days 3650
+<ul>
+<li><p>下载项目</p>
+
+<pre><code class="language-bash">wget -c https://github.com/ceph/ceph-ansible/archive/v3.1.7.tar.gz
+tar xf v3.1.7.tar.gz
+cd ceph-ansible-3.1.7
+</code></pre></li>
+
+<li><p>host变量</p></li>
+</ul>
+
+<pre><code class="language-bash">[root@k8s-deploy01 ceph-ansible-3.1.7]# cat hosts
+### ceph
+[mons]
+172.16.68.11
+172.16.68.10
+172.16.68.9
+
+[osds]
+172.16.68.11
+172.16.68.10
+172.16.68.9
+
+[mgrs]
+172.16.68.11
+172.16.68.10
+172.16.68.9
+
+[mdss]
+172.16.68.11
+172.16.68.10
+172.16.68.9
+
+[clients]
+172.16.68.11
+172.16.68.10
+172.16.68.9
+172.16.68.8
+172.16.68.7
+172.16.68.6
+
 </code></pre>
 
-<h2 id="新增cm">新增cm</h2>
+<ul>
+<li>开始安装
+```bash
+cp group_vars/all.yml.sample group_vars/all.yml
+cp group_vars/osds.yml.sample group_vars/osds.yml
+cp site.yml.sample site.yml</li>
+</ul>
 
-<pre><code class="language-bash"># 配置traefik-cert cm
-kubectl create secret generic traefik-cert --from-file=rsa_private_key.pem --from-file=ca-cert.pem -n kube-system
-# 配置traefik.toml
-[root@by-deploy01 ingress]# cat traefik.toml
-defaultEntryPoints = [&quot;http&quot;,&quot;https&quot;]
-[entryPoints]
-  [entryPoints.http]
-  address = &quot;:80&quot;
-    [entryPoints.http.redirect]
-    entryPoint = &quot;https&quot;
-  [entryPoints.https]
-  address = &quot;:443&quot;
-    [entryPoints.https.tls]
-      [[entryPoints.https.tls.certificates]]
-      certFile = &quot;/opt/k8s/ssl/ca-cert.pem&quot;
-      keyFile = &quot;/opt/k8s/ssl/rsa_private_key.pem&quot;
+<p>vim group_vars/all.yml</p>
 
-# 配置traefik-conf cm
-kubectl create configmap traefik-conf --from-file=traefik.toml -n kube-system
-kubectl get cm -n kube-system
+<p>ceph_origin: repository
+ceph_repository: community
+ceph_mirror: <a href="http://mirrors.aliyun.com/ceph">http://mirrors.aliyun.com/ceph</a>
+ceph_stable_key: <a href="http://mirrors.aliyun.com/ceph/keys/release.asc">http://mirrors.aliyun.com/ceph/keys/release.asc</a>
+ceph_stable_release: luminous
+ceph_stable_repo: &ldquo;{{ ceph_mirror }}/rpm-{{ ceph_stable_release }}&rdquo;</p>
+
+<p>fsid: 54d55c64-d458-4208-9592-36ce881cbcb7 ##通过uuidgen生成
+generate_fsid: false</p>
+
+<p>cephx: true</p>
+
+<p>public_network: 172.16.64.0/20
+cluster_network: 172.16.64.0/20
+monitor_interface: eth0</p>
+
+<p>ceph_conf_overrides:
+    global:
+      rbd_default_features: 7
+      auth cluster required: cephx
+      auth service required: cephx
+      auth client required: cephx
+      osd journal size: 2048
+      osd pool default size: 3
+      osd pool default min size: 1
+      mon_pg_warn_max_per_osd: 1024
+      osd pool default pg num: 128
+      osd pool default pgp num: 128
+      max open files: 131072
+      osd_deep_scrub_randomize_ratio: 0.01</p>
+
+<pre><code>mgr:
+  mgr modules: dashboard
+
+mon:
+  mon_allow_pool_delete: true
+
+client:
+  rbd_cache: true
+  rbd_cache_size: 335544320
+  rbd_cache_max_dirty: 134217728
+  rbd_cache_max_dirty_age: 10
+
+osd:
+  osd mkfs type: xfs
+  osd mount options xfs: &quot;rw,noexec,nodev,noatime,nodiratime,nobarrier&quot;
+  ms_bind_port_max: 7100
+  osd_client_message_size_cap: 2147483648
+  osd_crush_update_on_start: true
+  osd_deep_scrub_stride: 131072
+  osd_disk_threads: 4
+  osd_map_cache_bl_size: 128
+  osd_max_object_name_len: 256
+  osd_max_object_namespace_len: 64
+  osd_max_write_size: 1024
+  osd_op_threads: 8
+
+  osd_recovery_op_priority: 1
+  osd_recovery_max_active: 1
+  osd_recovery_max_single_start: 1
+  osd_recovery_max_chunk: 1048576
+  osd_recovery_threads: 1
+  osd_max_backfills: 4
+  osd_scrub_begin_hour: 23
+  osd_scrub_end_hour: 7
+
+ # bluestore block create: true
+ # bluestore block db size: 73014444032
+ # bluestore block db create: true
+ # bluestore block wal size: 107374182400
+ # bluestore block wal create: true
 </code></pre>
 
-<h2 id="deploy引用">deploy引用</h2>
+<p>vim group_vars/osds.yml
+devices:
+  - /dev/vdc
+  - /dev/vdd
+  - /dev/vde
+osd_scenario: collocated
+osd_objectstore: bluestore</p>
 
-<pre><code class="language-yaml">kind: Deployment
-apiVersion: apps/v1beta1
-metadata:
-  name: traefik-ingress-controller
-  namespace: kube-system
-  labels:
-    k8s-app: traefik-ingress-lb
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      k8s-app: traefik-ingress-lb
-  template:
-    metadata:
-      labels:
-        k8s-app: traefik-ingress-lb
-        name: traefik-ingress-lb
-    spec:
-      serviceAccountName: traefik-ingress-controller
-      terminationGracePeriodSeconds: 60
-      containers:
-      - image: traefik:v1.6
-        imagePullPolicy: IfNotPresent
-        name: traefik-ingress-lb
-        args:
-        - --configFile=/opt/k8s/conf/traefik.toml
-        - --web
-        - --kubernetes
-        volumeMounts:
-        - mountPath: &quot;/opt/k8s/ssl/&quot;
-          name: &quot;ssl&quot;
-        - mountPath: &quot;/opt/k8s/conf/&quot;
-          name: &quot;config&quot;
-        ports:
-        - name: http
-          containerPort: 80
-        - name: https
-          containerPort: 443
-        - name: admin
-          containerPort: 8080
-      volumes:
-      - name: ssl
-        secret:
-          secretName: traefik-cert
-      - name: config
-        configMap:
-          name: traefik-conf
-          
-# 生效
-  kubectl apply -f traefik_deploy.yaml
+<p>#osd_scenario: non-collocated
+#osd_objectstore: bluestore
+#devices:</p>
+
+<h1 id="dev-sdc">- /dev/sdc</h1>
+
+<h1 id="dev-sdd">- /dev/sdd</h1>
+
+<h1 id="dev-sde">- /dev/sde</h1>
+
+<p>#dedicated_devices:</p>
+
+<h1 id="dev-sdf">- /dev/sdf</h1>
+
+<h1 id="dev-sdf-1">- /dev/sdf</h1>
+
+<h1 id="dev-sdf-2">- /dev/sdf</h1>
+
+<p>#bluestore_wal_devices:</p>
+
+<h1 id="dev-sdg">- /dev/sdg</h1>
+
+<h1 id="dev-sdg-1">- /dev/sdg</h1>
+
+<h1 id="dev-sdg-2">- /dev/sdg</h1>
+
+<p>#
+#monitor_address: 192.168.66.125</p>
+
+<h1 id="注释不需要的组件">注释不需要的组件</h1>
+
+<h2 id="vim-site-yml">vim site.yml</h2>
+
+<h1 id="defines-deployment-design-and-assigns-role-to-server-groups">Defines deployment design and assigns role to server groups</h1>
+
+<ul>
+<li><p>hosts:</p>
+
+<ul>
+<li><p>mons</p>
+
+<h1 id="agents">- agents</h1></li>
+
+<li><p>osds</p></li>
+
+<li><p>mdss</p>
+
+<h1 id="rgws">- rgws</h1>
+
+<h1 id="nfss">- nfss</h1>
+
+<h1 id="restapis">- restapis</h1>
+
+<h1 id="rbdmirrors">- rbdmirrors</h1></li>
+
+<li><p>clients</p></li>
+
+<li><p>mgrs</p>
+
+<h1 id="iscsigws">- iscsigws</h1>
+
+<h1 id="iscsi-gws-for-backward-compatibility-only">- iscsi-gws # for backward compatibility only!</h1></li>
+</ul></li>
+</ul>
+
+<p>ansible-playbook -i hosts site.yml</p>
+
+<pre><code>至此ceph部署完成，登陆ceph节点检查状态。
+&gt; ceph-ansible极大的提升工作效率，并且很好的减少人为的手工操作失误，解放劳动力的利器！
+
+- 清空集群
+```bash
+cp infrastructure-playbooks/purge-cluster.yml purge-cluster.yml # 必须copy到项目根目录下
+ansible-playbook -i hosts purge-cluster.yml
 </code></pre>
-
-<h2 id="修改svc增加443端口">修改svc增加443端口</h2>
-
-<pre><code class="language-yaml">kind: Service
-apiVersion: v1
-metadata:
-  name: traefik-ingress-service
-  namespace: kube-system
-spec:
-  selector:
-    k8s-app: traefik-ingress-lb
-  ports:
-    - protocol: TCP
-      # 该端口为 traefik ingress-controller的服务端口
-      port: 80
-      # 集群hosts文件中设置的 NODE_PORT_RANGE 作为 NodePort的可用范围
-      # 从默认20000~40000之间选一个可用端口，让ingress-controller暴露给外部的访问
-      nodePort: 23455
-      name: web
-    - protocol: TCP
-      port: 443
-      name: https
-      nodePort: 23456
-    - protocol: TCP
-      # 该端口为 traefik 的管理WEB界面
-      port: 8080
-      name: admin
-  type: NodePort
-
-# 生效
-  kubectl apply -f traefik_svc.yaml
-</code></pre>
-
-<p>至此配置完成可以用浏览器测试下！</p>
 
 
                 <hr>
 
                 <ul class="pager">
                     
-                    <li class="previous">
-                        <a href="/post/blog-wiki/2018-09-21-jenkins-cicd/" data-toggle="tooltip" data-placement="top" title="jenkins-cicd on kubernetes">&larr; Previous Post</a>
-                    </li>
-                    
                     
                     <li class="next">
-                        <a href="/2018/09/09/introducing-the-istio-v1alpha3-routing-api/" data-toggle="tooltip" data-placement="top" title="Istio v1aplha3 routing API介绍(译文）">Next Post &rarr;</a>
+                        <a href="/post/blog-wiki/2018-09-27-k8s-kubeasz-%E9%98%BF%E9%87%8C%E4%BA%91vpc%E9%83%A8%E7%BD%B2%E8%AE%B0%E5%BD%95/" data-toggle="tooltip" data-placement="top" title="k8s-kubeasz-阿里云vpc部署记录">Next Post &rarr;</a>
                     </li>
                     
                 </ul>
@@ -345,7 +502,7 @@ spec:
 <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
 <script>
   var gitment = new Gitment({
-    id: '2018-09-20-traefik配置https',  
+    id: '2018-09-29-ceph-ansible',  
     owner: 'li-sen',
     repo: 'li-sen.github.io',
     oauth: {

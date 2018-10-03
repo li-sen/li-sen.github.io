@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://li-sen.github.io/post/blog-wiki/2018-09-29-ceph-ansible/</loc>
+    <lastmod>2018-09-29T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://li-sen.github.io/post/blog-wiki/2018-09-27-k8s-kubeasz-%E9%98%BF%E9%87%8C%E4%BA%91vpc%E9%83%A8%E7%BD%B2%E8%AE%B0%E5%BD%95/</loc>
     <lastmod>2018-09-27T00:00:00+00:00</lastmod>
   </url>
@@ -28,12 +33,18 @@
   
   <url>
     <loc>https://li-sen.github.io/tags/ansible/</loc>
-    <lastmod>2018-09-27T00:00:00+00:00</lastmod>
+    <lastmod>2018-09-29T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://li-sen.github.io/categories/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://li-sen.github.io/tags/ceph/</loc>
+    <lastmod>2018-09-29T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -50,26 +61,26 @@
   </url>
   
   <url>
-    <loc>https://li-sen.github.io/categories/kubernetes/</loc>
-    <lastmod>2018-09-27T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>https://li-sen.github.io/tags/kubernetes/</loc>
     <lastmod>2018-09-27T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://li-sen.github.io/</loc>
+    <loc>https://li-sen.github.io/categories/kubernetes/</loc>
     <lastmod>2018-09-27T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
+    <loc>https://li-sen.github.io/</loc>
+    <lastmod>2018-09-29T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://li-sen.github.io/post/</loc>
-    <lastmod>2018-09-27T00:00:00+00:00</lastmod>
+    <lastmod>2018-09-29T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -85,8 +96,14 @@
   </url>
   
   <url>
+    <loc>https://li-sen.github.io/categories/storage/</loc>
+    <lastmod>2018-09-29T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://li-sen.github.io/tags/</loc>
-    <lastmod>2018-09-27T00:00:00+00:00</lastmod>
+    <lastmod>2018-09-29T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
