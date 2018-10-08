@@ -875,6 +875,7 @@ kubectl config use-context default --kubeconfig=dashboard.kubeconfig
 
 <pre><code class="language-bash"># 我本地访问不了，翻墙解决
 wget https://storage.googleapis.com/harbor-releases/release-1.6.0/harbor-offline-installer-v1.6.0.tgz
+
 vim /etc/ansible/roles/harbor/defaults/main.yml
 # harbor version
 HARBOR_VER: &quot;v1.6.0&quot;
@@ -885,6 +886,8 @@ vim /etc/ansible/roles/harbor/templates/harbor.cfg.j2
 
 # 调整harbor存储路径
 sed -i 's#/data#/opt/data#g' /etc/ansible/roles/harbor/tasks/main.yml
+
+ansible-playbook 11.harbor.yml
 </code></pre>
 
 
