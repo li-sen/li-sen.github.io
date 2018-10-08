@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Harbor on Lisen Blog</title>
+    <link>https://li-sen.github.io/tags/harbor/</link>
+    <description>Recent content in Harbor on Lisen Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sun, 09 Sep 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://li-sen.github.io/tags/harbor/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>k8s部署高可用harbor</title>
+      <link>https://li-sen.github.io/post/blog-wiki/2018-10-08-k8s%E9%83%A8%E7%BD%B2%E9%AB%98%E5%8F%AF%E7%94%A8harbor/</link>
+      <pubDate>Sun, 09 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://li-sen.github.io/post/blog-wiki/2018-10-08-k8s%E9%83%A8%E7%BD%B2%E9%AB%98%E5%8F%AF%E7%94%A8harbor/</guid>
+      <description>前言 harbor 是目前最流行的开源镜像仓库，不过之前部署都是基于Docker Compose，基本无高可用可言，上不了生产环境。不过了harbor-he</description>
+    </item>
+    
+  </channel>
+</rss>
