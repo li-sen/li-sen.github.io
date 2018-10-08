@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head><head>
+    <meta name="google-site-verification" content="9vIieCe-Qpd78QOmBl63rGtIVbhY6sYyuxX3j8XWBA4" />
+    <meta name="baidu-site-verification" content="LRrmH41lz7" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="description" content="ceph-ansible部署">
+    
+    <meta name="keyword"  content="李森, Lisen, 李森的博客, Lisen Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice">
+    <link rel="shortcut icon" href="https://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/blog/favicon.ico">
+
+    <title>ceph-ansible部署-李森的博客 | Lisen Blog</title>
+
+    <link rel="canonical" href="https://li-sen.github.io/2018/09/29/ceph-ansible%E9%83%A8%E7%BD%B2/">
+
+    <link rel="stylesheet" href="https://li-sen.github.io/css/iDisqus.min.css"/>
+	
+    
+    <link rel="stylesheet" href="https://li-sen.github.io/css/bootstrap.min.css">
+
+    
+    <link rel="stylesheet" href="https://li-sen.github.io/css/hux-blog.min.css">
+
+    
+    <link rel="stylesheet" href="https://li-sen.github.io/css/syntax.css">
+
+    
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    
+    
+    <script src="https://li-sen.github.io/js/jquery.min.js"></script>
+    
+    
+    <script src="https://li-sen.github.io/js/bootstrap.min.js"></script>
+    
+    
+    <script src="https://li-sen.github.io/js/hux-blog.min.js"></script>
+</head>
+</head>
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://li-sen.github.io/">Lisen Blog</a>
+        </div>
+
+        
+        
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="https://li-sen.github.io/">Home</a>
+                    </li>
+                    
+                    <li>
+                        <a href="https://li-sen.github.io/categories/iaas">IAAS</a>
+                    </li>
+                    
+                    <li>
+                        <a href="https://li-sen.github.io/categories/paas">PAAS</a>
+                    </li>
+                    
+
+                    
+		            <li>
+                        <a href="https://li-sen.github.io/search">SEARCH <img src="https://li-sen.github.io/img/search.png" height="15" style="cursor: pointer;"></a>
+		            </li>
+                    
+                </ul>
+            </div>
+        </div>
+        
+    </div>
+    
+</nav>
+<script>
+    
+    
+    
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        
+            $navbar.className = " ";
+            
+            setTimeout(function(){
+                
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+
+
+<style type="text/css">
+    header.intro-header{
+        background-image: url('https://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/blog/post-bg-2.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                       
+                       <a class="tag" href="/tags/ceph" title="ceph">
+                           ceph
+                        </a>
+                        
+                       <a class="tag" href="/tags/ansible" title="ansible">
+                           ansible
+                        </a>
+                        
+                       <a class="tag" href="/tags/storage" title="storage">
+                           storage
+                        </a>
+                        
+                    </div>
+                    <h1>ceph-ansible部署</h1>
+                    <h2 class="subheading">ceph-ansible部署</h2>
+                    <span  class="meta">Posted by     &#34;李森&#34; on Saturday, September 29, 2018
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+<article>
+    <div class="container">
+        <div class="row">
+
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+		
+                <header>
+                <h2>TOC</h2>
+                </header>
+                <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#环境说明">环境说明</a></li>
+<li><a href="#ansible安装">ansible安装</a></li>
+<li><a href="#免密登录配置-略">免密登录配置 (略)</a></li>
+<li><a href="#安装">安装</a>
+<ul>
+<li><a href="#下载项目">下载项目</a></li>
+<li><a href="#host变量">host变量</a></li>
+<li><a href="#开始安装">开始安装</a></li>
+<li><a href="#清空集群">清空集群</a></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+		
+		
+
+<p>ceph 不用多介绍了，之前都是使用ceph-deploy方式部署，感觉比较繁琐，不过ceph官方有ansible部署支持，刚好要新环境就用起来。</p>
+
+<h3 id="环境说明">环境说明</h3>
+
+<table>
+<thead>
+<tr>
+<th>hostname</th>
+<th>ip</th>
+<th>role</th>
+<th>os</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>k8s-deploy01</td>
+<td>172.16.68.12</td>
+<td>admin/deploy</td>
+<td>centos_7.5_x64/4.18.11-1.el7.elrepo.x86_64</td>
+</tr>
+
+<tr>
+<td>k8s-master01</td>
+<td>172.16.68.11</td>
+<td>mon/osd/mgr</td>
+<td>centos_7.5_x64/4.18.11-1.el7.elrepo.x86_64</td>
+</tr>
+
+<tr>
+<td>k8s-master02</td>
+<td>172.16.68.10</td>
+<td>mon/osd/mgr</td>
+<td>centos_7.5_x64/4.18.11-1.el7.elrepo.x86_64</td>
+</tr>
+
+<tr>
+<td>k8s-master03</td>
+<td>172.16.68.9</td>
+<td>mon/osd/mgr</td>
+<td>centos_7.5_x64/4.18.11-1.el7.elrepo.x86_64</td>
+</tr>
+</tbody>
+</table>
+
+<blockquote>
+<p>建议系统内核升级到4.x，不然容易出各种问题，不要给自己找不必要的麻烦，内核升级可参考我之前的文档。</p>
+</blockquote>
+
+<h3 id="ansible安装">ansible安装</h3>
+
+<pre><code class="language-bash">pip install ansible==2.4.2
+</code></pre>
+
+<blockquote>
+<p>严格按照官方文档的要求来，ansible版本过新或旧都会有各种报错。
+<a href="http://docs.ceph.com/ceph-ansible/stable-3.0/index.html#ansible-on-rhel-and-centos">ceph-ansible官方安装文档</a></p>
+</blockquote>
+
+<h3 id="免密登录配置-略">免密登录配置 (略)</h3>
+
+<p>可参考之前ceph-deploy</p>
+
+<h3 id="安装">安装</h3>
+
+<h4 id="下载项目">下载项目</h4>
+
+<pre><code class="language-bash">wget -c https://github.com/ceph/ceph-ansible/archive/v3.1.7.tar.gz
+tar xf v3.1.7.tar.gz
+cd ceph-ansible-3.1.7
+</code></pre>
+
+<h4 id="host变量">host变量</h4>
+
+<pre><code class="language-bash">vim hosts
+
+### ceph
+[mons]
+172.16.68.11
+172.16.68.10
+172.16.68.9
+
+[osds]
+172.16.68.11
+172.16.68.10
+172.16.68.9
+
+[mgrs]
+172.16.68.11
+172.16.68.10
+172.16.68.9
+
+[mdss]
+172.16.68.11
+172.16.68.10
+172.16.68.9
+
+[clients]
+172.16.68.11
+172.16.68.10
+172.16.68.9
+172.16.68.8
+172.16.68.7
+172.16.68.6
+</code></pre>
+
+<h4 id="开始安装">开始安装</h4>
+
+<pre><code class="language-bash">cp group_vars/all.yml.sample group_vars/all.yml
+cp group_vars/osds.yml.sample group_vars/osds.yml
+cp site.yml.sample site.yml
+
+vim group_vars/all.yml
+
+ceph_origin: repository
+ceph_repository: community
+ceph_mirror: http://mirrors.aliyun.com/ceph
+ceph_stable_key: http://mirrors.aliyun.com/ceph/keys/release.asc
+ceph_stable_release: luminous
+ceph_stable_repo: &quot;{{ ceph_mirror }}/rpm-{{ ceph_stable_release }}&quot;
+
+fsid: 54d55c64-d458-4208-9592-36ce881cbcb7 ##通过uuidgen生成
+generate_fsid: false
+
+cephx: true
+
+public_network: 172.16.64.0/20
+cluster_network: 172.16.64.0/20
+monitor_interface: eth0
+
+ceph_conf_overrides:
+    global:
+      rbd_default_features: 7
+      auth cluster required: cephx
+      auth service required: cephx
+      auth client required: cephx
+      osd journal size: 2048
+      osd pool default size: 3
+      osd pool default min size: 1
+      mon_pg_warn_max_per_osd: 1024
+      osd pool default pg num: 128
+      osd pool default pgp num: 128
+      max open files: 131072
+      osd_deep_scrub_randomize_ratio: 0.01
+
+    mgr:
+      mgr modules: dashboard
+
+    mon:
+      mon_allow_pool_delete: true
+
+    client:
+      rbd_cache: true
+      rbd_cache_size: 335544320
+      rbd_cache_max_dirty: 134217728
+      rbd_cache_max_dirty_age: 10
+
+    osd:
+      osd mkfs type: xfs
+      osd mount options xfs: &quot;rw,noexec,nodev,noatime,nodiratime,nobarrier&quot;
+      ms_bind_port_max: 7100
+      osd_client_message_size_cap: 2147483648
+      osd_crush_update_on_start: true
+      osd_deep_scrub_stride: 131072
+      osd_disk_threads: 4
+      osd_map_cache_bl_size: 128
+      osd_max_object_name_len: 256
+      osd_max_object_namespace_len: 64
+      osd_max_write_size: 1024
+      osd_op_threads: 8
+
+      osd_recovery_op_priority: 1
+      osd_recovery_max_active: 1
+      osd_recovery_max_single_start: 1
+      osd_recovery_max_chunk: 1048576
+      osd_recovery_threads: 1
+      osd_max_backfills: 4
+      osd_scrub_begin_hour: 23
+      osd_scrub_end_hour: 7
+      
+     # bluestore block create: true
+     # bluestore block db size: 73014444032
+     # bluestore block db create: true
+     # bluestore block wal size: 107374182400
+     # bluestore block wal create: true
+
+
+vim group_vars/osds.yml
+devices:
+  - /dev/vdc
+  - /dev/vdd
+  - /dev/vde
+osd_scenario: collocated
+osd_objectstore: bluestore
+
+#osd_scenario: non-collocated
+#osd_objectstore: bluestore
+#devices:
+#  - /dev/sdc
+#  - /dev/sdd
+#  - /dev/sde
+#dedicated_devices:
+#  - /dev/sdf
+#  - /dev/sdf
+#  - /dev/sdf
+#bluestore_wal_devices:
+#  - /dev/sdg
+#  - /dev/sdg
+#  - /dev/sdg
+#
+#monitor_address: 192.168.66.125
+
+
+# 注释不需要的组件
+vim site.yml
+---
+# Defines deployment design and assigns role to server groups
+
+- hosts:
+  - mons
+#  - agents
+  - osds
+  - mdss
+#  - rgws
+#  - nfss
+#  - restapis
+#  - rbdmirrors
+  - clients
+  - mgrs
+#  - iscsigws
+#  - iscsi-gws # for backward compatibility only!
+
+
+ansible-playbook -i hosts site.yml
+
+</code></pre>
+
+<p>至此ceph部署完成，登陆ceph节点检查状态。</p>
+
+<h4 id="清空集群">清空集群</h4>
+
+<pre><code class="language-bash">cp infrastructure-playbooks/purge-cluster.yml purge-cluster.yml # 必须copy到项目根目录下
+ansible-playbook -i hosts purge-cluster.yml
+</code></pre>
+
+<blockquote>
+<p>ceph-ansible极大的提升工作效率，并且很好的减少人为的手工操作失误，解放劳动力的利器！</p>
+</blockquote>
+
+
+                <hr>
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2018/10/08/k8s%e9%83%a8%e7%bd%b2%e9%ab%98%e5%8f%af%e7%94%a8harbor/" data-toggle="tooltip" data-placement="top" title="k8s部署高可用harbor">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2018/09/27/k8s-kubeasz-%e9%98%bf%e9%87%8c%e4%ba%91vpc%e9%83%a8%e7%bd%b2%e8%ae%b0%e5%bd%95/" data-toggle="tooltip" data-placement="top" title="k8s-kubeasz-阿里云vpc部署记录">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+            
+
+<div id="git-comments"></div>
+<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+  var gitment = new Gitment({
+    id: '2018-09-29-ceph-ansible',  
+    owner: 'li-sen',
+    repo: 'li-sen.github.io',
+    oauth: {
+      client_id: 'f883741f73f7876b684a',
+      client_secret: '3819694d4750165c05238c933cca53c42ff16020',
+    }
+  })
+  gitment.render('git-comments')
+</script>
+
+
+
+            </div>
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                     
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                            <a href="/tags/kubernetes" title="kubernetes">
+                                kubernetes
+                            </a>
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                    </div>
+                </section>
+
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+                    
+                        <li><a target="_blank" href="https://jimmysong.io/">宋净超的博客</a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                   
+                   <li>
+                       <a href="" rel="alternate" type="application/rss+xml" title="Lisen Blog" >
+                           <span class="fa-stack fa-lg">
+                               <i class="fa fa-circle fa-stack-2x"></i>
+                               <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                           </span>
+                       </a>
+                   </li>
+                   
+                    
+                    <li>
+                        <a href="mailto:lisen2023@gmail.com">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-envelope fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    
+                    
+                    
+
+                    
+
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/blog/wechat.jpeg">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-wechat fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/li-sen">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                </ul>
+		<p class="copyright text-muted">
+                    Copyright &copy; Lisen Blog , 2018
+                    <br>
+                    <a href="https://themes.gohugo.io/hugo-theme-cleanwhite">CleanWhite Hugo Theme</a> by <a href="https://zhaohuabing.com">Huabing</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=zhaohuabing&repo=hugo-theme-cleanwhite&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+
+
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+
+
+
+
+
+<script>
+    
+    if($('#tag_cloud').length !== 0){
+        async("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+
+<script>
+    async("https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https'){
+       bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      }
+      else{
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+
+
+
+
+
+
+</body>
+</html>

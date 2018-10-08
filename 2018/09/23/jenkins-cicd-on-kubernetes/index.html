@@ -8,14 +8,14 @@
     <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
-    <meta name="description" content="李森，devops, 骑行爱好者 | 这里是 李森 的博客，让我们来做点能改变世界的事。">
+    <meta name="description" content="jenkins-cicd-on-kubernetes">
     
     <meta name="keyword"  content="李森, Lisen, 李森的博客, Lisen Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice">
     <link rel="shortcut icon" href="https://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/blog/favicon.ico">
 
-    <title>Ingress-李森的博客 | Lisen Blog</title>
+    <title>jenkins-cicd-on-kubernetes-李森的博客 | Lisen Blog</title>
 
-    <link rel="canonical" href="https://li-sen.github.io/tags/ingress/">
+    <link rel="canonical" href="https://li-sen.github.io/2018/09/23/jenkins-cicd-on-kubernetes/">
 
     <link rel="stylesheet" href="https://li-sen.github.io/css/iDisqus.min.css"/>
 	
@@ -116,14 +116,37 @@
 
 
 
-<header class="intro-header" style="background-image: url('https://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/blog/home-bg-ride.jpg')">
+
+<style type="text/css">
+    header.intro-header{
+        background-image: url('https://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/blog/post-bg-3.jpg')
+    }
+</style>
+<header class="intro-header" >
     <div class="container">
         <div class="row">
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 ">
-                <div class="site-heading">
-                    <h1>Lisen Blog </h1>
-                    
-		    <h2>Do the right thing !<h2>
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                       
+                       <a class="tag" href="/tags/kubernetes" title="kubernetes">
+                           kubernetes
+                        </a>
+                        
+                       <a class="tag" href="/tags/jenkins" title="jenkins">
+                           jenkins
+                        </a>
+                        
+                       <a class="tag" href="/tags/cicd" title="cicd">
+                           cicd
+                        </a>
+                        
+                    </div>
+                    <h1>jenkins-cicd-on-kubernetes</h1>
+                    <h2 class="subheading">jenkins-cicd-on-kubernetes</h2>
+                    <span  class="meta">Posted by     &#34;李森&#34; on Sunday, September 23, 2018
+                        
+                    </span>
                 </div>
             </div>
         </div>
@@ -132,185 +155,177 @@
 
 
 
-  
-<div class="container">
-    <div class="row">
-        
-        
-   	    <div class="
-            col-lg-8 col-lg-offset-1
-            col-md-8 col-md-offset-1
-            col-sm-12
-            col-xs-12
-            post-container
-        ">
-            
 
-<div class="post-preview">
-    <a href="https://li-sen.github.io/2018/09/20/traefik%E9%85%8D%E7%BD%AEhttps/">
-        <h2 class="post-title">
-            traefik配置https
-        </h2>
-	
-        <h3 class="post-subtitle">
-            traefik配置https
-        </h3>
-	
-        <div class="post-content-preview">
-	
-            traefik配置https
-        
-        </div>
-    </a>
-    <p class="post-meta">
-    Posted by     &#34;李森&#34; Thursday, September 20, 2018
-    </p>
-</div>
-<hr>
-
+<article>
+    <div class="container">
+        <div class="row">
 
             
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+		
+                <header>
+                <h2>TOC</h2>
+                </header>
+                <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#部署jenkins-slave">部署jenkins slave</a></li>
+<li><a href="#生成证书">生成证书</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+		
+		
+
+<p>kubernetes ci/cd 开源实现有很多，传统的有霸主jenkins、后起之秀drone、Spinnaker、gitlab-ci以及jenkins-kubernetes衍生版jenkins X等；不可否认后起之秀们有性能优势、云原生跟kubernetes结合很好，他们都能很好的完成ci/cd的工作，但论产品的功能性、成熟度、稳定性包括生态跟jenkins比不是一个级别，ci/cd 是企业devops的关键一环，它还应该包括代码质量管理(sonar)、codereview以及相关的自动化测试环节，综合下来后起之秀们目前还是小玩具而已，jenkins在Pipeline加持下依然是不二之选。</p>
+
+<blockquote>
+<ol>
+<li>先说下我这里的技术栈dubbo+springboot，nexus gradle编译打包，大家可以根据自己的实际情况进行适当修改即可。</li>
+<li>在代码库中增加一个Jenkinsfile 结合BlueOcean插件实现，dev、test环境会定时扫描然后直接部署，master会有一个确认步骤，同意后才能进行发布。</li>
+<li>此次部署有持久化存储需求，请自行解决，或参考我之前的ceph文档。</li>
+</ol>
+</blockquote>
+
+<h3 id="部署jenkins-slave">部署jenkins slave</h3>
+
+<pre><code class="language-bash">git clone https://github.com/li-sen/jenkins-cicd-on-kubernetes.git
+cd jenkins-cicd-on-kubernetes
+
+1. 创建namespace
+kubectl create -f ns.yaml
+
+2. 创建ceph-key
+kubectl create secret generic ceph-storageclass-secret --type=&quot;kubernetes.io/rbd&quot; --from-literal=key='AQWCBc1xBzNNWJVcfyCrhWDA==' --namespace=kube-ops
+
+3. 创建sa
+kubectl create -f jenkins-rbac.yaml
+
+4. 创建statefulset
+kubectl create -f jenkins-statefulset.yaml
+
+5. 创建svc
+kubectl create -f jenkins-svc.yaml
+
+6. 安装jenkins
+# 获取初始密码
+kubectl exec -it jenkins-0 /bin/bash -n kube-ops
+jenkins@jenkins-0:/$ cat /var/jenkins_home/secrets/initialAdminPassword
+# 后续步骤跟传统安装一样，按推荐下一步就行（插件安装也按默认推荐），这里省略了。
+</code></pre>
+
+<blockquote>
+<ol>
+<li>Jenkins URL需要设置为: <a href="http://jenkins.kube-ops.svc.cluster.local:8080/">http://jenkins.kube-ops.svc.cluster.local:8080/</a> 不然slave pod 无法连接master</li>
+<li>插件的需另外安装Blue Ocean、kubernetes 两个插件 这里我就不截图了。</li>
+</ol>
+</blockquote>
+
+<h3 id="生成证书">生成证书</h3>
 
 
+                <hr>
 
-       	</div>
-        
-
-<div class="
-    col-lg-3 col-lg-offset-0
-    col-md-3 col-md-offset-0
-    col-sm-12
-    col-xs-12
-    sidebar-container
-">
-    
-    
-    <section>
-        <hr class="hidden-sm hidden-xs">
-        <h5>FEATURED TAGS</h5>
-        <div class="tags">
-             
-            
-                
-            
-                
-            
-                
-            
-                
-            
-                
-            
-                
-            
-                
-            
-                
-            
-                
-            
-                
-                    <a href="/tags/kubernetes" title="kubernetes">
-                        kubernetes
-                    </a>
-                
-            
-                
-            
-                
-            
-                
-            
-        </div>
-    </section>
-    
-
-    
-    <section class="visible-md visible-lg">
-        <hr><h5><a href="">ABOUT ME</a></h5>
-        <div class="short-about">
-            
-            <img src="https://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/blog/touxiang.png" />
-            
-            
-                <p>Open Source Enthusiast and Cycling Enthusiast</p>
-            
-           
-           <ul class="list-inline"> 
-               
-               <li>
-                   <a href="https://li-sen.github.io/tags/ingress/index.xml" rel="alternate" type="application/rss+xml" title="Lisen Blog" >
-                       <span class="fa-stack fa-lg">
-                           <i class="fa fa-circle fa-stack-2x"></i>
-                           <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
-                       </span>
-                   </a>
-               </li>
-               
-               
-                    <li>
-                        <a href="mailto:lisen2023@gmail.com">
-                            <span class="fa-stack fa-lg">
-                                <i class="fa fa-circle fa-stack-2x"></i>
-                                <i class="fa fa-envelope fa-stack-1x fa-inverse"></i>
-                            </span>
-                        </a>
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2018/09/27/k8s-kubeasz-%e9%98%bf%e9%87%8c%e4%ba%91vpc%e9%83%a8%e7%bd%b2%e8%ae%b0%e5%bd%95/" data-toggle="tooltip" data-placement="top" title="k8s-kubeasz-阿里云vpc部署记录">&larr; Previous Post</a>
                     </li>
-		    
-               
-               
-               
-               
-               
-               <li>
-                   <a target="_blank" href="https://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/blog/wechat.jpeg">
-                       <span class="fa-stack fa-lg">
-                           <i class="fa fa-circle fa-stack-2x"></i>
-                           <i class="fa fa-wechat fa-stack-1x fa-inverse"></i>
-                       </span>
-                   </a>
-               </li>
-               
-               
-               <li>
-                   <a target="_blank" href="https://github.com/li-sen">
-                       <span class="fa-stack fa-lg">
-                           <i class="fa fa-circle fa-stack-2x"></i>
-                           <i class="fa fa-github fa-stack-1x fa-inverse"></i>
-                       </span>
-                   </a>
-               </li>
-               
-               
+                    
+                    
+                    <li class="next">
+                        <a href="/2018/09/20/traefik%e9%85%8d%e7%bd%aehttps/" data-toggle="tooltip" data-placement="top" title="traefik配置https">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+            
+
+<div id="git-comments"></div>
+<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+  var gitment = new Gitment({
+    id: '2018-09-23-jenkins-cicd',  
+    owner: 'li-sen',
+    repo: 'li-sen.github.io',
+    oauth: {
+      client_id: 'f883741f73f7876b684a',
+      client_secret: '3819694d4750165c05238c933cca53c42ff16020',
+    }
+  })
+  gitment.render('git-comments')
+</script>
+
+
+
+            </div>
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                     
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                            <a href="/tags/kubernetes" title="kubernetes">
+                                kubernetes
+                            </a>
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                    </div>
+                </section>
+
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+                    
+                        <li><a target="_blank" href="https://jimmysong.io/">宋净超的博客</a></li>
+                    
                 </ul>
             </div>
-    </section>
-   
-   <hr>
-   <h5>FRIENDS</h5>
-   <ul class="list-inline">
-       
-           <li><a target="_blank" href="https://jimmysong.io/">宋净超的博客</a></li>
-       
-   </ul>
-   
-    
-   <hr>
-   <h5>BOOKMARKS</h5>
-   <ul class="list-inline">
-   
-           <li><a target="_blank" href="http://www.servicemesh.cn">ServiceMesh中文网</a></li>
-       
-           <li><a target="_blank" href="https://servicemesh.gitbooks.io/awesome-servicemesh">Awesome Service Mesh</a></li>
-       
-           <li><a target="_blank" href="https://tinypng.com">Image Compression</a></li>
-       
-   </ul>
-</div>
-
-	</div>
-</div>
-
+        </div>
+    </div>
+</article>
 
 
 
@@ -322,7 +337,7 @@
                 <ul class="list-inline text-center">
                    
                    <li>
-                       <a href="https://li-sen.github.io/tags/ingress/index.xml" rel="alternate" type="application/rss+xml" title="Lisen Blog" >
+                       <a href="" rel="alternate" type="application/rss+xml" title="Lisen Blog" >
                            <span class="fa-stack fa-lg">
                                <i class="fa fa-circle fa-stack-2x"></i>
                                <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
