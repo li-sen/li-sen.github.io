@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>IAAS on Lisen Blog</title>
+    <link>https://li-sen.github.io/categories/iaas/</link>
+    <description>Recent content in IAAS on Lisen Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sat, 29 Sep 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://li-sen.github.io/categories/iaas/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>ceph-ansible部署</title>
+      <link>https://li-sen.github.io/post/blog-wiki/2018-09-29-ceph-ansible/</link>
+      <pubDate>Sat, 29 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://li-sen.github.io/post/blog-wiki/2018-09-29-ceph-ansible/</guid>
+      <description>ceph 不用多介绍了，之前都是使用ceph-deploy方式部署，感觉比较繁琐，不过ceph官方有ansible部署支持，刚好要新环境就用起来。 环</description>
+    </item>
+    
+    <item>
+      <title>k8s-kubeasz-阿里云vpc部署记录</title>
+      <link>https://li-sen.github.io/post/blog-wiki/2018-09-27-k8s-kubeasz-%E9%98%BF%E9%87%8C%E4%BA%91vpc%E9%83%A8%E7%BD%B2%E8%AE%B0%E5%BD%95/</link>
+      <pubDate>Thu, 27 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://li-sen.github.io/post/blog-wiki/2018-09-27-k8s-kubeasz-%E9%98%BF%E9%87%8C%E4%BA%91vpc%E9%83%A8%E7%BD%B2%E8%AE%B0%E5%BD%95/</guid>
+      <description>这是本人参照开源项目kubeasz（项目地址），在阿里云vpc环境使用slb搭建的一套3*master+3*node的高可用k8s集群，这并</description>
+    </item>
+    
+  </channel>
+</rss>

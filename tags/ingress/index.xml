@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Ingress on Lisen Blog</title>
+    <link>https://li-sen.github.io/tags/ingress/</link>
+    <description>Recent content in Ingress on Lisen Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Thu, 20 Sep 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://li-sen.github.io/tags/ingress/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>traefik配置https</title>
+      <link>https://li-sen.github.io/post/blog-wiki/2018-09-20-traefik%E9%85%8D%E7%BD%AEhttps/</link>
+      <pubDate>Thu, 20 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://li-sen.github.io/post/blog-wiki/2018-09-20-traefik%E9%85%8D%E7%BD%AEhttps/</guid>
+      <description>目前所有的访问都已经转向https了，大势所趋，ssl重要性这里不细说了；我这里是client到traefik加密，后端还是http，有更高</description>
+    </item>
+    
+  </channel>
+</rss>

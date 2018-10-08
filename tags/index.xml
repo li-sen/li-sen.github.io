@@ -30,11 +30,38 @@
     </item>
     
     <item>
+      <title>Cicd</title>
+      <link>https://li-sen.github.io/tags/cicd/</link>
+      <pubDate>Fri, 21 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://li-sen.github.io/tags/cicd/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Ingress</title>
+      <link>https://li-sen.github.io/tags/ingress/</link>
+      <pubDate>Thu, 20 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://li-sen.github.io/tags/ingress/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Istio</title>
       <link>https://li-sen.github.io/tags/istio/</link>
       <pubDate>Sun, 09 Sep 2018 00:00:00 +0000</pubDate>
       
       <guid>https://li-sen.github.io/tags/istio/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Jenkins</title>
+      <link>https://li-sen.github.io/tags/jenkins/</link>
+      <pubDate>Fri, 21 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://li-sen.github.io/tags/jenkins/</guid>
       <description></description>
     </item>
     
@@ -53,6 +80,33 @@
       <pubDate>Thu, 27 Sep 2018 00:00:00 +0000</pubDate>
       
       <guid>https://li-sen.github.io/tags/kubernetes/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Servicemesh</title>
+      <link>https://li-sen.github.io/tags/servicemesh/</link>
+      <pubDate>Sun, 09 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://li-sen.github.io/tags/servicemesh/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Storage</title>
+      <link>https://li-sen.github.io/tags/storage/</link>
+      <pubDate>Sat, 29 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://li-sen.github.io/tags/storage/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Traefik</title>
+      <link>https://li-sen.github.io/tags/traefik/</link>
+      <pubDate>Thu, 20 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://li-sen.github.io/tags/traefik/</guid>
       <description></description>
     </item>
     

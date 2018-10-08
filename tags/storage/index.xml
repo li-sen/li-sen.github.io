@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Storage on Lisen Blog</title>
+    <link>https://li-sen.github.io/tags/storage/</link>
+    <description>Recent content in Storage on Lisen Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sat, 29 Sep 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://li-sen.github.io/tags/storage/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>ceph-ansible部署</title>
+      <link>https://li-sen.github.io/post/blog-wiki/2018-09-29-ceph-ansible/</link>
+      <pubDate>Sat, 29 Sep 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://li-sen.github.io/post/blog-wiki/2018-09-29-ceph-ansible/</guid>
+      <description>ceph 不用多介绍了，之前都是使用ceph-deploy方式部署，感觉比较繁琐，不过ceph官方有ansible部署支持，刚好要新环境就用起来。 环</description>
+    </item>
+    
+  </channel>
+</rss>
