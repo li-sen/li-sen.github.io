@@ -209,7 +209,7 @@ cd jenkins-cicd-on-kubernetes
 kubectl create -f ns.yaml
 
 2. 创建ceph-key
-kubectl create secret generic ceph-storageclass-secret --type=&quot;kubernetes.io/rbd&quot; --from-literal=key='AQWCBc1xBzNNWJVcfyCrhWDA==' --namespace=kube-ops
+kubectl create secret generic ceph-storageclass-secret --type=&quot;kubernetes.io/rbd&quot; --from-literal=key='xxxxxxxxxxxxxBzNNWJVcfyCrhWDA==' --namespace=kube-ops
 
 3. 创建sa
 kubectl create -f jenkins-rbac.yaml
