@@ -177,7 +177,12 @@
 <li>
 <ul>
 <li><a href="#部署jenkins-slave">部署jenkins slave</a></li>
-<li><a href="#生成证书">生成证书</a></li>
+<li><a href="#build-slave镜像">build slave镜像</a></li>
+<li><a href="#配置slave-pod-template">配置Slave Pod Template</a></li>
+<li><a href="#gitlab-key">gitlab key</a></li>
+<li><a href="#新建相关资源">新建相关资源</a></li>
+<li><a href="#根据需要调整jenkinsfile">根据需要调整Jenkinsfile</a></li>
+<li><a href="#创建多分支流水线">创建多分支流水线</a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -225,11 +230,117 @@ jenkins@jenkins-0:/$ cat /var/jenkins_home/secrets/initialAdminPassword
 <blockquote>
 <ol>
 <li>Jenkins URL需要设置为: <a href="http://jenkins.kube-ops.svc.cluster.local:8080/">http://jenkins.kube-ops.svc.cluster.local:8080/</a> 不然slave pod 无法连接master</li>
-<li>插件的需另外安装Blue Ocean、kubernetes 两个插件 这里我就不截图了。</li>
+
+<li><p>插件的需另外安装Blue Ocean、kubernetes 两个插件 这里我就不截图了。</p>
+
+<h3 id="build-slave镜像">build slave镜像</h3>
+
+<p>```bash
+[root@k8s-deploy01 jenkins-slave]# cat Dockerfile
+FROM jenkinsci/jnlp-slave:3.26-1-alpine
+MAINTAINER Lisen <lisen_@hotmail.com></p></li>
 </ol>
+
+<p>USER root</p>
+
+<p>RUN echo -e &ldquo;<a href="https://mirror.tuna.tsinghua.edu.cn/alpine/latest-stable/mainn">https://mirror.tuna.tsinghua.edu.cn/alpine/latest-stable/mainn</a<br />
+<a href="https://mirror.tuna.tsinghua.edu.cn/alpine/latest-stable/community&quot;">https://mirror.tuna.tsinghua.edu.cn/alpine/latest-stable/community&quot;</a> &gt; /etc/apk/repositories</p>
+
+<p>RUN apk update &amp;&amp; apk &ndash;no-cache add tzdata ca-certificates wget docker maven <br />
+    &amp;&amp; cp -r -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime</p>
+
+<p>COPY kubectl /usr/local/bin/kubectl</p>
+
+<p>RUN apk &ndash;update add docker</p>
+
+<p>COPY k8s/* /opt/k8s/
+[root@k8s-deploy01 jenkins-slave]#</p>
+
+<p>docker build -t harbor.xxx.com/pub/jnlp-slave:3.26-1-alpine .</p>
+
+<pre><code>### 集成k8s
+安装完毕后，点击 Manage Jenkins —&gt; Configure System —&gt; (拖到最下方)Add a new cloud —&gt; 选择 Kubernetes，然后填写 Kubernetes 和 Jenkins 配置信息。
+```bash
+https://kubernetes.default.svc.cluster.local
+kube-ops
+http://jenkins.kube-ops.svc.cluster.local:8080
+
+点击连接测试
+
+</code></pre>
 </blockquote>
 
-<h3 id="生成证书">生成证书</h3>
+<h3 id="配置slave-pod-template">配置Slave Pod Template</h3>
+
+<pre><code class="language-bash">jnlp
+jnlp
+kube-ops
+jenkins-jnlp
+
+jnlp
+harbor.xxx.com/pub/jnlp-slave:3.26-1-alpine
+# 这个镜像，这个镜像是在官方的 jnlp 镜像基础上定制的，加入了 kubectl 等一些实用的工具。
+
+/var/run/docker.sock
+/var/run/docker.sock
+
+/root/.kube
+/home/jenkins/.kube
+#另外需要注意我们这里需要在下面挂载两个主机目录，一个是 /var/run/docker.sock，该文件是用于 Pod 中的容器能够共享宿主机的 Docker，这就是大家说的 docker in docker 的方式，Docker 二进制文件我们已经打包到上面的镜像中了，另外一个目录下 /root/.kube 目录，我们将这个目录挂载到容器的 /home/jenkins/.kube 目录下面这是为了让我们能够在 Pod 的容器中能够使用 kubectl 工具来访问我们的 Kubernetes 集群，方便我们后面在 Slave Pod 部署 Kubernetes 应用。
+
+# 另外还有几个参数需要注意，如下图中的Time in minutes to retain slave when idle，这个参数表示的意思是当处于空闲状态的时候保留 Slave Pod 多长时间，这个参数可以选择480分钟，这样会一直有slave在线，会加速打包编译以及发布速度。
+
+&gt; 说明下最好是镜像拉取策略为 Always，因为有时候基础slave 镜像更新了 由于tag一样，如果策略为IfNotPresent，则会一直使用老的镜像。
+myregistrykey
+jenkins
+
+
+# 测试
+ubectl create secret docker-registry myregistrykey --docker-server=harbor.xxx.com --docker-username=admin --docker-password=xxxx --docker-email=&quot;xxx@xxx.com&quot; -n kube-ops
+
+
+echo &quot;测试 Kubernetes 动态生成 jenkins slave&quot;
+echo &quot;==============docker in docker===========&quot;
+docker info
+
+echo &quot;=============kubectl=============&quot;
+kubectl get pods
+
+点击构建 查看结果
+
+</code></pre>
+
+<h3 id="gitlab-key">gitlab key</h3>
+
+<p>生成gitlabkey，添加到jenkins以及gitlab账户中。</p>
+
+<h3 id="新建相关资源">新建相关资源</h3>
+
+<pre><code class="language-bash"># k8s 新建 ns
+kubectl create ns master
+kubectl create ns test
+kubectl create ns dev
+
+# 新建ns 相关资源
+kubectl create secret docker-registry myregistrykey --docker-server=harbor.xxx.com --docker-username=admin --docker-password=xxxx --docker-email=&quot;xxx@xxx.com&quot; -n master
+kubectl create secret docker-registry myregistrykey --docker-server=harbor.xxx.com --docker-username=admin --docker-password=xxxx --docker-email=&quot;xxx@xxx.com&quot; -n test
+kubectl create secret docker-registry myregistrykey --docker-server=harbor.xxx.com --docker-username=admin --docker-password=xxxx --docker-email=&quot;xxx@xxx.com&quot; -n dev
+
+kubectl create secret generic ceph-storageclass-secret --type=&quot;kubernetes.io/rbd&quot; --from-literal=key='xxxxxxxxxxxxxxxxxxxx/SiECTd0WfQ==' --namespace=master
+kubectl create secret generic ceph-storageclass-secret --type=&quot;kubernetes.io/rbd&quot; --from-literal=key='xxxxxxxxxxxxxxxxxxxx/SiECTd0WfQ==' --namespace=test
+kubectl create secret generic ceph-storageclass-secret --type=&quot;kubernetes.io/rbd&quot; --from-literal=key='xxxxxxxxxxxxxxxxxxxx/SiECTd0WfQ==' --namespace=dev
+
+# jenkins中新增 harbor账号密码 
+# 目的是为了隐藏Jenkinsfile中的harbor账号密码，直接通过jenkins变量引入
+harbor
+
+</code></pre>
+
+<h3 id="根据需要调整jenkinsfile">根据需要调整Jenkinsfile</h3>
+
+<h3 id="创建多分支流水线">创建多分支流水线</h3>
+
+<p>打开 Blue Ocean</p>
 
 
                 <hr>

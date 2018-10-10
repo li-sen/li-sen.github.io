@@ -177,6 +177,7 @@
 <li>
 <ul>
 <li><a href="#环境说明">环境说明</a></li>
+<li><a href="#升级内核">升级内核</a></li>
 <li><a href="#ansible安装">ansible安装</a></li>
 <li><a href="#免密登录配置-略">免密登录配置 (略)</a></li>
 <li><a href="#安装">安装</a>
@@ -239,7 +240,48 @@
 </table>
 
 <blockquote>
-<p>建议系统内核升级到4.x，不然容易出各种问题，不要给自己找不必要的麻烦，内核升级可参考我之前的文档。</p>
+<p>建议系统内核升级到4.x，不然容易出各种问题，不要给自己找不必要的麻烦。</p>
+</blockquote>
+
+<h3 id="升级内核">升级内核</h3>
+
+<pre><code># 载入公钥
+rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+# 安装ELRepo
+rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-3.el7.elrepo.noarch.rpm
+# 载入elrepo-kernel元数据
+yum --disablerepo=\* --enablerepo=elrepo-kernel repolist
+# 查看可用的rpm包
+yum --disablerepo=\* --enablerepo=elrepo-kernel list kernel*
+# 安装最新版本的kernel
+yum --disablerepo=\* --enablerepo=elrepo-kernel install -y kernel-ml.x86_64
+
+#查看默认启动顺序
+awk -F\' '$1==&quot;menuentry &quot; {print $2}' /etc/grub2.cfg
+CentOS Linux (4.17.1-1.el7.elrepo.x86_64) 7 (Core)
+CentOS Linux (3.10.0-862.3.3.el7.x86_64) 7 (Core)
+CentOS Linux (3.10.0-862.el7.x86_64) 7 (Core)
+CentOS Linux (0-rescue-14cd5fb0ee114fa88d6c747daee61c31) 7 (Core)
+
+#默认启动的顺序是从0开始，新内核是从头插入（目前位置在0，而4.4.4的是在1），所以需要选择0。
+
+grub2-set-default 0
+
+reboot
+uname -a
+
+# 删除老内核以及内核工具
+rpm -qa|grep kernel|grep 3.10
+rpm -qa|grep kernel|grep 3.10|xargs yum remove -y
+
+# 安装新版本工具包
+yum --disablerepo=\* --enablerepo=elrepo-kernel install -y kernel-ml-tools.x86_64
+
+rpm -qa|grep kernel
+</code></pre>
+
+<blockquote>
+<p>内核版本我这里选的的ml，如果求稳妥可以选择lt版本。</p>
 </blockquote>
 
 <h3 id="ansible安装">ansible安装</h3>
