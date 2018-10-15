@@ -180,23 +180,9 @@
 <li><a href="#目录说明">目录说明</a></li>
 <li><a href="#build-slave镜像">build slave镜像</a></li>
 <li><a href="#集成k8s">集成k8s</a></li>
-</ul></li>
-</ul></li>
-<li><a href="#相关参数我这里贴下">相关参数我这里贴下：</a></li>
-<li><a href="#这个镜像-这个镜像是在官方的-jnlp-镜像基础上定制的-加入了-kubectl-等一些实用的工具-具体请看dockerfile">这个镜像，这个镜像是在官方的 jnlp 镜像基础上定制的，加入了 kubectl 等一些实用的工具，具体请看Dockerfile。</a></li>
-<li><a href="#说明下最好是镜像拉取策略为-always-因为有时候基础slave-镜像更新了-由于tag一样-如果策略为ifnotpresent-则会一直使用老的镜像">说明下最好是镜像拉取策略为 Always，因为有时候基础slave 镜像更新了 由于tag一样，如果策略为IfNotPresent，则会一直使用老的镜像。</a>
-<ul>
-<li>
-<ul>
 <li><a href="#测试">测试</a></li>
 <li><a href="#jenkinsfile">Jenkinsfile</a></li>
 <li><a href="#新建相关资源">新建相关资源</a></li>
-</ul></li>
-</ul></li>
-<li><a href="#新建ns-相关资源">新建ns 相关资源</a>
-<ul>
-<li>
-<ul>
 <li><a href="#blueocean">BlueOcean</a></li>
 </ul></li>
 </ul></li>
@@ -292,30 +278,28 @@ http://jenkins.kube-ops.svc.cluster.local:8080
 </code></pre>
 
 <ul>
-<li><p>新增pod 模板
-<a href="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins2.png">新增pod模板1</a>
-```bash</p>
-
-<h1 id="相关参数我这里贴下">相关参数我这里贴下：</h1>
-
-<p>jnlp-java
-jnlp-java
-kube-ops
-jenkins-jnlp-java # 这个lable很重要，后面的Jenkinsfile 运行指定容器就用这个参数</p></li>
+<li>新增pod 模板
+<a href="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins2.png">新增pod模板1</a></li>
 </ul>
 
-<p>harbor.xxx.com/pub/jnlp-slave:java</p>
+<pre><code class="language-bash"># 相关参数我这里贴下：
+jnlp-java
+jnlp-java
+kube-ops
+jenkins-jnlp-java # 这个lable很重要，后面的Jenkinsfile 运行指定容器就用这个参数
 
-<h1 id="这个镜像-这个镜像是在官方的-jnlp-镜像基础上定制的-加入了-kubectl-等一些实用的工具-具体请看dockerfile">这个镜像，这个镜像是在官方的 jnlp 镜像基础上定制的，加入了 kubectl 等一些实用的工具，具体请看Dockerfile。</h1>
+harbor.xxx.com/pub/jnlp-slave:java
+# 这个镜像，这个镜像是在官方的 jnlp 镜像基础上定制的，加入了 kubectl 等一些实用的工具，具体请看Dockerfile。
+# 说明下最好是镜像拉取策略为 Always，因为有时候基础slave 镜像更新了 由于tag一样，如果策略为IfNotPresent，则会一直使用老的镜像。
+</code></pre>
 
-<h1 id="说明下最好是镜像拉取策略为-always-因为有时候基础slave-镜像更新了-由于tag一样-如果策略为ifnotpresent-则会一直使用老的镜像">说明下最好是镜像拉取策略为 Always，因为有时候基础slave 镜像更新了 由于tag一样，如果策略为IfNotPresent，则会一直使用老的镜像。</h1>
+<blockquote>
+<p>jenkins中设置多个 pod 模板，譬如java、或者前端fe 不要改变container模板的名称，不然jenkins-slave无法连接master</p>
+</blockquote>
 
-<pre><code>&gt; jenkins中设置多个 pod 模板，譬如java、或者前端fe 不要改变container模板的名称，不然jenkins-slave无法连接master
+<p><a href="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins3.png">新增pod模板2</a></p>
 
-
-[新增pod模板2](http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins3.png)
-```bash
-# 相关参数我这里贴下：
+<pre><code class="language-bash"># 相关参数我这里贴下：
 /var/run/docker.sock
 /var/run/docker.sock
 </code></pre>
@@ -331,13 +315,16 @@ jenkins-jnlp-java # 这个lable很重要，后面的Jenkinsfile 运行指定容�
 </code></pre>
 </blockquote>
 
-<p><a href="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins4.png">新增pod模板3</a>
-&gt; 说明：</p>
+<p><a href="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins4.png">新增pod模板3</a></p>
+
+<blockquote>
+<p>说明：</p>
 
 <pre><code class="language-bash"># 相关参数我这里贴下：
 myregistrykey
 jenkins
 </code></pre>
+</blockquote>
 
 <p><a href="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins5.png">新增pod模板4</a>
 <a href="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins6.png">新增pod模板5</a>
@@ -384,26 +371,28 @@ kubectl get pods
 <h3 id="新建相关资源">新建相关资源</h3>
 
 <ul>
-<li>k8s 新建 ns
-```bash
-kubectl create ns master
-kubectl create ns test
-kubectl create ns dev</li>
+<li>k8s 新建 ns</li>
 </ul>
 
-<h1 id="新建ns-相关资源">新建ns 相关资源</h1>
+<pre><code class="language-bash">kubectl create ns master
+kubectl create ns test
+kubectl create ns dev
 
-<p>kubectl create secret docker-registry myregistrykey &ndash;docker-server=harbor.xxx.com &ndash;docker-username=admin &ndash;docker-password=xxxx &ndash;docker-email=&ldquo;xxx@xxx.com&rdquo; -n master
-kubectl create secret docker-registry myregistrykey &ndash;docker-server=harbor.xxx.com &ndash;docker-username=admin &ndash;docker-password=xxxx &ndash;docker-email=&ldquo;xxx@xxx.com&rdquo; -n test
-kubectl create secret docker-registry myregistrykey &ndash;docker-server=harbor.xxx.com &ndash;docker-username=admin &ndash;docker-password=xxxx &ndash;docker-email=&ldquo;xxx@xxx.com&rdquo; -n dev</p>
+# 新建ns 相关资源
+kubectl create secret docker-registry myregistrykey --docker-server=harbor.xxx.com --docker-username=admin --docker-password=xxxx --docker-email=&quot;xxx@xxx.com&quot; -n master
+kubectl create secret docker-registry myregistrykey --docker-server=harbor.xxx.com --docker-username=admin --docker-password=xxxx --docker-email=&quot;xxx@xxx.com&quot; -n test
+kubectl create secret docker-registry myregistrykey --docker-server=harbor.xxx.com --docker-username=admin --docker-password=xxxx --docker-email=&quot;xxx@xxx.com&quot; -n dev
 
-<p>kubectl create secret generic ceph-storageclass-secret &ndash;type=&ldquo;kubernetes.io/rbd&rdquo; &ndash;from-literal=key=&lsquo;xxxxxxxxxxxxxxxxxxxx/SiECTd0WfQ==&rsquo; &ndash;namespace=master
-kubectl create secret generic ceph-storageclass-secret &ndash;type=&ldquo;kubernetes.io/rbd&rdquo; &ndash;from-literal=key=&lsquo;xxxxxxxxxxxxxxxxxxxx/SiECTd0WfQ==&rsquo; &ndash;namespace=test
-kubectl create secret generic ceph-storageclass-secret &ndash;type=&ldquo;kubernetes.io/rbd&rdquo; &ndash;from-literal=key=&lsquo;xxxxxxxxxxxxxxxxxxxx/SiECTd0WfQ==&rsquo; &ndash;namespace=dev</p>
+kubectl create secret generic ceph-storageclass-secret --type=&quot;kubernetes.io/rbd&quot; --from-literal=key='xxxxxxxxxxxxxxxxxxxx/SiECTd0WfQ==' --namespace=master
+kubectl create secret generic ceph-storageclass-secret --type=&quot;kubernetes.io/rbd&quot; --from-literal=key='xxxxxxxxxxxxxxxxxxxx/SiECTd0WfQ==' --namespace=test
+kubectl create secret generic ceph-storageclass-secret --type=&quot;kubernetes.io/rbd&quot; --from-literal=key='xxxxxxxxxxxxxxxxxxxx/SiECTd0WfQ==' --namespace=dev
+</code></pre>
 
-<pre><code>- jenkins 账号新增
-```bash
-# jenkins中新增 harbor账号密码 
+<ul>
+<li>jenkins 账号新增</li>
+</ul>
+
+<pre><code class="language-bash"># jenkins中新增 harbor账号密码 
 # 我这里将数据库的账号密码也放jenkins中了
 # 目的是为了隐藏账号密码，Jenkinsfile直接通过jenkins变量引入
 </code></pre>
@@ -412,10 +401,11 @@ kubectl create secret generic ceph-storageclass-secret &ndash;type=&ldquo;kubern
 
 <h3 id="blueocean">BlueOcean</h3>
 
-<p>打开BlueOcean，安装提示部署，默认会在有Jenkinsfile的项目分支中建立多分支项目。
-&gt; Jenkinsfile中 对与master分支 也就是一般的生产环境所用的分支，在发布的时候会有一个 确认操作！否则会一直等待直到失效。</p>
+<p>打开BlueOcean，安装提示部署，默认会在有Jenkinsfile的项目分支中建立多分支项目。</p>
 
 <blockquote>
+<p>Jenkinsfile中 对与master分支 也就是一般的生产环境所用的分支，在发布的时候会有一个 确认操作！否则会一直等待直到失效。</p>
+
 <p>前端项目，nginx的配置文件我是通过configmap进行存储控制的，所以打包发布之前先确认对应的configmap建立好。</p>
 </blockquote>
 
