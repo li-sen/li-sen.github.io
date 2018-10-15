@@ -179,11 +179,16 @@
 <li><a href="#部署jenkins-slave">部署jenkins slave</a></li>
 <li><a href="#目录说明">目录说明</a></li>
 <li><a href="#build-slave镜像">build slave镜像</a></li>
-<li><a href="#集成k8s">集成k8s</a></li>
+<li><a href="#集成k8s">集成k8s</a>
+<ul>
+<li><a href="#新增kubernetes信息">新增kubernetes信息</a></li>
+<li><a href="#新增pod-模板">新增pod 模板</a></li>
+</ul></li>
 <li><a href="#测试">测试</a></li>
 <li><a href="#jenkinsfile">Jenkinsfile</a></li>
 <li><a href="#新建相关资源">新建相关资源</a></li>
 <li><a href="#blueocean">BlueOcean</a></li>
+<li><a href="#自动触发部署">自动触发部署</a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -265,9 +270,11 @@ docker push harbor.xxx.com/pub/jnlp-slave:java
 
 <h3 id="集成k8s">集成k8s</h3>
 
-<p>安装完毕后，点击 Manage Jenkins —&gt; Configure System —&gt; (拖到最下方)Add a new cloud —&gt; 选择 Kubernetes，然后填写 Kubernetes 和 Jenkins 配置信息。
-- 新增kubernetes信息
-<img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins1.png" alt="新增kubernetes" /></p>
+<p>安装完毕后，点击 Manage Jenkins —&gt; Configure System —&gt; (拖到最下方)Add a new cloud —&gt; 选择 Kubernetes，然后填写 Kubernetes 和 Jenkins 配置信息。</p>
+
+<h4 id="新增kubernetes信息">新增kubernetes信息</h4>
+
+<p><img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins1.png" alt="新增kubernetes" /></p>
 
 <pre><code class="language-bash"># 相关参数我这里贴下：
 https://kubernetes.default.svc.cluster.local
@@ -276,10 +283,13 @@ http://jenkins.kube-ops.svc.cluster.local:8080
 点击连接测试
 </code></pre>
 
+<h4 id="新增pod-模板">新增pod 模板</h4>
+
 <ul>
-<li>新增pod 模板
-<img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins2.png" alt="新增pod模板1" /></li>
+<li>步骤1</li>
 </ul>
+
+<p><img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins2.png" alt="新增pod模板1" /></p>
 
 <pre><code class="language-bash"># 相关参数我这里贴下：
 jnlp-java
@@ -296,23 +306,31 @@ harbor.xxx.com/pub/jnlp-slave:java
 <p>jenkins中设置多个 pod 模板，譬如java、或者前端fe 不要改变container模板的名称，不然jenkins-slave无法连接master</p>
 </blockquote>
 
-<p><img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins3.png" alt="新增pod模板2" /></p>
+<ul>
+<li>步骤2</li>
+</ul>
 
-<pre><code class="language-bash"># 相关参数我这里贴下：
-/var/run/docker.sock
-/var/run/docker.sock
-</code></pre>
+<p><img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins3.png" alt="新增pod模板2" /></p>
 
 <blockquote>
 <p>说明:</p>
 
-<pre><code class="language-bash">/root/.kube
+<pre><code class="language-bash"># 相关参数我这里贴下：
+/var/run/docker.sock
+/var/run/docker.sock
+
+/root/.kube
 /home/jenkins/.kube
+
 # /var/run/docker.sock 让slave pod 共享宿主机的 Docker， docker in docker 的方式
 # /root/.kube 让slave pod中能够使用 kubectl 工具来访问我们的 Kubernetes 
 #代理的空闲存活时间 这个参数可以选择480分钟，这样会一直有slave在线，会加速打包编译以及发布速度。
 </code></pre>
 </blockquote>
+
+<ul>
+<li>步骤3</li>
+</ul>
 
 <p><img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins4.png" alt="新增pod模板3" /></p>
 
@@ -327,8 +345,11 @@ jenkins
 
 <p><img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins5.png" alt="新增pod模板4" />
 <img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins6.png" alt="新增pod模板5" />
-<img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins7.png" alt="新增pod模板6" />
-&gt; 说明： 前端slave pod 这里参数基本一样这里就不赘述了。</p>
+<img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins7.png" alt="新增pod模板6" /></p>
+
+<blockquote>
+<p>说明： 前端slave pod 这里参数基本一样这里就不赘述了。</p>
+</blockquote>
 
 <h3 id="测试">测试</h3>
 
@@ -410,6 +431,8 @@ kubectl create secret generic ceph-storageclass-secret --type=&quot;kubernetes.i
 
 <p>前端项目，nginx的配置文件我是通过configmap进行存储控制的，所以打包发布之前先确认对应的configmap建立好。</p>
 </blockquote>
+
+<h3 id="自动触发部署">自动触发部署</h3>
 
 
                 <hr>
