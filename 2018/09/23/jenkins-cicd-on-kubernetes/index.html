@@ -231,17 +231,16 @@ jenkins@jenkins-0:/$ cat /var/jenkins_home/secrets/initialAdminPassword
 <blockquote>
 <ol>
 <li>Jenkins URL需要设置为: <a href="http://jenkins.kube-ops.svc.cluster.local:8080/">http://jenkins.kube-ops.svc.cluster.local:8080/</a> 不然slave pod 无法连接master</li>
-
-<li><p>插件的需另外安装Blue Ocean、kubernetes 两个插件 这里我就不截图了。</p>
+<li>插件的需另外安装Blue Ocean、kubernetes 两个插件 这里我就不截图了。</li>
+</ol>
+</blockquote>
 
 <h3 id="目录说明">目录说明</h3>
 
 <p>由于前后端，采用不同的打包方式，部署的方式也不一样，所以采用不同的slave进行打包部署</p>
 
 <pre><code class="language-bash">git clone 
-</code></pre></li>
-</ol>
-</blockquote>
+</code></pre>
 
 <ul>
 <li><p>fe 表示前端</p></li>
@@ -268,7 +267,7 @@ docker push harbor.xxx.com/pub/jnlp-slave:java
 
 <p>安装完毕后，点击 Manage Jenkins —&gt; Configure System —&gt; (拖到最下方)Add a new cloud —&gt; 选择 Kubernetes，然后填写 Kubernetes 和 Jenkins 配置信息。
 - 新增kubernetes信息
-<a href="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins1.png">新增kubernetes</a></p>
+<img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins1.png" alt="新增kubernetes" /></p>
 
 <pre><code class="language-bash"># 相关参数我这里贴下：
 https://kubernetes.default.svc.cluster.local
@@ -279,7 +278,7 @@ http://jenkins.kube-ops.svc.cluster.local:8080
 
 <ul>
 <li>新增pod 模板
-<a href="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins2.png">新增pod模板1</a></li>
+<img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins2.png" alt="新增pod模板1" /></li>
 </ul>
 
 <pre><code class="language-bash"># 相关参数我这里贴下：
@@ -297,7 +296,7 @@ harbor.xxx.com/pub/jnlp-slave:java
 <p>jenkins中设置多个 pod 模板，譬如java、或者前端fe 不要改变container模板的名称，不然jenkins-slave无法连接master</p>
 </blockquote>
 
-<p><a href="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins3.png">新增pod模板2</a></p>
+<p><img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins3.png" alt="新增pod模板2" /></p>
 
 <pre><code class="language-bash"># 相关参数我这里贴下：
 /var/run/docker.sock
@@ -315,7 +314,7 @@ harbor.xxx.com/pub/jnlp-slave:java
 </code></pre>
 </blockquote>
 
-<p><a href="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins4.png">新增pod模板3</a></p>
+<p><img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins4.png" alt="新增pod模板3" /></p>
 
 <blockquote>
 <p>说明：</p>
@@ -326,9 +325,9 @@ jenkins
 </code></pre>
 </blockquote>
 
-<p><a href="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins5.png">新增pod模板4</a>
-<a href="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins6.png">新增pod模板5</a>
-<a href="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins7.png">新增pod模板6</a>
+<p><img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins5.png" alt="新增pod模板4" />
+<img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins6.png" alt="新增pod模板5" />
+<img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins7.png" alt="新增pod模板6" />
 &gt; 说明： 前端slave pod 这里参数基本一样这里就不赘述了。</p>
 
 <h3 id="测试">测试</h3>
@@ -339,8 +338,8 @@ jenkins
 kubectl create secret docker-registry myregistrykey --docker-server=harbor.xxx.com --docker-username=admin --docker-password=xxxx --docker-email=&quot;xxx@xxx.com&quot; -n kube-ops
 </code></li>
 <li>创建一个自由风格项目
-<a href="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins8.png">新增项目</a>
-<a href="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins9.png">新增项目</a></li>
+<img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins8.png" alt="新增项目" />
+<img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins9.png" alt="新增项目" /></li>
 </ul>
 
 <pre><code class="language-bash"># 相关参数我这里贴下：
@@ -397,7 +396,7 @@ kubectl create secret generic ceph-storageclass-secret --type=&quot;kubernetes.i
 # 目的是为了隐藏账号密码，Jenkinsfile直接通过jenkins变量引入
 </code></pre>
 
-<p><a href="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins10.png">jenkins 账号</a></p>
+<p><img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins10.png" alt="jenkins 账号" /></p>
 
 <h3 id="blueocean">BlueOcean</h3>
 
