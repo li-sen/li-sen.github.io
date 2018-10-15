@@ -333,10 +333,13 @@ jenkins
 <h3 id="测试">测试</h3>
 
 <ul>
-<li>创建harbor secrets
-<code>bash
-kubectl create secret docker-registry myregistrykey --docker-server=harbor.xxx.com --docker-username=admin --docker-password=xxxx --docker-email=&quot;xxx@xxx.com&quot; -n kube-ops
-</code></li>
+<li>创建harbor secrets</li>
+</ul>
+
+<pre><code class="language-bash">kubectl create secret docker-registry myregistrykey --docker-server=harbor.xxx.com --docker-username=admin --docker-password=xxxx --docker-email=&quot;xxx@xxx.com&quot; -n kube-ops
+</code></pre>
+
+<ul>
 <li>创建一个自由风格项目
 <img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins8.png" alt="新增项目" />
 <img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins9.png" alt="新增项目" /></li>
