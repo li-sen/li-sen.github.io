@@ -274,7 +274,7 @@ docker push harbor.xxx.com/pub/jnlp-slave:java
 
 <h4 id="新增kubernetes信息">新增kubernetes信息</h4>
 
-<p><img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins1.png" alt="新增kubernetes" /></p>
+<p><img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins01.png" alt="新增kubernetes" /></p>
 
 <pre><code class="language-bash"># 相关参数我这里贴下：
 https://kubernetes.default.svc.cluster.local
@@ -289,7 +289,7 @@ http://jenkins.kube-ops.svc.cluster.local:8080
 <li>步骤1</li>
 </ul>
 
-<p><img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins2.png" alt="新增pod模板1" /></p>
+<p><img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins02.png" alt="新增pod模板1" /></p>
 
 <pre><code class="language-bash"># 相关参数我这里贴下：
 jnlp-java
@@ -310,7 +310,7 @@ harbor.xxx.com/pub/jnlp-slave:java
 <li>步骤2</li>
 </ul>
 
-<p><img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins3.png" alt="新增pod模板2" /></p>
+<p><img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins03.png" alt="新增pod模板2" /></p>
 
 <blockquote>
 <p>说明:</p>
@@ -332,7 +332,7 @@ harbor.xxx.com/pub/jnlp-slave:java
 <li>步骤3</li>
 </ul>
 
-<p><img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins4.png" alt="新增pod模板3" /></p>
+<p><img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins04.png" alt="新增pod模板3" /></p>
 
 <blockquote>
 <p>说明：</p>
@@ -343,9 +343,9 @@ jenkins
 </code></pre>
 </blockquote>
 
-<p><img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins5.png" alt="新增pod模板4" />
-<img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins6.png" alt="新增pod模板5" />
-<img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins7.png" alt="新增pod模板6" /></p>
+<p><img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins05.png" alt="新增pod模板4" />
+<img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins06.png" alt="新增pod模板5" />
+<img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins07.png" alt="新增pod模板6" /></p>
 
 <blockquote>
 <p>说明： 前端slave pod 这里参数基本一样这里就不赘述了。</p>
@@ -362,16 +362,12 @@ jenkins
 
 <ul>
 <li>创建一个自由风格项目
-<img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins8.png" alt="新增项目" />
-<img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins9.png" alt="新增项目" /></li>
+<img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins08.png" alt="新增项目" />
+<img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins09.png" alt="新增项目" /></li>
 </ul>
 
 <pre><code class="language-bash"># 相关参数我这里贴下：
-echo &quot;测试 Kubernetes 动态生成 jenkins slave&quot;
-echo &quot;==============docker in docker===========&quot;
 docker info
-
-echo &quot;=============kubectl=============&quot;
 kubectl get pods
 </code></pre>
 
