@@ -197,7 +197,7 @@
 <li><a href="#jenkins-账号新增">jenkins 账号新增</a></li>
 </ul></li>
 <li><a href="#blueocean">BlueOcean</a></li>
-<li><a href="#自动触发部署">自动触发部署</a></li>
+<li><a href="#webhook">webhook</a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -245,7 +245,7 @@ jenkins@jenkins-0:/$ cat /var/jenkins_home/secrets/initialAdminPassword
 <blockquote>
 <ol>
 <li>Jenkins URL需要设置为: <a href="http://jenkins.kube-ops.svc.cluster.local:8080/">http://jenkins.kube-ops.svc.cluster.local:8080/</a> 不然slave pod 无法连接master</li>
-<li>插件的需另外安装Blue Ocean、kubernetes 两个插件 这里我就不截图了。</li>
+<li>插件的需另外安装Blue Ocean、kubernetes Gitlab相关插件 这里我就不截图了。</li>
 </ol>
 </blockquote>
 
@@ -308,8 +308,10 @@ harbor.xxx.com/pub/jnlp-slave:java
 <p>jenkins中设置多个 pod 模板，譬如java、或者前端fe 不要改变container模板的名称，不然jenkins-slave无法连接master</p>
 </blockquote>
 
-<p><img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins03.png" alt="新增pod模板2" />
-&gt; 说明:</p>
+<p><img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins03.png" alt="新增pod模板2" /></p>
+
+<blockquote>
+<p>说明:</p>
 
 <pre><code class="language-bash"># 相关参数我这里贴下：
 /var/run/docker.sock
@@ -322,21 +324,28 @@ harbor.xxx.com/pub/jnlp-slave:java
 # /root/.kube 让slave pod中能够使用 kubectl 工具来访问我们的 Kubernetes 
 #代理的空闲存活时间 这个参数可以选择480分钟，这样会一直有slave在线，会加速打包编译以及发布速度。
 </code></pre>
+</blockquote>
 
-<p><img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins04.png" alt="新增pod模板3" />
-&gt; 说明：</p>
+<p><img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins04.png" alt="新增pod模板3" /></p>
+
+<blockquote>
+<p>说明：</p>
 
 <pre><code class="language-bash"># 相关参数我这里贴下：
 myregistrykey
 jenkins
 </code></pre>
+</blockquote>
 
 <h4 id="新增前端-pod-模板">新增前端 pod 模板</h4>
 
 <p><img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins05.png" alt="新增pod模板4" />
 <img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins06.png" alt="新增pod模板5" />
-<img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins07.png" alt="新增pod模板6" />
-&gt; 说明： 前端slave pod和后端 参数基本一样这里就不赘述了。</p>
+<img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins07.png" alt="新增pod模板6" /></p>
+
+<blockquote>
+<p>说明： 前端slave pod和后端 参数基本一样这里就不赘述了。</p>
+</blockquote>
 
 <h3 id="测试">测试</h3>
 
@@ -408,7 +417,26 @@ kubectl create secret generic ceph-storageclass-secret --type=&quot;kubernetes.i
 <p>前端项目，nginx的配置文件我是通过configmap进行存储控制的，所以打包发布之前先确认对应的configmap建立好。</p>
 </blockquote>
 
-<h3 id="自动触发部署">自动触发部署</h3>
+<h3 id="webhook">webhook</h3>
+
+<p>只要代码进行了修改，就自动触发cicd</p>
+
+<p>在gitlab 设置webhook url</p>
+
+<p>Settings——&gt;Integrations</p>
+
+<p>格式为：</p>
+
+<p><a href="http://xxxxx/project/[ProjectName">http://xxxxx/project/[ProjectName</a>]</p>
+
+<p>示例：</p>
+
+<p><a href="http://88.88.88.88:40002/project/test">http://88.88.88.88:40002/project/test</a></p>
+
+<blockquote>
+<p>webhook触发多分支流水线会自动判断并触发对应的分支打包，比如项目master分支更新了，只会触发jenkins上项目对应的master，其他的分支不会
+触发打包发布操作。</p>
+</blockquote>
 
 
                 <hr>
