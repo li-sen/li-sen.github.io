@@ -205,11 +205,13 @@
 		
 		
 
-<p>kubernetes ci/cd 开源实现有很多，传统的有霸主jenkins、后起之秀drone、Spinnaker、gitlab-ci以及jenkins-kubernetes衍生版jenkins X等；不可否认后起之秀们有性能优势、云原生跟kubernetes结合很好，他们都能很好的完成ci/cd的工作，但论产品的功能性、成熟度、稳定性包括生态跟jenkins比不是一个级别，ci/cd 是企业devops的关键一环，它还应该包括代码质量管理(sonar)、codereview以及相关的自动化测试环节，综合下来后起之秀们目前还是小玩具而已，jenkins在Pipeline加持下依然是不二之选。</p>
+<p>kubernetes ci/cd 开源实现有很多，传统的有霸主jenkins、后起之秀drone、Spinnaker、gitlab-ci以及jenkins-kubernetes衍生版jenkins X等；
+不可否认后起之秀们有性能优势、云原生，但论产品的功能性、成熟度、包括生态跟jenkins比不是一个级别，ci/cd 是企业devops的关键一环，
+jenkins在Pipeline加持下依然是不二之选。</p>
 
 <blockquote>
 <ol>
-<li>先说下我这里的后端部署有jar包：dubbo+springboot，nexus gradle编译打包和 war包，前端都是一样，大家可以根据自己的实际情况进行适当修改即可。</li>
+<li>先说下我这里的后端部署有 jar包和 war包，前端都是一样，大家可以根据自己的实际情况进行适当修改即可。</li>
 <li>在代码库中增加一个Jenkinsfile 结合BlueOcean插件实现，dev、test环境会定时扫描然后直接部署，master会有一个确认步骤，同意后才能进行发布。</li>
 <li>此次部署有持久化存储需求，请自行解决，或参考我之前的ceph文档。</li>
 </ol>
