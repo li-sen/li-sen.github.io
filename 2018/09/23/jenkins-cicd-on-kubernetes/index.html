@@ -182,11 +182,20 @@
 <li><a href="#集成k8s">集成k8s</a>
 <ul>
 <li><a href="#新增kubernetes信息">新增kubernetes信息</a></li>
-<li><a href="#新增pod-模板">新增pod 模板</a></li>
+<li><a href="#新增后端-pod-模板">新增后端 pod 模板</a></li>
+<li><a href="#新增前端-pod-模板">新增前端 pod 模板</a></li>
 </ul></li>
-<li><a href="#测试">测试</a></li>
+<li><a href="#测试">测试</a>
+<ul>
+<li><a href="#创建harbor-secrets">创建harbor secrets</a></li>
+<li><a href="#创建一个自由风格项目">创建一个自由风格项目</a></li>
+</ul></li>
 <li><a href="#jenkinsfile">Jenkinsfile</a></li>
-<li><a href="#新建相关资源">新建相关资源</a></li>
+<li><a href="#新建相关资源">新建相关资源</a>
+<ul>
+<li><a href="#k8s-新建-ns">k8s 新建 ns</a></li>
+<li><a href="#jenkins-账号新增">jenkins 账号新增</a></li>
+</ul></li>
 <li><a href="#blueocean">BlueOcean</a></li>
 <li><a href="#自动触发部署">自动触发部署</a></li>
 </ul></li>
@@ -200,7 +209,7 @@
 
 <blockquote>
 <ol>
-<li>先说下我这里的技术栈dubbo+springboot，nexus gradle编译打包，大家可以根据自己的实际情况进行适当修改即可。</li>
+<li>先说下我这里的后端部署有jar包：dubbo+springboot，nexus gradle编译打包和 war包，前端都是一样，大家可以根据自己的实际情况进行适当修改即可。</li>
 <li>在代码库中增加一个Jenkinsfile 结合BlueOcean插件实现，dev、test环境会定时扫描然后直接部署，master会有一个确认步骤，同意后才能进行发布。</li>
 <li>此次部署有持久化存储需求，请自行解决，或参考我之前的ceph文档。</li>
 </ol>
@@ -244,9 +253,6 @@ jenkins@jenkins-0:/$ cat /var/jenkins_home/secrets/initialAdminPassword
 
 <p>由于前后端，采用不同的打包方式，部署的方式也不一样，所以采用不同的slave进行打包部署</p>
 
-<pre><code class="language-bash">git clone 
-</code></pre>
-
 <ul>
 <li><p>fe 表示前端</p></li>
 
@@ -283,11 +289,7 @@ http://jenkins.kube-ops.svc.cluster.local:8080
 点击连接测试
 </code></pre>
 
-<h4 id="新增pod-模板">新增pod 模板</h4>
-
-<ul>
-<li>步骤1</li>
-</ul>
+<h4 id="新增后端-pod-模板">新增后端 pod 模板</h4>
 
 <p><img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins02.png" alt="新增pod模板1" /></p>
 
@@ -306,14 +308,8 @@ harbor.xxx.com/pub/jnlp-slave:java
 <p>jenkins中设置多个 pod 模板，譬如java、或者前端fe 不要改变container模板的名称，不然jenkins-slave无法连接master</p>
 </blockquote>
 
-<ul>
-<li>步骤2</li>
-</ul>
-
-<p><img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins03.png" alt="新增pod模板2" /></p>
-
-<blockquote>
-<p>说明:</p>
+<p><img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins03.png" alt="新增pod模板2" />
+&gt; 说明:</p>
 
 <pre><code class="language-bash"># 相关参数我这里贴下：
 /var/run/docker.sock
@@ -326,45 +322,33 @@ harbor.xxx.com/pub/jnlp-slave:java
 # /root/.kube 让slave pod中能够使用 kubectl 工具来访问我们的 Kubernetes 
 #代理的空闲存活时间 这个参数可以选择480分钟，这样会一直有slave在线，会加速打包编译以及发布速度。
 </code></pre>
-</blockquote>
 
-<ul>
-<li>步骤3</li>
-</ul>
-
-<p><img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins04.png" alt="新增pod模板3" /></p>
-
-<blockquote>
-<p>说明：</p>
+<p><img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins04.png" alt="新增pod模板3" />
+&gt; 说明：</p>
 
 <pre><code class="language-bash"># 相关参数我这里贴下：
 myregistrykey
 jenkins
 </code></pre>
-</blockquote>
+
+<h4 id="新增前端-pod-模板">新增前端 pod 模板</h4>
 
 <p><img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins05.png" alt="新增pod模板4" />
 <img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins06.png" alt="新增pod模板5" />
-<img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins07.png" alt="新增pod模板6" /></p>
-
-<blockquote>
-<p>说明： 前端slave pod 这里参数基本一样这里就不赘述了。</p>
-</blockquote>
+<img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins07.png" alt="新增pod模板6" />
+&gt; 说明： 前端slave pod和后端 参数基本一样这里就不赘述了。</p>
 
 <h3 id="测试">测试</h3>
 
-<ul>
-<li>创建harbor secrets</li>
-</ul>
+<h4 id="创建harbor-secrets">创建harbor secrets</h4>
 
 <pre><code class="language-bash">kubectl create secret docker-registry myregistrykey --docker-server=harbor.xxx.com --docker-username=admin --docker-password=xxxx --docker-email=&quot;xxx@xxx.com&quot; -n kube-ops
 </code></pre>
 
-<ul>
-<li>创建一个自由风格项目
-<img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins08.png" alt="新增项目" />
-<img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins09.png" alt="新增项目" /></li>
-</ul>
+<h4 id="创建一个自由风格项目">创建一个自由风格项目</h4>
+
+<p><img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins08.png" alt="新增项目" />
+<img src="http://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/jenkins-cicd/jenkins09.png" alt="新增项目" /></p>
 
 <pre><code class="language-bash"># 相关参数我这里贴下：
 docker info
@@ -389,9 +373,7 @@ kubectl get pods
 
 <h3 id="新建相关资源">新建相关资源</h3>
 
-<ul>
-<li>k8s 新建 ns</li>
-</ul>
+<h4 id="k8s-新建-ns">k8s 新建 ns</h4>
 
 <pre><code class="language-bash">kubectl create ns master
 kubectl create ns test
@@ -407,9 +389,7 @@ kubectl create secret generic ceph-storageclass-secret --type=&quot;kubernetes.i
 kubectl create secret generic ceph-storageclass-secret --type=&quot;kubernetes.io/rbd&quot; --from-literal=key='xxxxxxxxxxxxxxxxxxxx/SiECTd0WfQ==' --namespace=dev
 </code></pre>
 
-<ul>
-<li>jenkins 账号新增</li>
-</ul>
+<h4 id="jenkins-账号新增">jenkins 账号新增</h4>
 
 <pre><code class="language-bash"># jenkins中新增 harbor账号密码 
 # 我这里将数据库的账号密码也放jenkins中了
