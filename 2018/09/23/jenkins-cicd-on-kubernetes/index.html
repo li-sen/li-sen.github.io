@@ -221,19 +221,19 @@
 cd jenkins-cicd-on-kubernetes
 
 1. 创建namespace
-kubectl create -f ns.yaml
+kubectl create -f 01ns.yaml
 
 2. 创建ceph-key
 kubectl create secret generic ceph-storageclass-secret --type=&quot;kubernetes.io/rbd&quot; --from-literal=key='xxxxxxxxxxxxxBzNNWJVcfyCrhWDA==' --namespace=kube-ops
 
 3. 创建sa
-kubectl create -f jenkins-rbac.yaml
+kubectl create -f 02jenkins-rbac.yaml
 
 4. 创建statefulset
-kubectl create -f jenkins-statefulset.yaml
+kubectl create -f 03jenkins-statefulset.yaml
 
 5. 创建svc
-kubectl create -f jenkins-svc.yaml
+kubectl create -f 04jenkins-svc.yaml
 
 6. 安装jenkins
 # 获取初始密码
