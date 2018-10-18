@@ -443,7 +443,7 @@ kubectl create secret generic ceph-storageclass-secret --type=&quot;kubernetes.i
 
 <h3 id="回滚">回滚</h3>
 
-<p>由于在 发布/更新 时候添加了 &ndash;record ，所以会有一个版本号的概念</p>
+<p>由于在 发布/更新 时候添加了 --record ，所以会有一个版本号的概念</p>
 
 <pre><code class="language-bash">kubectl apply -f deploy.yaml --record
 kubectl set image deploy ${app_name} ${app_name}=${image_name} -n ${env.BRANCH_NAME} --record
