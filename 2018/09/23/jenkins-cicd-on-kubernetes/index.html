@@ -198,6 +198,7 @@
 </ul></li>
 <li><a href="#blueocean">BlueOcean</a></li>
 <li><a href="#webhook">webhook</a></li>
+<li><a href="#回滚">回滚</a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -438,6 +439,25 @@ kubectl create secret generic ceph-storageclass-secret --type=&quot;kubernetes.i
 <blockquote>
 <p>webhook触发多分支流水线会自动判断并触发对应的分支打包，比如项目master分支更新了，只会触发jenkins上项目对应的master，其他的分支不会
 触发打包发布操作。</p>
+</blockquote>
+
+<h3 id="回滚">回滚</h3>
+
+<p>由于在 发布/更新 时候添加了 &ndash;record ，所以会有一个版本号的概念</p>
+
+<pre><code class="language-bash">kubectl apply -f deploy.yaml --record
+kubectl set image deploy ${app_name} ${app_name}=${image_name} -n ${env.BRANCH_NAME} --record
+
+# 查看master namespace deployment 记录
+kubectl rollout history deployment -n master
+
+# 回滚
+kubectl rollout undo deployment xxxx --to-revision=2 -n master
+
+</code></pre>
+
+<blockquote>
+<p>后续有需求再来采用 helm方式进行发布 回滚，先满足功能需求再说。。。</p>
 </blockquote>
 
 
