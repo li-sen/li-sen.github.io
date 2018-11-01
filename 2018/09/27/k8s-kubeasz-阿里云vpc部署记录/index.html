@@ -210,7 +210,13 @@
 <li><a href="#network">network</a></li>
 <li><a href="#插件">插件</a></li>
 <li><a href="#一步安装">一步安装</a></li>
-<li><a href="#验证集群功能">验证集群功能</a></li>
+<li><a href="#验证集群功能">验证集群功能</a>
+<ul>
+<li><a href="#查看集群状态">查看集群状态</a></li>
+<li><a href="#创建测试文件">创建测试文件</a></li>
+<li><a href="#验证coredns">验证coredns</a></li>
+<li><a href="#验证dashboard">验证dashboard</a></li>
+</ul></li>
 <li><a href="#harbor">harbor</a></li>
 </ul></li>
 </ul></li>
@@ -782,9 +788,7 @@ ansible-playbook 07.cluster-addon.yml
 
 <h3 id="验证集群功能">验证集群功能</h3>
 
-<ul>
-<li>查看集群状态</li>
-</ul>
+<h4 id="查看集群状态">查看集群状态</h4>
 
 <pre><code class="language-bash">kubectl get node
 kubectl cluster-info
@@ -792,9 +796,7 @@ kubectl  top node
 kubectl get ep --all-namespaces -o yaml
 </code></pre>
 
-<ul>
-<li>创建测试文件</li>
-</ul>
+<h4 id="创建测试文件">创建测试文件</h4>
 
 <pre><code class="language-bash">cat &gt; nginx-ds.yml &lt;&lt;EOF
 apiVersion: v1
@@ -841,9 +843,7 @@ curl k8s-node01:22462
 # 出现nginx欢迎页
 </code></pre>
 
-<ul>
-<li>验证coredns</li>
-</ul>
+<h4 id="验证coredns">验证coredns</h4>
 
 <pre><code class="language-bash">kubectl exec  -it nginx-ds-8sd6z /bin/bash
 cat /etc/resolv.conf
@@ -851,9 +851,7 @@ ping nginx-ds
 # 能成功解析服务到ip证明dns正常
 </code></pre>
 
-<ul>
-<li>验证dashboard</li>
-</ul>
+<h4 id="验证dashboard">验证dashboard</h4>
 
 <pre><code class="language-bash"># kube-apiserver 访问 dashboard
 kubectl cluster-info
