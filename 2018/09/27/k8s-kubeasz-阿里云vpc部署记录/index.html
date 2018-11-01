@@ -211,20 +211,9 @@
 <li><a href="#插件">插件</a></li>
 <li><a href="#一步安装">一步安装</a></li>
 <li><a href="#验证集群功能">验证集群功能</a></li>
+<li><a href="#harbor">harbor</a></li>
 </ul></li>
 </ul></li>
-<li><a href="#检查nodeport可用性">检查nodeport可用性</a></li>
-<li><a href="#出现nginx欢迎页">出现nginx欢迎页</a></li>
-<li><a href="#kube-apiserver-访问-dashboard">kube-apiserver 访问 dashboard</a></li>
-<li><a href="#也可以通过nodeport-访问">也可以通过nodeport 访问</a></li>
-<li><a href="#创建登录-dashboard-的-token-和-kubeconfig-配置文件">创建登录 Dashboard 的 token 和 kubeconfig 配置文件</a></li>
-<li><a href="#上面提到-dashboard-默认只支持-token-认证-所以如果使用-kubeconfig-文件-需要在该文件中指定-token-不支持使用-client-证书认证">上面提到，Dashboard 默认只支持 token 认证，所以如果使用 KubeConfig 文件，需要在该文件中指定 token，不支持使用 client 证书认证。</a></li>
-<li><a href="#创建登录-token">创建登录 token</a></li>
-<li><a href="#创建使用-token-的-kubeconfig-文件">创建使用 token 的 KubeConfig 文件</a></li>
-<li><a href="#设置集群参数">设置集群参数</a></li>
-<li><a href="#设置客户端认证参数-使用上面创建的-token">设置客户端认证参数，使用上面创建的 Token</a></li>
-<li><a href="#设置上下文参数">设置上下文参数</a></li>
-<li><a href="#设置默认上下文">设置默认上下文</a></li>
 </ul>
 </nav>
 		
@@ -794,138 +783,125 @@ ansible-playbook 07.cluster-addon.yml
 <h3 id="验证集群功能">验证集群功能</h3>
 
 <ul>
-<li><p>查看集群状态</p>
+<li>查看集群状态</li>
+</ul>
 
 <pre><code class="language-bash">kubectl get node
 kubectl cluster-info
 kubectl  top node
 kubectl get ep --all-namespaces -o yaml
-</code></pre></li>
+</code></pre>
 
-<li><p>创建测试文件
-```bash
-cat &gt; nginx-ds.yml &lt;&lt;EOF
+<ul>
+<li>创建测试文件</li>
+</ul>
+
+<pre><code class="language-bash">cat &gt; nginx-ds.yml &lt;&lt;EOF
 apiVersion: v1
 kind: Service
 metadata:
-name: nginx-ds
-labels:
-app: nginx-ds
+  name: nginx-ds
+  labels:
+    app: nginx-ds
 spec:
-type: NodePort
-selector:
-app: nginx-ds
-ports:</p>
-
-<ul>
-<li>name: http
-port: 80
-targetPort: 80
-&mdash;
+  type: NodePort
+  selector:
+    app: nginx-ds
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+---
 apiVersion: extensions/v1beta1
 kind: DaemonSet
 metadata:
-name: nginx-ds
-labels:
-addonmanager.kubernetes.io/mode: Reconcile
+  name: nginx-ds
+  labels:
+    addonmanager.kubernetes.io/mode: Reconcile
 spec:
-template:
-metadata:
-labels:
-app: nginx-ds
-spec:
-containers:
+  template:
+    metadata:
+      labels:
+        app: nginx-ds
+    spec:
+      containers:
+      - name: my-nginx
+        image: nginx:1.7.9
+        ports:
+        - containerPort: 80
+EOF
+
+kubectl create -f nginx-ds.yml
+
+kubectl get pods  -o wide|grep nginx-ds
+kubectl get svc  -o wide|grep nginx-ds
+
+# 检查nodeport可用性
+curl k8s-node01:22462
+# 出现nginx欢迎页
+</code></pre>
 
 <ul>
-<li>name: my-nginx
-image: nginx:1.7.9
-ports:</li>
-<li>containerPort: 80
-EOF</li>
-</ul></li>
-</ul></li>
+<li>验证coredns</li>
 </ul>
 
-<p>kubectl create -f nginx-ds.yml</p>
-
-<p>kubectl get pods  -o wide|grep nginx-ds
-kubectl get svc  -o wide|grep nginx-ds</p>
-
-<h1 id="检查nodeport可用性">检查nodeport可用性</h1>
-
-<p>curl k8s-node01:22462</p>
-
-<h1 id="出现nginx欢迎页">出现nginx欢迎页</h1>
-
-<pre><code>
-- 验证coredns
-```bash
-kubectl exec  -it nginx-ds-8sd6z /bin/bash
+<pre><code class="language-bash">kubectl exec  -it nginx-ds-8sd6z /bin/bash
 cat /etc/resolv.conf
 ping nginx-ds
 # 能成功解析服务到ip证明dns正常
 </code></pre>
 
 <ul>
-<li><p>验证dashboard
-```bash</p>
-
-<h1 id="kube-apiserver-访问-dashboard">kube-apiserver 访问 dashboard</h1>
-
-<p>kubectl cluster-info</p>
-
-<h1 id="也可以通过nodeport-访问">也可以通过nodeport 访问</h1>
-
-<p>kubectl get svc -n kube-system</p></li>
+<li>验证dashboard</li>
 </ul>
 
-<h1 id="创建登录-dashboard-的-token-和-kubeconfig-配置文件">创建登录 Dashboard 的 token 和 kubeconfig 配置文件</h1>
+<pre><code class="language-bash"># kube-apiserver 访问 dashboard
+kubectl cluster-info
+# 也可以通过nodeport 访问
+kubectl get svc -n kube-system
 
-<h1 id="上面提到-dashboard-默认只支持-token-认证-所以如果使用-kubeconfig-文件-需要在该文件中指定-token-不支持使用-client-证书认证">上面提到，Dashboard 默认只支持 token 认证，所以如果使用 KubeConfig 文件，需要在该文件中指定 token，不支持使用 client 证书认证。</h1>
+# 创建登录 Dashboard 的 token 和 kubeconfig 配置文件
+# 上面提到，Dashboard 默认只支持 token 认证，所以如果使用 KubeConfig 文件，需要在该文件中指定 token，不支持使用 client 证书认证。
 
-<h1 id="创建登录-token">创建登录 token</h1>
+# 创建登录 token
+kubectl create sa dashboard-admin -n kube-system
+kubectl create clusterrolebinding dashboard-admin --clusterrole=cluster-admin --serviceaccount=kube-system:dashboard-admin
+ADMIN_SECRET=$(kubectl get secrets -n kube-system | grep dashboard-admin | awk '{print $1}')
+DASHBOARD_LOGIN_TOKEN=$(kubectl describe secret -n kube-system ${ADMIN_SECRET} | grep -E '^token' | awk '{print $2}')
+echo ${DASHBOARD_LOGIN_TOKEN}
 
-<p>kubectl create sa dashboard-admin -n kube-system
-kubectl create clusterrolebinding dashboard-admin &ndash;clusterrole=cluster-admin &ndash;serviceaccount=kube-system:dashboard-admin
-ADMIN_SECRET=$(kubectl get secrets -n kube-system | grep dashboard-admin | awk &lsquo;{print $1}&rsquo;)
-DASHBOARD_LOGIN_TOKEN=$(kubectl describe secret -n kube-system ${ADMIN_SECRET} | grep -E &lsquo;^token&rsquo; | awk &lsquo;{print $2}&rsquo;)
-echo ${DASHBOARD_LOGIN_TOKEN}</p>
+# 创建使用 token 的 KubeConfig 文件
+# 设置集群参数
+kubectl config set-cluster kubernetes \
+  --certificate-authority=/etc/kubernetes/ssl/ca.pem \
+  --embed-certs=true \
+  --server=https://172.16.68.14:8443 \
+  --kubeconfig=dashboard.kubeconfig
 
-<h1 id="创建使用-token-的-kubeconfig-文件">创建使用 token 的 KubeConfig 文件</h1>
+# 设置客户端认证参数，使用上面创建的 Token
+kubectl config set-credentials dashboard_user \
+  --token=${DASHBOARD_LOGIN_TOKEN} \
+  --kubeconfig=dashboard.kubeconfig
 
-<h1 id="设置集群参数">设置集群参数</h1>
+# 设置上下文参数
+kubectl config set-context default \
+  --cluster=kubernetes \
+  --user=dashboard_user \
+  --kubeconfig=dashboard.kubeconfig
 
-<p>kubectl config set-cluster kubernetes <br />
-  &ndash;certificate-authority=/etc/kubernetes/ssl/ca.pem <br />
-  &ndash;embed-certs=true <br />
-  &ndash;server=<a href="https://172.16.68.14:8443">https://172.16.68.14:8443</a> <br />
-  &ndash;kubeconfig=dashboard.kubeconfig</p>
+# 设置默认上下文
+kubectl config use-context default --kubeconfig=dashboard.kubeconfig
+</code></pre>
 
-<h1 id="设置客户端认证参数-使用上面创建的-token">设置客户端认证参数，使用上面创建的 Token</h1>
+<p>用生成的 dashboard.kubeconfig 登录 Dashboard。</p>
 
-<p>kubectl config set-credentials dashboard_user <br />
-  &ndash;token=${DASHBOARD_LOGIN_TOKEN} <br />
-  &ndash;kubeconfig=dashboard.kubeconfig</p>
+<h3 id="harbor">harbor</h3>
 
-<h1 id="设置上下文参数">设置上下文参数</h1>
+<p>harbor 还是建议使用helm部署的高可用harbor，详见blog文档<a href="https://li-sen.github.io/2018/10/08/k8s%E9%83%A8%E7%BD%B2%E9%AB%98%E5%8F%AF%E7%94%A8harbor/">k8s部署高可用harbor</a></p>
 
-<p>kubectl config set-context default <br />
-  &ndash;cluster=kubernetes <br />
-  &ndash;user=dashboard_user <br />
-  &ndash;kubeconfig=dashboard.kubeconfig</p>
+<p>docker-compose 配置参考：</p>
 
-<h1 id="设置默认上下文">设置默认上下文</h1>
-
-<p>kubectl config use-context default &ndash;kubeconfig=dashboard.kubeconfig</p>
-
-<pre><code>用生成的 dashboard.kubeconfig 登录 Dashboard。
-
-### harbor 
-harbor 还是建议使用helm部署的高可用harbor，详见blog文档[k8s部署高可用harbor](https://li-sen.github.io/2018/10/08/k8s%E9%83%A8%E7%BD%B2%E9%AB%98%E5%8F%AF%E7%94%A8harbor/)
-
-docker-compose 配置参考：
-```bash
-# 我本地访问不了，翻墙解决
+<pre><code class="language-bash"># 我本地访问不了，翻墙解决
 wget https://storage.googleapis.com/harbor-releases/release-1.6.0/harbor-offline-installer-v1.6.0.tgz
 
 vim /etc/ansible/roles/harbor/defaults/main.yml
