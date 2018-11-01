@@ -183,12 +183,7 @@
 <li><a href="#各节点安装python">各节点安装python</a></li>
 <li><a href="#各节点时间同步">各节点时间同步</a></li>
 <li><a href="#初始配置">初始配置</a></li>
-</ul></li>
-</ul></li>
-<li><a href="#参考">参考</a>
-<ul>
-<li>
-<ul>
+<li><a href="#在deploy节点安装及准备ansible">在deploy节点安装及准备ansible</a></li>
 <li><a href="#在deploy节点配置免密码登陆">在deploy节点配置免密码登陆</a></li>
 </ul></li>
 <li><a href="#kubeasz配置">kubeasz配置</a>
@@ -404,35 +399,35 @@ yum install python -y
 <ul>
 <li>配置hostname</li>
 <li>挂载数据盘</li>
-
-<li><p>升级内核
-&gt; 自己根据情况自行解决
-```bash</p>
-
-<h1 id="参考">参考</h1>
-
-<p>rpm &ndash;import <a href="https://www.elrepo.org/RPM-GPG-KEY-elrepo.org">https://www.elrepo.org/RPM-GPG-KEY-elrepo.org</a>
-rpm -Uvh <a href="http://www.elrepo.org/elrepo-release-7.0-3.el7.elrepo.noarch.rpm">http://www.elrepo.org/elrepo-release-7.0-3.el7.elrepo.noarch.rpm</a>
-yum &ndash;disablerepo=* &ndash;enablerepo=elrepo-kernel repolist
-yum &ndash;disablerepo=* &ndash;enablerepo=elrepo-kernel list kernel*
-yum &ndash;disablerepo=* &ndash;enablerepo=elrepo-kernel install -y kernel-ml.x86_64
-uname -a
-awk -F\&rsquo; &lsquo;$1==&ldquo;menuentry &rdquo; {print $2}&rsquo; /etc/grub2.cfg
-grub2-set-default 0</p></li>
+<li>升级内核</li>
 </ul>
 
-<p>rpm -qa|grep kernel|grep 3.10|xargs yum remove -y
-yum &ndash;disablerepo=* &ndash;enablerepo=elrepo-kernel install -y kernel-ml-tools.x86_64
+<blockquote>
+<p>自己根据情况自行解决，贴下centos参考。</p>
+
+<pre><code class="language-bash"># 参考
+rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-3.el7.elrepo.noarch.rpm
+yum --disablerepo=\* --enablerepo=elrepo-kernel repolist
+yum --disablerepo=\* --enablerepo=elrepo-kernel list kernel*
+yum --disablerepo=\* --enablerepo=elrepo-kernel install -y kernel-ml.x86_64
+uname -a
+awk -F\' '$1==&quot;menuentry &quot; {print $2}' /etc/grub2.cfg
+grub2-set-default 0
+
+rpm -qa|grep kernel|grep 3.10|xargs yum remove -y
+yum --disablerepo=\* --enablerepo=elrepo-kernel install -y kernel-ml-tools.x86_64
 rpm -qa|grep kernel
-reboot</p>
+reboot
 
-<p>至此内核升级完毕！</p>
+至此内核升级完毕！
 
-<pre><code>
-### 在deploy节点安装及准备ansible
+</code></pre>
+</blockquote>
 
-``` bash
-yum install git python-pip -y
+<h3 id="在deploy节点安装及准备ansible">在deploy节点安装及准备ansible</h3>
+
+<pre><code class="language-bash">yum install git python-pip -y
 # pip安装ansible(国内如果安装太慢可以直接用pip阿里云加速)
 pip install pip --upgrade -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com
 pip install --no-cache-dir ansible -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com
