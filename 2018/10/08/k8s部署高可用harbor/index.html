@@ -561,12 +561,15 @@ notary:
 </code></pre>
 
 <blockquote>
-<p>需要修改的是:
-- ingress 域名， harbor.xxx.com notary.xxx.com做好解析
-- 持久化存储storageclass
-- redis用了已有的redis-ha-sentine，据我目前了解还不支持redis-cluster
-- 数据库方面还是保持默认 部署postgress ，本来想采用 已有的mariadb cluster 我试了貌似不支持</p>
+<p>需要修改的是:</p>
 </blockquote>
+
+<ul>
+<li>ingress 域名， harbor.xxx.com notary.xxx.com做好解析</li>
+<li>持久化存储storageclass</li>
+<li>redis用了已有的redis-ha-sentine，据我目前了解还不支持redis-cluster</li>
+<li>数据库方面还是保持默认 部署postgress ，本来想采用 已有的mariadb cluster 我试了貌似不支持</li>
+</ul>
 
 <h4 id="部署">部署</h4>
 
