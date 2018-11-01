@@ -185,6 +185,11 @@
 <li><a href="#helm-资源">helm 资源</a></li>
 <li><a href="#部署">部署</a></li>
 </ul></li>
+<li><a href="#客户端">客户端</a>
+<ul>
+<li><a href="#获取证书">获取证书</a></li>
+<li><a href="#分发配置">分发配置</a></li>
+</ul></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -587,6 +592,26 @@ helms delete --purge my-harbor
 <blockquote>
 <p>我这里是采用安全的helm 做了个helms 别名 : alias helms=&lsquo;helm &ndash;tls &ndash;tiller-namespace kube-system&rsquo;</p>
 </blockquote>
+
+<h3 id="客户端">客户端</h3>
+
+<h4 id="获取证书">获取证书</h4>
+
+<pre><code class="language-bash">kubectl get secrets/my-harbor-harbor-ingress -o jsonpath=&quot;{.data.ca\.crt}&quot; | base64 --decode &gt; /etc/kubernetes/ssl/harbor.crt
+</code></pre>
+
+<h4 id="分发配置">分发配置</h4>
+
+<pre><code class="language-bash"># Docker Client 加入
+ansible kube-cluster,deploy -m file  -a 'path=/etc/docker/certs.d/harbor.xx.com state=directory'
+
+ansible kube-cluster,deploy -m copy -a 'src=/etc/kubernetes/ssl/harbor.crt dest=/etc/docker/certs.d/harbor.xx.com'
+
+# 加harbor的hosts解析
+172.16.68.15 harbor.xxx.com
+ansible kube-cluster -m copy -a 'src=/etc/hosts dest=/etc/hosts'
+
+</code></pre>
 
 
                 <hr>

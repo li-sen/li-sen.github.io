@@ -183,10 +183,23 @@
 <li><a href="#各节点安装python">各节点安装python</a></li>
 <li><a href="#各节点时间同步">各节点时间同步</a></li>
 <li><a href="#初始配置">初始配置</a></li>
-<li><a href="#在deploy节点安装及准备ansible">在deploy节点安装及准备ansible</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#参考">参考</a>
+<ul>
+<li>
+<ul>
 <li><a href="#在deploy节点配置免密码登陆">在deploy节点配置免密码登陆</a></li>
 </ul></li>
-<li><a href="#kubeasz配置">kubeasz配置</a></li>
+<li><a href="#kubeasz配置">kubeasz配置</a>
+<ul>
+<li><a href="#下载源码解压到同样目录">下载源码解压到同样目录</a></li>
+<li><a href="#下载二进制文件">下载二进制文件</a></li>
+<li><a href="#可选-下载离线docker镜像">[可选]下载离线docker镜像</a></li>
+<li><a href="#配置集群参数">配置集群参数</a></li>
+<li><a href="#验证ansible安装-正常能看到每个节点返回-success">验证ansible安装，正常能看到每个节点返回 SUCCESS</a></li>
+<li><a href="#配置hosts文件-ssh-key">配置hosts文件、ssh-key</a></li>
+</ul></li>
 <li><a href="#开始安装k8s">开始安装k8s</a>
 <ul>
 <li><a href="#prepare">prepare</a></li>
@@ -198,9 +211,20 @@
 <li><a href="#插件">插件</a></li>
 <li><a href="#一步安装">一步安装</a></li>
 <li><a href="#验证集群功能">验证集群功能</a></li>
-<li><a href="#harbor-参考后续高可用部署">harbor (参考后续高可用部署)</a></li>
 </ul></li>
 </ul></li>
+<li><a href="#检查nodeport可用性">检查nodeport可用性</a></li>
+<li><a href="#出现nginx欢迎页">出现nginx欢迎页</a></li>
+<li><a href="#kube-apiserver-访问-dashboard">kube-apiserver 访问 dashboard</a></li>
+<li><a href="#也可以通过nodeport-访问">也可以通过nodeport 访问</a></li>
+<li><a href="#创建登录-dashboard-的-token-和-kubeconfig-配置文件">创建登录 Dashboard 的 token 和 kubeconfig 配置文件</a></li>
+<li><a href="#上面提到-dashboard-默认只支持-token-认证-所以如果使用-kubeconfig-文件-需要在该文件中指定-token-不支持使用-client-证书认证">上面提到，Dashboard 默认只支持 token 认证，所以如果使用 KubeConfig 文件，需要在该文件中指定 token，不支持使用 client 证书认证。</a></li>
+<li><a href="#创建登录-token">创建登录 token</a></li>
+<li><a href="#创建使用-token-的-kubeconfig-文件">创建使用 token 的 KubeConfig 文件</a></li>
+<li><a href="#设置集群参数">设置集群参数</a></li>
+<li><a href="#设置客户端认证参数-使用上面创建的-token">设置客户端认证参数，使用上面创建的 Token</a></li>
+<li><a href="#设置上下文参数">设置上下文参数</a></li>
+<li><a href="#设置默认上下文">设置默认上下文</a></li>
 </ul>
 </nav>
 		
@@ -361,7 +385,7 @@
 </table>
 
 <blockquote>
-<p>建议大家把内核都升级到最新的lt版本，不然会出现各种bug，因为centos的内核版本实在太老了。</p>
+<p>建议大家把内核都升级到最新的lt版本，不然会出现各种bug，因为centos的内核版本实在太老了，我这里用的ml版本。</p>
 </blockquote>
 
 <h2 id="安装准备">安装准备</h2>
@@ -385,13 +409,35 @@ yum install python -y
 <ul>
 <li>配置hostname</li>
 <li>挂载数据盘</li>
-<li>升级内核
-&gt; 自己根据情况自行解决</li>
+
+<li><p>升级内核
+&gt; 自己根据情况自行解决
+```bash</p>
+
+<h1 id="参考">参考</h1>
+
+<p>rpm &ndash;import <a href="https://www.elrepo.org/RPM-GPG-KEY-elrepo.org">https://www.elrepo.org/RPM-GPG-KEY-elrepo.org</a>
+rpm -Uvh <a href="http://www.elrepo.org/elrepo-release-7.0-3.el7.elrepo.noarch.rpm">http://www.elrepo.org/elrepo-release-7.0-3.el7.elrepo.noarch.rpm</a>
+yum &ndash;disablerepo=* &ndash;enablerepo=elrepo-kernel repolist
+yum &ndash;disablerepo=* &ndash;enablerepo=elrepo-kernel list kernel*
+yum &ndash;disablerepo=* &ndash;enablerepo=elrepo-kernel install -y kernel-ml.x86_64
+uname -a
+awk -F\&rsquo; &lsquo;$1==&ldquo;menuentry &rdquo; {print $2}&rsquo; /etc/grub2.cfg
+grub2-set-default 0</p></li>
 </ul>
 
-<h3 id="在deploy节点安装及准备ansible">在deploy节点安装及准备ansible</h3>
+<p>rpm -qa|grep kernel|grep 3.10|xargs yum remove -y
+yum &ndash;disablerepo=* &ndash;enablerepo=elrepo-kernel install -y kernel-ml-tools.x86_64
+rpm -qa|grep kernel
+reboot</p>
 
-<pre><code class="language-bash">yum install git python-pip -y
+<p>至此内核升级完毕！</p>
+
+<pre><code>
+### 在deploy节点安装及准备ansible
+
+``` bash
+yum install git python-pip -y
 # pip安装ansible(国内如果安装太慢可以直接用pip阿里云加速)
 pip install pip --upgrade -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com
 pip install --no-cache-dir ansible -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com
@@ -412,34 +458,28 @@ for i in 172.16.68.{6..13}; do  ssh-copy-id $i; done
 <p>默认在deploy节点进行操作</p>
 </blockquote>
 
-<ul>
-<li>下载源码解压到同样目录</li>
-</ul>
+<h3 id="下载源码解压到同样目录">下载源码解压到同样目录</h3>
 
 <pre><code class="language-bash">git clone https://github.com/gjmzj/kubeasz.git
 mkdir -p /etc/ansible
 mv kubeasz/* /etc/ansible
 </code></pre>
 
-<ul>
-<li>下载二进制文件
-请从分享的<a href="https://pan.baidu.com/s/1c4RFaA">百度云链接</a>，下载解压到/etc/ansible/bin目录，如果你有合适网络环境也可以按照/down/download.sh自行从官网下载各种tar包</li>
-</ul>
+<h3 id="下载二进制文件">下载二进制文件</h3>
+
+<p>请从分享的<a href="https://pan.baidu.com/s/1c4RFaA">百度云链接</a>，下载解压到/etc/ansible/bin目录，如果你有合适网络环境也可以按照/down/download.sh自行从官网下载各种tar包</p>
 
 <pre><code class="language-bash">tar xf /root/k8sfile/k8s.1-11-3.tar.gz -C /etc/ansible/
 </code></pre>
 
-<ul>
-<li>[可选]下载离线docker镜像
-服务器使用内部yum源/apt源，但是无法访问公网情况下，请下载离线docker镜像完成集群安装；从百度云盘把<code>basic_images_kubeasz_x.y.tar.gz</code> 下载解压到<code>/etc/ansible/down</code> 目录</li>
-</ul>
+<h3 id="可选-下载离线docker镜像">[可选]下载离线docker镜像</h3>
+
+<p>服务器使用内部yum源/apt源，但是无法访问公网情况下，请下载离线docker镜像完成集群安装；从百度云盘把<code>basic_images_kubeasz_x.y.tar.gz</code> 下载解压到<code>/etc/ansible/down</code> 目录</p>
 
 <pre><code class="language-bash">tar xf /root/k8sfile/basic_images_kubeasz_0.3.tar.gz -C /etc/ansible/down/
 </code></pre>
 
-<ul>
-<li>配置集群参数</li>
-</ul>
+<h3 id="配置集群参数">配置集群参数</h3>
 
 <pre><code class="language-bash">cd /etc/ansible
 cp example/hosts.m-masters.example hosts
@@ -544,15 +584,14 @@ base_dir=&quot;/etc/ansible&quot;
 <p>我这里根据自己的需求新增了下haproxy、kube-cluster</p>
 </blockquote>
 
-<ul>
-<li><p>验证ansible安装，正常能看到每个节点返回 SUCCESS</p>
+<h3 id="验证ansible安装-正常能看到每个节点返回-success">验证ansible安装，正常能看到每个节点返回 SUCCESS</h3>
 
 <pre><code class="language-bash">ansible all -m ping
-</code></pre></li>
+</code></pre>
 
-<li><p>配置hosts文件、ssh-key
-为了后续部署方便，建议还是配置好/etc/hosts文件、ssh-key，分发都所有节点。</p></li>
-</ul>
+<h3 id="配置hosts文件-ssh-key">配置hosts文件、ssh-key</h3>
+
+<p>为了后续部署方便，建议还是配置好/etc/hosts文件、ssh-key，分发都所有节点。</p>
 
 <pre><code class="language-bash">vim  /etc/hosts
 
@@ -755,121 +794,138 @@ ansible-playbook 07.cluster-addon.yml
 <h3 id="验证集群功能">验证集群功能</h3>
 
 <ul>
-<li>查看集群状态</li>
-</ul>
+<li><p>查看集群状态</p>
 
 <pre><code class="language-bash">kubectl get node
 kubectl cluster-info
 kubectl  top node
 kubectl get ep --all-namespaces -o yaml
-</code></pre>
+</code></pre></li>
 
-<ul>
-<li>创建测试文件</li>
-</ul>
-
-<pre><code class="language-bash">cat &gt; nginx-ds.yml &lt;&lt;EOF
+<li><p>创建测试文件
+```bash
+cat &gt; nginx-ds.yml &lt;&lt;EOF
 apiVersion: v1
 kind: Service
 metadata:
-  name: nginx-ds
-  labels:
-    app: nginx-ds
+name: nginx-ds
+labels:
+app: nginx-ds
 spec:
-  type: NodePort
-  selector:
-    app: nginx-ds
-  ports:
-  - name: http
-    port: 80
-    targetPort: 80
----
+type: NodePort
+selector:
+app: nginx-ds
+ports:</p>
+
+<ul>
+<li>name: http
+port: 80
+targetPort: 80
+&mdash;
 apiVersion: extensions/v1beta1
 kind: DaemonSet
 metadata:
-  name: nginx-ds
-  labels:
-    addonmanager.kubernetes.io/mode: Reconcile
+name: nginx-ds
+labels:
+addonmanager.kubernetes.io/mode: Reconcile
 spec:
-  template:
-    metadata:
-      labels:
-        app: nginx-ds
-    spec:
-      containers:
-      - name: my-nginx
-        image: nginx:1.7.9
-        ports:
-        - containerPort: 80
-EOF
-
-kubectl create -f nginx-ds.yml
-
-kubectl get pods  -o wide|grep nginx-ds
-kubectl get svc  -o wide|grep nginx-ds
-
-# 检查nodeport可用性
-curl k8s-node01:22462
-# 出现nginx欢迎页
-</code></pre>
+template:
+metadata:
+labels:
+app: nginx-ds
+spec:
+containers:
 
 <ul>
-<li>验证coredns</li>
+<li>name: my-nginx
+image: nginx:1.7.9
+ports:</li>
+<li>containerPort: 80
+EOF</li>
+</ul></li>
+</ul></li>
 </ul>
 
-<pre><code class="language-bash">kubectl exec  -it nginx-ds-8sd6z /bin/bash
+<p>kubectl create -f nginx-ds.yml</p>
+
+<p>kubectl get pods  -o wide|grep nginx-ds
+kubectl get svc  -o wide|grep nginx-ds</p>
+
+<h1 id="检查nodeport可用性">检查nodeport可用性</h1>
+
+<p>curl k8s-node01:22462</p>
+
+<h1 id="出现nginx欢迎页">出现nginx欢迎页</h1>
+
+<pre><code>
+- 验证coredns
+```bash
+kubectl exec  -it nginx-ds-8sd6z /bin/bash
 cat /etc/resolv.conf
 ping nginx-ds
 # 能成功解析服务到ip证明dns正常
 </code></pre>
 
 <ul>
-<li>验证dashboard</li>
+<li><p>验证dashboard
+```bash</p>
+
+<h1 id="kube-apiserver-访问-dashboard">kube-apiserver 访问 dashboard</h1>
+
+<p>kubectl cluster-info</p>
+
+<h1 id="也可以通过nodeport-访问">也可以通过nodeport 访问</h1>
+
+<p>kubectl get svc -n kube-system</p></li>
 </ul>
 
-<pre><code class="language-bash"># kube-apiserver 访问 dashboard
-kubectl cluster-info
-# 也可以通过nodeport 访问
-kubectl get svc -n kube-system
+<h1 id="创建登录-dashboard-的-token-和-kubeconfig-配置文件">创建登录 Dashboard 的 token 和 kubeconfig 配置文件</h1>
 
-# 创建登录 Dashboard 的 token 和 kubeconfig 配置文件
-# 上面提到，Dashboard 默认只支持 token 认证，所以如果使用 KubeConfig 文件，需要在该文件中指定 token，不支持使用 client 证书认证。
+<h1 id="上面提到-dashboard-默认只支持-token-认证-所以如果使用-kubeconfig-文件-需要在该文件中指定-token-不支持使用-client-证书认证">上面提到，Dashboard 默认只支持 token 认证，所以如果使用 KubeConfig 文件，需要在该文件中指定 token，不支持使用 client 证书认证。</h1>
 
-# 创建登录 token
-kubectl create sa dashboard-admin -n kube-system
-kubectl create clusterrolebinding dashboard-admin --clusterrole=cluster-admin --serviceaccount=kube-system:dashboard-admin
-ADMIN_SECRET=$(kubectl get secrets -n kube-system | grep dashboard-admin | awk '{print $1}')
-DASHBOARD_LOGIN_TOKEN=$(kubectl describe secret -n kube-system ${ADMIN_SECRET} | grep -E '^token' | awk '{print $2}')
-echo ${DASHBOARD_LOGIN_TOKEN}
+<h1 id="创建登录-token">创建登录 token</h1>
 
-# 创建使用 token 的 KubeConfig 文件
-# 设置集群参数
-kubectl config set-cluster kubernetes \
-  --certificate-authority=/etc/kubernetes/ssl/ca.pem \
-  --embed-certs=true \
-  --server=https://172.16.68.14:8443 \
-  --kubeconfig=dashboard.kubeconfig
+<p>kubectl create sa dashboard-admin -n kube-system
+kubectl create clusterrolebinding dashboard-admin &ndash;clusterrole=cluster-admin &ndash;serviceaccount=kube-system:dashboard-admin
+ADMIN_SECRET=$(kubectl get secrets -n kube-system | grep dashboard-admin | awk &lsquo;{print $1}&rsquo;)
+DASHBOARD_LOGIN_TOKEN=$(kubectl describe secret -n kube-system ${ADMIN_SECRET} | grep -E &lsquo;^token&rsquo; | awk &lsquo;{print $2}&rsquo;)
+echo ${DASHBOARD_LOGIN_TOKEN}</p>
 
-# 设置客户端认证参数，使用上面创建的 Token
-kubectl config set-credentials dashboard_user \
-  --token=${DASHBOARD_LOGIN_TOKEN} \
-  --kubeconfig=dashboard.kubeconfig
+<h1 id="创建使用-token-的-kubeconfig-文件">创建使用 token 的 KubeConfig 文件</h1>
 
-# 设置上下文参数
-kubectl config set-context default \
-  --cluster=kubernetes \
-  --user=dashboard_user \
-  --kubeconfig=dashboard.kubeconfig
+<h1 id="设置集群参数">设置集群参数</h1>
 
-# 设置默认上下文
-kubectl config use-context default --kubeconfig=dashboard.kubeconfig
-</code></pre>
+<p>kubectl config set-cluster kubernetes <br />
+  &ndash;certificate-authority=/etc/kubernetes/ssl/ca.pem <br />
+  &ndash;embed-certs=true <br />
+  &ndash;server=<a href="https://172.16.68.14:8443">https://172.16.68.14:8443</a> <br />
+  &ndash;kubeconfig=dashboard.kubeconfig</p>
 
-<p>用生成的 dashboard.kubeconfig 登录 Dashboard。</p>
+<h1 id="设置客户端认证参数-使用上面创建的-token">设置客户端认证参数，使用上面创建的 Token</h1>
 
-<h3 id="harbor-参考后续高可用部署">harbor (参考后续高可用部署)</h3>
+<p>kubectl config set-credentials dashboard_user <br />
+  &ndash;token=${DASHBOARD_LOGIN_TOKEN} <br />
+  &ndash;kubeconfig=dashboard.kubeconfig</p>
 
-<pre><code class="language-bash"># 我本地访问不了，翻墙解决
+<h1 id="设置上下文参数">设置上下文参数</h1>
+
+<p>kubectl config set-context default <br />
+  &ndash;cluster=kubernetes <br />
+  &ndash;user=dashboard_user <br />
+  &ndash;kubeconfig=dashboard.kubeconfig</p>
+
+<h1 id="设置默认上下文">设置默认上下文</h1>
+
+<p>kubectl config use-context default &ndash;kubeconfig=dashboard.kubeconfig</p>
+
+<pre><code>用生成的 dashboard.kubeconfig 登录 Dashboard。
+
+### harbor 
+harbor 还是建议使用helm部署的高可用harbor，详见blog文档[k8s部署高可用harbor](https://li-sen.github.io/2018/10/08/k8s%E9%83%A8%E7%BD%B2%E9%AB%98%E5%8F%AF%E7%94%A8harbor/)
+
+docker-compose 配置参考：
+```bash
+# 我本地访问不了，翻墙解决
 wget https://storage.googleapis.com/harbor-releases/release-1.6.0/harbor-offline-installer-v1.6.0.tgz
 
 vim /etc/ansible/roles/harbor/defaults/main.yml
