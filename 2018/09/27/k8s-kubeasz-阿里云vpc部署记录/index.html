@@ -399,6 +399,51 @@ yum install python -y
 <ul>
 <li>配置hostname</li>
 <li>挂载数据盘</li>
+</ul>
+
+<blockquote>
+<p>分享一个硬盘挂载的小脚本</p>
+</blockquote>
+
+<pre><code class="language-bash">cat fdisk.sh
+
+#!/bin/bash
+###FORMAT DISK###
+###by lisen###
+DISK=/dev/vdb
+DIR=/opt
+echo -e &quot;\033[31mWarning!Ready mount $DISK...\033[0m&quot;
+read -p &quot;Please input your choice:yes|no,if you want exit,please input no:&quot; ANS
+until [ $ANS == 'yes' ]; do
+   echo &quot;Quiting...goodbye!&quot; &amp;&amp; exit 7
+read -p &quot;Please input your choice:yes|no,if you want exit,please input no:&quot; ANS
+done
+if fdisk -l | grep $DISK &amp;&gt; /dev/null; then
+echo &quot;$DISK was found!!!disk partitioning...&quot;
+mkdir -p $DIR &amp;&amp; echo &quot;$DIR created!!!!&quot;
+echo 'n
+p
+1
+
+
+w'|fdisk $DISK &amp;&gt; /dev/null
+partprobe $DISK
+sync
+echo &quot;Partition parttables success!!!&quot;
+sleep 2
+echo &quot;Fomat $DISK!!!!!&quot;
+mkfs.xfs ${DISK}1 &amp;&gt; /dev/null || echo &quot;$DISK fomat success!&quot;
+echo &quot;Add parttables to /etc/fstab&quot;
+echo &quot;${DISK}1  $DIR  xfs   defaults   0  0&quot; &gt;&gt; /etc/fstab &amp;&amp; mount -a &amp;&gt; /dev/null &amp;&amp; echo &quot;Well done!&quot;
+df -h
+mount
+else
+  echo &quot;$DISK not  exist!!&quot;
+  exit 8
+fi
+</code></pre>
+
+<ul>
 <li>升级内核</li>
 </ul>
 
@@ -597,8 +642,9 @@ base_dir=&quot;/etc/ansible&quot;
 172.16.68.7 k8s-node02
 172.16.68.6 k8s-node03
 
-ansible all  -m copy  -a 'src=/etc/hosts dest=/etc/hosts'
 ansible all -m copy -a 'src=/root/.ssh/authorized_keys dest=/root/.ssh/authorized_keys'
+ansible all -m copy -a 'src=/etc/hosts dest=/etc/hosts'
+ansible all -m copy -a 'src=/root/fdisk.sh dest=/root/'
 </code></pre>
 
 <h2 id="开始安装k8s">开始安装k8s</h2>
