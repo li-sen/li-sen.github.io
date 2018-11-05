@@ -744,6 +744,7 @@ ansible kube-cluster  -a 'mkdir -p /opt/kubelet'
 ansible-playbook 04.kube-master.yml
 
 kubectl cluster-info
+kubectl get componentstatuses -o wide
 NAME                 STATUS    MESSAGE             ERROR
 controller-manager   Healthy   ok
 scheduler            Healthy   ok
