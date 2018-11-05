@@ -468,6 +468,10 @@ vim site.yml
 #  - iscsi-gws # for backward compatibility only!
 
 
+# 客户端卸载pip中安装的urllib3，不然会失败
+pip freeze|grep urllib3
+pip uninstall urllib3
+
 ansible-playbook -i hosts site.yml
 
 </code></pre>
