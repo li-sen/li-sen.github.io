@@ -480,6 +480,8 @@ ansible-playbook -i hosts site.yml
 
 <h4 id="清空集群">清空集群</h4>
 
+<p>如果部署过程中出现报错，建议先清空集群 再进行部署操作</p>
+
 <pre><code class="language-bash">cp infrastructure-playbooks/purge-cluster.yml purge-cluster.yml # 必须copy到项目根目录下
 ansible-playbook -i hosts purge-cluster.yml
 </code></pre>
