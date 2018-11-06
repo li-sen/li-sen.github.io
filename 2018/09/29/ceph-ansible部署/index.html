@@ -394,7 +394,7 @@ ceph_conf_overrides:
 
     osd:
       osd mkfs type: xfs
-      osd mount options xfs: &quot;rw,noexec,nodev,noatime,nodiratime,nobarrier&quot;
+    # osd mount options xfs: &quot;rw,noexec,nodev,noatime,nodiratime,nobarrier&quot;
       ms_bind_port_max: 7100
       osd_client_message_size_cap: 2147483648
       osd_crush_update_on_start: true
