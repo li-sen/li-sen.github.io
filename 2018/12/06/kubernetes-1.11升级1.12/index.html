@@ -176,7 +176,7 @@
 <li><a href="#备份etcd">备份etcd</a></li>
 <li><a href="#分发二进制文件">分发二进制文件</a></li>
 <li><a href="#重启服务">重启服务</a></li>
-<li><a href="#如要更新-docker-尽量避免中断业务">如要更新 docker 尽量避免中断业务</a></li>
+<li><a href="#docker">docker</a></li>
 <li><a href="#验证">验证</a></li>
 </ul></li>
 </ul></li>
@@ -241,7 +241,9 @@ ansible kube-master -a 'systemctl restart  kube-controller-manager'
 ansible kube-master -a 'systemctl restart  kube-scheduler'
 </code></pre>
 
-<h3 id="如要更新-docker-尽量避免中断业务">如要更新 docker 尽量避免中断业务</h3>
+<h3 id="docker">docker</h3>
+
+<p>如要更新 docker 尽量避免中断业务</p>
 
 <pre><code class="language-bash">待升级节点，先应用kubectl cordon和kubectl drain命令迁移业务pod
 待升级节点执行 systemctl restart docker
