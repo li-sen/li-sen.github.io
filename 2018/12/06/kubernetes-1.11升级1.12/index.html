@@ -191,7 +191,7 @@
 
 <p>k8s环境是通过kubeasz搭建部署的。 <a href="https://li-sen.github.io/2018/09/27/k8s-kubeasz-%E9%98%BF%E9%87%8C%E4%BA%91vpc%E9%83%A8%E7%BD%B2%E8%AE%B0%E5%BD%95/">搭建参考</a></p>
 
-<p>因为整个升级比较简单，就没用kubeasz中的升级脚本，图省事 可以使用项目中的 脚本。</p>
+<p>因为整个升级比较简单，就没用kubeasz中的升级脚本，图省事 可以使用项目中的 脚本。  <a href="https://github.com/gjmzj/kubeasz/blob/master/docs/op/upgrade.md">kubeasz升级文档</a></p>
 </blockquote>
 
 <h3 id="二进制文件">二进制文件</h3>
@@ -211,6 +211,8 @@
 <pre><code class="language-bash">先备份 原有二进制
 cp -a /etc/ansible/bin /etc/ansible/bin-1.11.3
 解压server 然后把kube开头的文件 copy到 /etc/ansible/bin 覆盖掉原有
+
+特别注意如果跨大版本升级需要修改/etc/ansible/hosts文件中的参数K8S_VER
 </code></pre>
 
 <h3 id="备份etcd">备份etcd</h3>
@@ -252,6 +254,10 @@ ansible kube-master -a 'systemctl restart  kube-scheduler'
 kubectl get cs
 kubectl version
 </code></pre>
+
+<blockquote>
+<p>整个流程还是比较简单的，替换二进制，重启相关服务即可。</p>
+</blockquote>
 
 
                 <hr>
