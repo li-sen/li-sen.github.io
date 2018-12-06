@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Kubernetes升级 on Lisen Blog</title>
+    <link>https://li-sen.github.io/tags/kubernetes%E5%8D%87%E7%BA%A7/</link>
+    <description>Recent content in Kubernetes升级 on Lisen Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Thu, 06 Dec 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://li-sen.github.io/tags/kubernetes%E5%8D%87%E7%BA%A7/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>kubernetes 1.11升级1.12</title>
+      <link>https://li-sen.github.io/2018/12/06/kubernetes-1.11%E5%8D%87%E7%BA%A71.12/</link>
+      <pubDate>Thu, 06 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://li-sen.github.io/2018/12/06/kubernetes-1.11%E5%8D%87%E7%BA%A71.12/</guid>
+      <description>最近kubernetes爆严重安全漏洞，赶紧升级下。 漏洞连接 我的环境是kubeasz搭建部署的。 搭建参考 二进制文件 github地址：http</description>
+    </item>
+    
+  </channel>
+</rss>
