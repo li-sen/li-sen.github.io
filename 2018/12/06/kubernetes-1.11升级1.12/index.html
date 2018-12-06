@@ -189,7 +189,9 @@
 <p>最近kubernetes爆严重安全漏洞，赶紧升级下。
 <a href="https://mp.weixin.qq.com/s/Q8XngAr5RuL_irRscbVbKw">漏洞连接</a></p>
 
-<p>我的环境是kubeasz搭建部署的。 <a href="https://li-sen.github.io/2018/09/27/k8s-kubeasz-%E9%98%BF%E9%87%8C%E4%BA%91vpc%E9%83%A8%E7%BD%B2%E8%AE%B0%E5%BD%95/">搭建参考</a></p>
+<p>k8s环境是通过kubeasz搭建部署的。 <a href="https://li-sen.github.io/2018/09/27/k8s-kubeasz-%E9%98%BF%E9%87%8C%E4%BA%91vpc%E9%83%A8%E7%BD%B2%E8%AE%B0%E5%BD%95/">搭建参考</a></p>
+
+<p>因为整个升级比较简单，就没用kubeasz中的升级脚本，图省事 可以使用项目中的 脚本。</p>
 </blockquote>
 
 <h3 id="二进制文件">二进制文件</h3>
@@ -204,9 +206,12 @@
 <p>我下载的时候被墙了，网盘地址：<a href="https://pan.baidu.com/s/1vgSXE01JHxd2bQqDGJLWEQ">https://pan.baidu.com/s/1vgSXE01JHxd2bQqDGJLWEQ</a></p>
 </blockquote>
 
-<p>先备份 原有二进制
+<p>在deploy节点上</p>
+
+<pre><code class="language-bash">先备份 原有二进制
 cp -a /etc/ansible/bin /etc/ansible/bin-1.11.3
-解压server 然后把kube开头的文件 copy到 /etc/ansible/bin 覆盖掉原有</p>
+解压server 然后把kube开头的文件 copy到 /etc/ansible/bin 覆盖掉原有
+</code></pre>
 
 <h3 id="备份etcd">备份etcd</h3>
 

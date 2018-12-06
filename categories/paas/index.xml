@@ -17,7 +17,7 @@
       <pubDate>Thu, 06 Dec 2018 00:00:00 +0000</pubDate>
       
       <guid>https://li-sen.github.io/2018/12/06/kubernetes-1.11%E5%8D%87%E7%BA%A71.12/</guid>
-      <description>最近kubernetes爆严重安全漏洞，赶紧升级下。 漏洞连接 我的环境是kubeasz搭建部署的。 搭建参考 二进制文件 github地址：http</description>
+      <description>最近kubernetes爆严重安全漏洞，赶紧升级下。 漏洞连接 k8s环境是通过kubeasz搭建部署的。 搭建参考 因为整个升级比较简单，就没用k</description>
     </item>
     
     <item>
