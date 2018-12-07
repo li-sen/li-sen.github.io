@@ -459,6 +459,7 @@ yum --disablerepo=\* --enablerepo=elrepo-kernel install -y kernel-ml.x86_64
 uname -a
 awk -F\' '$1==&quot;menuentry &quot; {print $2}' /etc/grub2.cfg
 grub2-set-default 0
+reboot
 
 rpm -qa|grep kernel|grep 3.10|xargs yum remove -y
 yum --disablerepo=\* --enablerepo=elrepo-kernel install -y kernel-ml-tools.x86_64
