@@ -266,16 +266,36 @@ jenkins@jenkins-0:/$ cat /var/jenkins_home/secrets/initialAdminPassword
 
 <pre><code class="language-bash"># fe 前端
 # fe前端打包前需要打包一个自定义nginx镜像：增加自定义配置，详细看Dockerfile。
+cd fe/
 docker build -t harbor.xxx.com/pub/nginx:v1 .
 docker push harbor.xxx.com/pub/nginx:v1
 
 docker build -t harbor.xxx.com/pub/jnlp-slave:fe .
 docker push harbor.xxx.com/pub/jnlp-slave:fe 
 
-# java 后端
+# 基础镜像，改时区，deploy虽然已经挂载了宿主机的/etc/localtime，但java还是无法正确识别时区，只能打基础镜像。
+cd java/jar/springboot
+docker build -t harbor.xxx.com/pub/springboot .
+docker push harbor.xxx.com/pub/springboot
+
+cd java/war/tomcat
+docker build -t harbor.xxx.com/pub/tomcat .
+docker push harbor.xxx.com/pub/tomcat
+
+# war 后端
+cd java/war/jenkins-slave
 docker build -t harbor.xxx.com/pub/jnlp-slave:java .
 docker push harbor.xxx.com/pub/jnlp-slave:java
+
+# jar 后端
+cd java/jar/jenkins-slave
+docker build -t harbor.xxx.com/pub/jnlp-slave:jar .
+docker push harbor.xxx.com/pub/jnlp-slave:jar
 </code></pre>
+
+<blockquote>
+<p>根据实际情况选取前后端slave</p>
+</blockquote>
 
 <h3 id="集成k8s">集成k8s</h3>
 
