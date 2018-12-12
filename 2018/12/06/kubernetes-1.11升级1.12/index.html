@@ -211,6 +211,8 @@
 <pre><code class="language-bash">先备份 原有二进制
 cp -a /etc/ansible/bin /etc/ansible/bin-1.11.3
 解压server 然后把kube开头的文件 copy到 /etc/ansible/bin 覆盖掉原有
+# 如果需要更新docker
+解压docker 把docker dockerd 也覆盖/etc/ansible/bin
 
 特别注意如果跨大版本升级需要修改/etc/ansible/hosts文件中的参数K8S_VER
 </code></pre>
@@ -265,6 +267,10 @@ kubectl version
                 <hr>
 
                 <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2018/12/08/docker%e5%9f%ba%e7%a1%80/" data-toggle="tooltip" data-placement="top" title="docker基础">&larr; Previous Post</a>
+                    </li>
                     
                     
                     <li class="next">
@@ -326,9 +332,13 @@ kubectl version
                         
                     
                         
+                    
+                        
                             <a href="/tags/kubernetes" title="kubernetes">
                                 kubernetes
                             </a>
+                        
+                    
                         
                     
                         

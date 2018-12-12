@@ -6,10 +6,19 @@
     <description>Recent content in IAAS on Lisen Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sat, 29 Sep 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 08 Dec 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://li-sen.github.io/categories/iaas/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>docker基础</title>
+      <link>https://li-sen.github.io/2018/12/08/docker%E5%9F%BA%E7%A1%80/</link>
+      <pubDate>Sat, 08 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://li-sen.github.io/2018/12/08/docker%E5%9F%BA%E7%A1%80/</guid>
+      <description>什么是docker 用大白话说，容器技术就是把应用程序和操作系统打成一个包，然后在Docker引擎中可以运行这个容器。比如把Mysql和Cen</description>
+    </item>
     
     <item>
       <title>ceph-ansible部署</title>
