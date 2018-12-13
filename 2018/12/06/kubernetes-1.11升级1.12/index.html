@@ -212,7 +212,7 @@
 cp -a /etc/ansible/bin /etc/ansible/bin-1.11.3
 解压server 然后把kube开头的文件 copy到 /etc/ansible/bin 覆盖掉原有
 # 如果需要更新docker
-解压docker 把docker dockerd 也覆盖/etc/ansible/bin
+解压docker 把所有二进制文件 也覆盖/etc/ansible/bin
 
 特别注意如果跨大版本升级需要修改/etc/ansible/hosts文件中的参数K8S_VER
 </code></pre>
