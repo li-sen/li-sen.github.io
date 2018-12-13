@@ -213,12 +213,11 @@ cp -a /etc/ansible/bin /etc/ansible/bin-1.11.3
 解压server 然后把kube开头的文件 copy到 /etc/ansible/bin 覆盖掉原有
 # 如果需要更新docker
 解压docker 把所有二进制文件 也覆盖/etc/ansible/bin
-
-特别注意如果跨大版本升级需要修改/etc/ansible/hosts文件中的参数K8S_VER
 </code></pre>
 
 <blockquote>
-<p>升级前好好看下官方升级文档，注意下组件启动时配置参数是否有大的改动，建议参考kubeasz项目中的systemd模板</p>
+<p>升级前好好看下官方升级文档，注意下组件启动时配置参数是否有大的改动，建议参考kubeasz项目中的systemd模板
+kubeasz项目分支master安装的集群可以在k8s 1.<sup>8</sup>&frasl;<sub>1</sub>.<sup>9</sup>&frasl;<sub>1</sub>.<sup>10</sup>&frasl;<sub>1</sub>.<sup>11</sup>&frasl;<sub>1</sub>.12 任意小版本、大版本间升级（特别注意如果跨大版本升级需要修改/etc/ansible/hosts文件中的参数K8S_VER）</p>
 </blockquote>
 
 <h3 id="备份etcd">备份etcd</h3>
