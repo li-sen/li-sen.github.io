@@ -180,11 +180,11 @@
 <li><a href="#一个容器一个程序-进程">一个容器一个程序（进程）</a></li>
 <li><a href="#docker-基本原理">docker 基本原理</a>
 <ul>
-<li><a href="#docker运行架构">docker运行架构</a></li>
 <li><a href="#docker基本概念">docker基本概念</a></li>
-<li><a href="#镜像技术">镜像技术 ：</a></li>
-<li><a href="#docker安装">docker安装</a></li>
+<li><a href="#镜像技术">镜像技术</a></li>
+<li><a href="#docker运行架构">docker运行架构</a></li>
 </ul></li>
+<li><a href="#docker安装">docker安装</a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -193,31 +193,6 @@
 		
 
 <h3 id="什么是docker">什么是docker</h3>
-
-<p>镜像
-上面的命令docker run mysql:5.5.38中，使用docker引擎运行了一个mysql的容器，容器使用的镜像是mysql，存储在官方的docker hub仓库。版本是5.5.38。镜像就是把应用，文件和操作系统打成的包。比如把Mysql和CentOS打成一个包。镜像在逻辑是一个文件，但物理上是分成多个文件层的。Docker的文件储存是分层的，每个层类似于git的一次commit。镜像有官方的，也可以自己制作镜像。镜像是不可变的。</p>
-
-<p>容器
-使用一个镜像可以运行一个或多个容器。一个容器就是一个进程，是隔离的。基于linux的cgroup做的隔离。镜像类似于Java里面的类，容器类似于类对应的实例。</p>
-
-<p>容器数据存储
-容器中运行的mysql，会产生数据，这些数据保存在哪里？容器停止或被删除后，这些数据还在吗？</p>
-
-<p>容器中的应用产生的数据是保存在容器里面的，在本地机器的某个临时户目录，以docker的格式保存的，一旦容器被删除了，这些文件就被删除了。如果想对容器中的数据进行持久化，比如讲mysql的data文件写入本机的某个目录，就要用到docker中的数据卷，即volume。</p>
-
-<p>docker run -v /some/path:/var/lib/mysql mysql。这条命令是将本机的/some/path目录挂载到容器里面的/var/lib/mysql目录，也就是myslq保存数据的目录。这样当容器里面的mysql写数据时，就向本地的目录写了。</p>
-
-<p>容器中的网络
- docker容器是一个进程，是互相隔离的，如何在容器外部访问容器里面的应用呢？比如访问容器里面的mysql服务。</p>
-
-<p>docker run -p 3306:3306 mysql。大家注意到命令里有一段参数 -p 3306:3306。这个参数的意思是将容器里面的3306端口映射到本地机器的3306端口，这样，通过访问本机机器的3306端口，会转发到容器的3306端口。</p>
-
-<p>那容器里机器的ip是多少呢？这就涉及到docker的网络模型。</p>
-
-<p>bridge：默认模式，每个容纳有自己的网络，ip是内部ip172.17.0.X。
-Host模式：容器和host机器的网络配置是一样的。ip也是一样的，但这样违背了容器的隔离性。多个容器的端口可能会冲突，而且，当host机器的网络比较复杂时，容器里面的网络也会发生一些不可预知的问题。
-自定义模式，docker使用的是eth0网络设备，可以自定义docker的网络，k8s就是使用自定义的网络。
-使用哪种网络视具体情况而定，比较简单的应用可以使用breidge模式，一些情况下可能要用到Host模式，比如在容器中运行dubbo，如果使用的是bridge模式，dubbo向zookeeper注册的ip地址是docker的内外地址，也就是172.17.0.X，导致容器外部的dubbo应用无法调用容器里面的服务。也就是说所有的dubbo容器必须在同一台机器上。如果垮多台机器，无法互相调用。这时候就必须使用Host模式了。</p>
 
 <blockquote>
 <p>一个使用docker的场景</p>
@@ -470,24 +445,18 @@ docker 直接通过 LXC 与 宿主机 共享内核 在操作系统级别进行�
 <p>docker 最大的突破是引入镜像技术，可以让开发者轻松打包他们的应用以及相关的环境依赖生成docker镜像，然后利用镜像仓库可以快速发布到任何支持docker的
 主机上，开发者不用再关注部署环境主机硬件、系统版本、运行环境等等环境配置问题，只要有docker服务，docker run 就解决了，很好解决了环境一致性问题，从而极大的提高了软件开发交付效率！</p>
 
-<h4 id="docker运行架构">docker运行架构</h4>
-
-<p>docker 也是c/s架构 ，基本运行流程是这样的：用户通过docker client(docker) 与docker daemon(dockerd) 通信，docker daemon 接收请求后，查询本地是否存有对应镜像，如果有就使用本地镜像，启动
-对应容器，如果没有就去指定 Registry 仓库拉取，然后存在本地，再执行启动步骤。</p>
-
-<p><img src="https://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/docker/docker03.png" alt="docker 运行流程" /></p>
-
 <h4 id="docker基本概念">docker基本概念</h4>
 
 <p>容器：以进程模式独立运行的一个或一组应用，可以看作是编程语言中 类对应的实例 动态的 有生命周期的
 镜像：用于创建 Docker 容器的模板，可以看作是面向对象中的类 静态的
 仓库：就是存放镜像的地方，可以理解为代码控制中的代码仓库</p>
 
-<h4 id="镜像技术">镜像技术 ：</h4>
+<h4 id="镜像技术">镜像技术</h4>
 
-<p>docker 镜像技术 实现了容器 分层构建 联合挂载
-- 镜像文件
-比如你要制作一个jdk镜像  你只需要 引入一个基础系统镜像 在加一个jdk环境即可  然后 把两层 一起挂载起来 就完成了 一个jdk 环境 保存成一个特殊文件即可</p>
+<ul>
+<li>镜像文件
+比如你要制作一个jdk镜像  你只需要 引入一个基础系统镜像 在加一个jdk环境即可  然后 把两层 一起挂载起来 就完成了 一个jdk 环境 保存成一个专有格式的文件就是镜像文件了。</li>
+</ul>
 
 <blockquote>
 <p>镜像文件每一层是只读的，要修改 只能在顶层 封装一层自定义的一层  （删除就是在最新一层标记不可见，修改就是复制一份再修改）跟 lvm 快照原理差不多</p>
@@ -498,7 +467,18 @@ docker 直接通过 LXC 与 宿主机 共享内核 在操作系统级别进行�
 镜像仓库跟 包仓库一样，最大的目的就是镜像分发，很好的进行版本管理等</li>
 </ul>
 
-<h4 id="docker安装">docker安装</h4>
+<blockquote>
+<p>docker 镜像技术 实现了容器 分层构建 联合挂载，利于容器标准化，移植分发。</p>
+</blockquote>
+
+<h4 id="docker运行架构">docker运行架构</h4>
+
+<p><img src="https://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/docker/docker03.png" alt="docker 运行流程" /></p>
+
+<p>docker 也是c/s架构 ，基本运行流程是这样的：用户通过docker client(docker) 与docker daemon(dockerd) 通信，docker daemon 接收请求后，查询本地是否存有对应镜像，如果有就使用本地镜像，启动
+对应容器，如果没有就去指定 Registry 仓库拉取，然后存在本地，再执行启动步骤。</p>
+
+<h3 id="docker安装">docker安装</h3>
 
 
                 <hr>

@@ -17,7 +17,7 @@
       <pubDate>Sat, 08 Dec 2018 00:00:00 +0000</pubDate>
       
       <guid>https://li-sen.github.io/2018/12/08/docker%E5%9F%BA%E7%A1%80/</guid>
-      <description>什么是docker 镜像 上面的命令docker run mysql:5.5.38中，使用docker引擎运行了一个mysql的容器，容器使用的镜像是m</description>
+      <description>什么是docker 一个使用docker的场景 目的：运行一个tomcat应用 传统方式： 去官网下载jdk的，配置jdk，去官网下载tomcat 配</description>
     </item>
     
     <item>
