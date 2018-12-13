@@ -249,7 +249,8 @@ ansible kube-master -a 'systemctl restart  kube-scheduler'
 
 <p>如要更新 docker 尽量避免中断业务</p>
 
-<pre><code class="language-bash">待升级节点，先应用kubectl cordon和kubectl drain命令迁移业务pod
+<pre><code class="language-bash">先分发docker最新二进制到各节点
+待升级节点，先应用kubectl cordon和kubectl drain命令迁移业务pod
 待升级节点执行 systemctl restart docker
 恢复节点可调度 kubectl uncordon
 </code></pre>
