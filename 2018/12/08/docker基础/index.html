@@ -181,10 +181,20 @@
 <li><a href="#docker-基本原理">docker 基本原理</a>
 <ul>
 <li><a href="#docker基本概念">docker基本概念</a></li>
-<li><a href="#镜像技术">镜像技术</a></li>
 <li><a href="#docker运行架构">docker运行架构</a></li>
+<li><a href="#docker镜像">docker镜像</a>
+<ul>
+<li><a href="#image">image</a></li>
+<li><a href="#镜像仓库registry">镜像仓库registry</a></li>
 </ul></li>
-<li><a href="#docker安装">docker安装</a></li>
+</ul></li>
+<li><a href="#docker安装">docker安装</a>
+<ul>
+<li><a href="#移除老版本">移除老版本</a></li>
+<li><a href="#配置yum源并安装">配置yum源并安装</a></li>
+<li><a href="#配置加速器和存放路径">配置加速器和存放路径</a></li>
+</ul></li>
+<li><a href="#docker-基础命令">docker 基础命令</a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -429,11 +439,11 @@ docker 直接通过 LXC 与 宿主机 共享内核 在操作系统级别进行�
 <li>安全隔离：一个程序用一个容器，挂了、被入侵了可以很好的隔离，对其他程序无影响</li>
 <li>最小粒度控制资源:
 
-<ol>
+<ul>
 <li>最少化使用资源：哪些程序需要资源多，提高对应容器的资源即可，不用一锅粥的提升</li>
 <li>更好的管理： 比如扩缩容nginx 副本数，只要对nginx容器进行副本数增加即可
 <br /></li>
-</ol></li>
+</ul></li>
 </ol>
 
 <p>这些都是一个容器跑多个程序做不到，不过这仅仅是我个人的一些见解。</p>
@@ -451,26 +461,6 @@ docker 直接通过 LXC 与 宿主机 共享内核 在操作系统级别进行�
 镜像：用于创建 Docker 容器的模板，可以看作是面向对象中的类 静态的
 仓库：就是存放镜像的地方，可以理解为代码控制中的代码仓库</p>
 
-<h4 id="镜像技术">镜像技术</h4>
-
-<ul>
-<li>镜像文件
-比如你要制作一个jdk镜像  你只需要 引入一个基础系统镜像 在加一个jdk环境即可  然后 把两层 一起挂载起来 就完成了 一个jdk 环境 保存成一个专有格式的文件就是镜像文件了。</li>
-</ul>
-
-<blockquote>
-<p>镜像文件每一层是只读的，要修改 只能在顶层 封装一层自定义的一层  （删除就是在最新一层标记不可见，修改就是复制一份再修改）跟 lvm 快照原理差不多</p>
-</blockquote>
-
-<ul>
-<li>镜像仓库
-镜像仓库跟 包仓库一样，最大的目的就是镜像分发，很好的进行版本管理等</li>
-</ul>
-
-<blockquote>
-<p>docker 镜像技术 实现了容器 分层构建 联合挂载，利于容器标准化，移植分发。</p>
-</blockquote>
-
 <h4 id="docker运行架构">docker运行架构</h4>
 
 <p><img src="https://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/docker/docker03.png" alt="docker 运行流程" /></p>
@@ -478,7 +468,91 @@ docker 直接通过 LXC 与 宿主机 共享内核 在操作系统级别进行�
 <p>docker 也是c/s架构 ，基本运行流程是这样的：用户通过docker client(docker) 与docker daemon(dockerd) 通信，docker daemon 接收请求后，查询本地是否存有对应镜像，如果有就使用本地镜像，启动
 对应容器，如果没有就去指定 Registry 仓库拉取，然后存在本地，再执行启动步骤。</p>
 
+<h4 id="docker镜像">docker镜像</h4>
+
+<h5 id="image">image</h5>
+
+<p>比如你要制作一个jdk 镜像  你只需要 引入一个基础系统镜像 在加一个jdk环境即可  然后 把两层 一起挂载起来 就完成了 一个jdk 环境 保存成一个专有文件系统的文件就是镜像文件了。</p>
+
+<p>专有文件系统发展历程中有 aufs devicemapper overlay overlay2(目前默认)
+&gt; 镜像文件每一层是只读的，要修改 只能在顶层 封装一层自定义的一层  （删除就是在最新一层标记不可见，修改就是复制一份再修改）跟 lvm 快照原理差不多</p>
+
+<h5 id="镜像仓库registry">镜像仓库registry</h5>
+
+<p>镜像仓库跟 包仓库一样，最大的目的就是镜像分发，很好的进行版本管理等
+- registry 用于保存docker的镜像的镜像仓库，用户可以自建registry，也可以用官方的docker hub。</p>
+
+<p>我们拉镜像如果没指明registry地址默认就是去 docker hub上拉取进行</p>
+
+<pre><code class="language-bash">譬如： docker pull mysql:8.0 就是默认去docker hub上去拉取mysql 8.0 镜像
+      docker pull registry.xxx.com/mysql:8.0 就是去指定的私有或第三方registry拉取镜像
+</code></pre>
+
+<blockquote>
+<p>这里说下VMware中国 开发并开源的私有镜像仓库harbor，已入CNCF进行孵化了，目前官方推出的registry功能太单一了基本没啥人用，
+而作为registry的二次开发版harbor大受欢迎，这里贴下官网<a href="https://goharbor.io/">官网地址</a></p>
+</blockquote>
+
+<ul>
+<li>registry 默认为https 用http 得在配置文件中明确指明：
+<code>bash
+echo '{ &quot;insecure-registries&quot;:[&quot;registry.xxx.com:5000&quot;,&quot;xxx.xxx.xxx.xxx:5000&quot;] }' &gt; /etc/docker/daemon.json
+</code></li>
+<li>repository、tag
+<code>bash
+譬如： docker pull mysql:8.0 
+中的 mysql 就是repository， 8.0是tag 也就是版本号，如果没有tag 
+就会默认拉取latest
+</code>
+&gt; docker 镜像技术 实现了容器 分层构建 联合挂载，使用镜像仓库使得容器能快速部署、标准化移植交付。</li>
+</ul>
+
 <h3 id="docker安装">docker安装</h3>
+
+<h4 id="移除老版本">移除老版本</h4>
+
+<pre><code class="language-bash">yum remove docker \
+                  docker-client \
+                  docker-client-latest \
+                  docker-common \
+                  docker-latest \
+                  docker-latest-logrotate \
+                  docker-logrotate \
+                  docker-selinux \
+                  docker-engine-selinux \
+                  docker-engine
+</code></pre>
+
+<h4 id="配置yum源并安装">配置yum源并安装</h4>
+
+<pre><code class="language-bash">yum install -y yum-utils device-mapper-persistent-data   lvm2
+yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+yum install docker-ce
+systemctl start docker
+docker info
+</code></pre>
+
+<blockquote>
+<p><a href="https://docs.docker.com/install/linux/docker-ce/centos/#set-up-the-repository">官方安装文档连接</a></p>
+</blockquote>
+
+<h4 id="配置加速器和存放路径">配置加速器和存放路径</h4>
+
+<pre><code class="language-bash">cat /etc/docker/daemon.json
+{
+  &quot;registry-mirrors&quot;: [&quot;https://registry.docker-cn.com&quot;, &quot;https://docker.mirrors.ustc.edu.cn&quot;],
+  &quot;max-concurrent-downloads&quot;: 10,
+  &quot;log-driver&quot;: &quot;json-file&quot;,
+  &quot;log-level&quot;: &quot;warn&quot;,
+  &quot;log-opts&quot;: {
+    &quot;max-size&quot;: &quot;10m&quot;,
+    &quot;max-file&quot;: &quot;3&quot;
+    },
+  &quot;graph&quot;: &quot;/opt/docker&quot;
+}
+</code></pre>
+
+<h3 id="docker-基础命令">docker 基础命令</h3>
 
 
                 <hr>
