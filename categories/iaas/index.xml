@@ -12,11 +12,11 @@
     
     
     <item>
-      <title>docker基础</title>
-      <link>https://li-sen.github.io/2018/12/08/docker%E5%9F%BA%E7%A1%80/</link>
+      <title>docker基本概念和原理</title>
+      <link>https://li-sen.github.io/2018/12/08/docker%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5%E5%92%8C%E5%8E%9F%E7%90%86/</link>
       <pubDate>Sat, 08 Dec 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://li-sen.github.io/2018/12/08/docker%E5%9F%BA%E7%A1%80/</guid>
+      <guid>https://li-sen.github.io/2018/12/08/docker%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5%E5%92%8C%E5%8E%9F%E7%90%86/</guid>
       <description>什么是docker 一个使用docker的场景 目的：运行一个tomcat应用 传统方式： 去官网下载jdk的，配置jdk，去官网下载tomcat 配</description>
     </item>
     

@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head><head>
+    <meta name="google-site-verification" content="9vIieCe-Qpd78QOmBl63rGtIVbhY6sYyuxX3j8XWBA4" />
+    <meta name="baidu-site-verification" content="LRrmH41lz7" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="description" content="李森，devops, 骑行爱好者 | 这里是 李森 的博客，让我们来做点能改变世界的事。">
+    
+    <meta name="keyword"  content="李森, Lisen, 李森的博客, Lisen Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice">
+    <link rel="shortcut icon" href="https://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/blog/favicon.ico">
+
+    <title>docker基本概念和原理-李森的博客 | Lisen Blog</title>
+
+    <link rel="canonical" href="https://li-sen.github.io/2018/12/08/docker%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5%E5%92%8C%E5%8E%9F%E7%90%86/">
+
+    <link rel="stylesheet" href="https://li-sen.github.io/css/iDisqus.min.css"/>
+	
+    
+    <link rel="stylesheet" href="https://li-sen.github.io/css/bootstrap.min.css">
+
+    
+    <link rel="stylesheet" href="https://li-sen.github.io/css/hux-blog.min.css">
+
+    
+    <link rel="stylesheet" href="https://li-sen.github.io/css/syntax.css">
+
+    
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    
+    
+    <script src="https://li-sen.github.io/js/jquery.min.js"></script>
+    
+    
+    <script src="https://li-sen.github.io/js/bootstrap.min.js"></script>
+    
+    
+    <script src="https://li-sen.github.io/js/hux-blog.min.js"></script>
+</head>
+</head>
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://li-sen.github.io/">Lisen Blog</a>
+        </div>
+
+        
+        
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="https://li-sen.github.io/">Home</a>
+                    </li>
+                    
+                    <li>
+                        <a href="https://li-sen.github.io/categories/iaas">IAAS</a>
+                    </li>
+                    
+                    <li>
+                        <a href="https://li-sen.github.io/categories/paas">PAAS</a>
+                    </li>
+                    
+
+                    
+		            <li>
+                        <a href="https://li-sen.github.io/search">SEARCH <img src="https://li-sen.github.io/img/search.png" height="15" style="cursor: pointer;"></a>
+		            </li>
+                    
+                </ul>
+            </div>
+        </div>
+        
+    </div>
+    
+</nav>
+<script>
+    
+    
+    
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        
+            $navbar.className = " ";
+            
+            setTimeout(function(){
+                
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+
+
+<style type="text/css">
+    header.intro-header{
+        background-image: url('https://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/blog/post-bg-1.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                       
+                       <a class="tag" href="/tags/docker" title="docker">
+                           docker
+                        </a>
+                        
+                       <a class="tag" href="/tags/%E5%AE%B9%E5%99%A8" title="容器">
+                           容器
+                        </a>
+                        
+                    </div>
+                    <h1>docker基本概念和原理</h1>
+                    <h2 class="subheading"></h2>
+                    <span  class="meta">Posted by 李森 on Saturday, December 8, 2018
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+<article>
+    <div class="container">
+        <div class="row">
+
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+		
+                <header>
+                <h2>TOC</h2>
+                </header>
+                <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#什么是docker">什么是docker</a>
+<ul>
+<li><a href="#一个使用docker的场景">一个使用docker的场景</a></li>
+<li><a href="#namespace-cgroup">namespace、cgroup</a></li>
+</ul></li>
+<li><a href="#docker-vs-vm">docker vs vm</a>
+<ul>
+<li><a href="#两者对比图">两者对比图：</a>
+<ul>
+<li><a href="#架构对比">架构对比</a></li>
+<li><a href="#容器优势">容器优势</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#一个容器一个程序-进程">一个容器一个程序（进程）</a></li>
+<li><a href="#docker基本概念">docker基本概念</a></li>
+<li><a href="#docker运行架构">docker运行架构</a></li>
+<li><a href="#docker镜像">docker镜像</a>
+<ul>
+<li><a href="#image">image</a></li>
+<li><a href="#镜像仓库registry">镜像仓库registry</a></li>
+</ul></li>
+<li><a href="#docker安装">docker安装</a>
+<ul>
+<li><a href="#移除老版本">移除老版本</a></li>
+<li><a href="#配置yum源并安装">配置yum源并安装</a></li>
+<li><a href="#配置加速器和存放路径">配置加速器和存放路径</a></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+		
+		
+
+<h3 id="什么是docker">什么是docker</h3>
+
+<h4 id="一个使用docker的场景">一个使用docker的场景</h4>
+
+<p>目的：运行一个tomcat应用</p>
+
+<p>传统方式：</p>
+
+<pre><code class="language-text">去官网下载jdk的，配置jdk，去官网下载tomcat 配置tomcat 。。。
+不同的人有不同的习惯，每个人的配置参数甚至存放路径都不一样，无法标准化，导致，A安装的Mysql，让B来管理，无从下手。
+</code></pre>
+
+<p>容器方式：</p>
+
+<pre><code class="language-text">安装Docker 命令行运行 docker run -v /xxx/xx.war:/usr/local/tomcat/webapps -p 8080:8080 tomcat 
+
+一条命令就完成了部署！！快速部署这仅仅是docker魅力之一。。。
+
+</code></pre>
+
+<p>docker 中文意思为 码头工人，有点类似集装箱的概念, 也是虚拟化的一种实现，只不过是更轻量级的容器虚拟化；主要利用linux内核中的Namespaces
+以及Cgroup，进行内核级别的资源隔离以及限制。</p>
+
+<p>简单的说 docker将应用以及对应的系统环境（基本的操作系统，以及运行环境）打成一个包，这个包就叫做镜像，把这个包也就是镜像
+扔进docker引擎中就可以直接运行了，比如将mysql跟centos打成一个镜像，在有docker引擎的机器上，直接docker run就完成mysql的部署了</p>
+
+<h4 id="namespace-cgroup">namespace、cgroup</h4>
+
+<p>关于namespace以及cgroup 做下简单说明，如果需要深入 请自行谷歌百度</p>
+
+<ul>
+<li>namespace ：简单来讲就是可以实现每个容器只能看到和使用它自己的资源(资源隔离)。</li>
+</ul>
+
+<table>
+<thead>
+<tr>
+<th align="center">namespace</th>
+<th align="center">内核版本</th>
+<th align="center">隔离内容</th>
+<th align="center">隔离效果</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="center">Mount</td>
+<td align="center">2.4.19</td>
+<td align="center">文件系统挂接点</td>
+<td align="center">每个容器能看到不同的文件系统层次结构</td>
+</tr>
+
+<tr>
+<td align="center">UTS</td>
+<td align="center">2.6.19</td>
+<td align="center">主机名和域名</td>
+<td align="center">每个容器可以有自己的 hostname 和 domainame</td>
+</tr>
+
+<tr>
+<td align="center">IPC</td>
+<td align="center">2.6.19</td>
+<td align="center">信号量、消息队列和共享内存</td>
+<td align="center">只有在同一个 IPC namespace 的进程之间才能互相通信</td>
+</tr>
+
+<tr>
+<td align="center">PID</td>
+<td align="center">2.6.24</td>
+<td align="center">进程ID</td>
+<td align="center">每个容器有独立的PID</td>
+</tr>
+
+<tr>
+<td align="center">Network</td>
+<td align="center">2.6.29</td>
+<td align="center">网络相关的系统资源</td>
+<td align="center">每个容器用有其独立的网络设备，IP地址，IP路由表，端口号等等</td>
+</tr>
+
+<tr>
+<td align="center">User</td>
+<td align="center">3.8</td>
+<td align="center">用户和用户组</td>
+<td align="center">每个容器有独立的用户和用户组</td>
+</tr>
+</tbody>
+</table>
+
+<blockquote>
+<p>centos 6 基本就不能用了，其默认内核为2.6 比较老， USER 3.8才支持，即使内核升级也会不稳定；默认docker也适合不支持32位系统，所以使用docker推荐使用centos 7.4_x64
+最好将内核升级到4.x 。</p>
+</blockquote>
+
+<ul>
+<li>cgroup : 通过 cgroup 来控制容器使用的资源配额，包括 CPU、内存、磁盘三大方面，基本覆盖了常见的资源配额和使用量控制。</li>
+</ul>
+
+<table>
+<thead>
+<tr>
+<th>子系统</th>
+<th>说明</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>blkio</td>
+<td>限制每个块设备的输入输出。</td>
+</tr>
+
+<tr>
+<td>cpu</td>
+<td>为每个进程组设置一个使用CPU的权重值，以此来管理进程对cpu的访问。</td>
+</tr>
+
+<tr>
+<td>cpuacct</td>
+<td>CPU资源使用报告。</td>
+</tr>
+
+<tr>
+<td>cpuset</td>
+<td>多处理器平台上的CPU集合。</td>
+</tr>
+
+<tr>
+<td>devices</td>
+<td>设备访问，可允许或者拒绝 cgroup 中的任务访问设备。</td>
+</tr>
+
+<tr>
+<td>freezer</td>
+<td>挂起或恢复任务。</td>
+</tr>
+
+<tr>
+<td>memory</td>
+<td>内存用量限制以及生成内存资源报告。</td>
+</tr>
+
+<tr>
+<td>net_cls</td>
+<td>提供对网络带宽的访问限制，比如对发送带宽和接收带宽进程限制。</td>
+</tr>
+</tbody>
+</table>
+
+<p>还有其他子系统，这里就不一一列举了。</p>
+
+<h3 id="docker-vs-vm">docker vs vm</h3>
+
+<p>docker 也是虚拟化技术的一种，不过它比传统的vm更加轻量、快速，
+更关键的是他能提供一个统一的、可控的软件环境，有点类似jvm 跨平台一样，一次编译到处运行；这使得软件的开发以及交付 对于vm是一种质飞跃。</p>
+
+<h4 id="两者对比图">两者对比图：</h4>
+
+<h5 id="架构对比">架构对比</h5>
+
+<pre><code>1. docker 架构
+![docker架构](https://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/docker/docker01.png
+</code></pre>
+
+<p>)
+    2. vm 架构
+    <img src="https://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/docker/docker02.png" alt="vm架构" />
+&gt; 很明显docker 与 vm 最大的区别是:
+vm 需要先去虚拟一堆硬件，然后在此之上新建一个os，还得去部署运行环境才能运行应用，
+docker 直接通过 LXC 与 宿主机 共享内核 在操作系统级别进行虚拟，隔离 ，下镜像后直接运行应用，而且性能接近原生。</p>
+
+<h5 id="容器优势">容器优势</h5>
+
+<table>
+<thead>
+<tr>
+<th align="center">特性</th>
+<th align="center">docker</th>
+<th align="center">vm</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td align="center">启动速度</td>
+<td align="center">秒级</td>
+<td align="center">分钟级别</td>
+</tr>
+
+<tr>
+<td align="center">硬盘使用</td>
+<td align="center">MB</td>
+<td align="center">GB</td>
+</tr>
+
+<tr>
+<td align="center">性能</td>
+<td align="center">接近原生</td>
+<td align="center">有一定的性能损失</td>
+</tr>
+
+<tr>
+<td align="center">系统支持量</td>
+<td align="center">单机上千</td>
+<td align="center">单机几十</td>
+</tr>
+
+<tr>
+<td align="center">隔离性</td>
+<td align="center">内核</td>
+<td align="center">OS</td>
+</tr>
+</tbody>
+</table>
+
+<blockquote>
+<p>从很多方面来说docker 对比 vm 几乎是碾压的优势，只是在安全隔离方面弱于vm，不过k8s/docker生态越来越完善的趋势下，
+这一问题肯定会得到很好的解决，瑕不掩瑜。</p>
+</blockquote>
+
+<h3 id="一个容器一个程序-进程">一个容器一个程序（进程）</h3>
+
+<p>容器有个默认规范或约定，就是一个容器 只运行一个程序或进程，这是一个很nice的设计哲学，这体现在：
+1. 安全隔离：一个程序用一个容器，挂了、被入侵了可以很好的隔离，对其他程序无影响
+2. 最小粒度控制资源:
+    - 最少化使用资源：哪些程序需要资源多，提高对应容器的资源即可，不用一锅粥的提升
+    - 更好的管理： 比如扩缩容nginx 副本数，只要对nginx容器进行副本数增加即可</p>
+
+<p>这些都是一个容器跑多个程序做不到，不过这仅仅是我个人的一些见解。</p>
+
+<h3 id="docker基本概念">docker基本概念</h3>
+
+<p>其实容器虚拟化技术很早就有了，那为什么现在才突出重围，docker做了哪些改变才是容器爆发出来？</p>
+
+<p>docker 最大的突破是引入镜像技术，可以让开发者轻松打包他们的应用以及相关的环境依赖生成docker镜像，然后利用镜像仓库可以快速发布到任何支持docker的
+主机上，开发者不用再关注部署环境主机硬件、系统版本、运行环境等等环境配置问题，只要有docker服务，docker run 就解决了，很好解决了环境一致性问题，从而极大的提高了软件开发交付效率！</p>
+
+<p>容器：以进程模式独立运行的一个或一组应用，可以看作是编程语言中 类对应的实例 动态的 有生命周期的
+镜像：用于创建 Docker 容器的模板，可以看作是面向对象中的类 静态的
+仓库：就是存放镜像的地方，可以理解为代码控制中的代码仓库</p>
+
+<h3 id="docker运行架构">docker运行架构</h3>
+
+<p><img src="https://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/docker/docker03.png" alt="docker 运行流程" /></p>
+
+<p>docker 也是c/s架构 ，基本运行流程是这样的：用户通过docker client(docker) 与docker daemon(dockerd) 通信，docker daemon 接收请求后，查询本地是否存有对应镜像，如果有就使用本地镜像，启动
+对应容器，如果没有就去指定 Registry 仓库拉取，然后存在本地，再执行启动步骤。</p>
+
+<h3 id="docker镜像">docker镜像</h3>
+
+<h4 id="image">image</h4>
+
+<p>比如你要制作一个jdk 镜像  你只需要 引入一个基础系统镜像 在加一个jdk环境即可  然后 把两层 一起挂载起来 就完成了 一个jdk 环境 保存成一个专有文件系统的文件就是镜像文件了。</p>
+
+<p>专有文件系统发展历程中有 aufs devicemapper overlay overlay2(目前默认)
+&gt; 镜像文件每一层是只读的，要修改 只能在顶层 封装一层自定义的一层  （删除就是在最新一层标记不可见，修改就是复制一份再修改）跟 lvm 快照原理差不多</p>
+
+<h4 id="镜像仓库registry">镜像仓库registry</h4>
+
+<p>镜像仓库跟 包仓库一样，最大的目的就是镜像分发，很好的进行版本管理等
+- registry 用于保存docker的镜像的镜像仓库，用户可以自建registry，也可以用官方的docker hub。</p>
+
+<p>我们拉镜像如果没指明registry地址默认就是去 docker hub上拉取进行</p>
+
+<pre><code class="language-bash">譬如： docker pull mysql:8.0 就是默认去docker hub上去拉取mysql 8.0 镜像
+      docker pull registry.xxx.com/mysql:8.0 就是去指定的私有或第三方registry拉取镜像
+</code></pre>
+
+<blockquote>
+<p>这里说下VMware中国 开发并开源的私有镜像仓库harbor，已入CNCF进行孵化了，目前官方推出的registry功能太单一了基本没啥人用，
+而作为registry的二次开发版harbor大受欢迎，这里贴下官网<a href="https://goharbor.io/">官网地址</a></p>
+</blockquote>
+
+<ul>
+<li>registry 默认为https 用http 得在配置文件中明确指明：
+<code>bash
+echo '{ &quot;insecure-registries&quot;:[&quot;registry.xxx.com:5000&quot;,&quot;xxx.xxx.xxx.xxx:5000&quot;] }' &gt; /etc/docker/daemon.json
+</code></li>
+<li>repository、tag
+<code>bash
+譬如： docker pull mysql:8.0 
+中的 mysql 就是repository， 8.0是tag 也就是版本号，如果没有tag 
+就会默认拉取latest
+</code>
+&gt; docker 镜像技术 实现了容器 分层构建 联合挂载，使用镜像仓库使得容器能快速部署、标准化移植交付。</li>
+</ul>
+
+<h3 id="docker安装">docker安装</h3>
+
+<h4 id="移除老版本">移除老版本</h4>
+
+<pre><code class="language-bash">yum remove docker \
+                  docker-client \
+                  docker-client-latest \
+                  docker-common \
+                  docker-latest \
+                  docker-latest-logrotate \
+                  docker-logrotate \
+                  docker-selinux \
+                  docker-engine-selinux \
+                  docker-engine
+</code></pre>
+
+<h4 id="配置yum源并安装">配置yum源并安装</h4>
+
+<pre><code class="language-bash">yum install -y yum-utils device-mapper-persistent-data   lvm2
+yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+yum install docker-ce
+systemctl start docker
+docker info
+</code></pre>
+
+<blockquote>
+<p><a href="https://docs.docker.com/install/linux/docker-ce/centos/#set-up-the-repository">官方安装文档连接</a></p>
+</blockquote>
+
+<h4 id="配置加速器和存放路径">配置加速器和存放路径</h4>
+
+<pre><code class="language-bash">cat /etc/docker/daemon.json
+{
+  &quot;registry-mirrors&quot;: [&quot;https://registry.docker-cn.com&quot;, &quot;https://docker.mirrors.ustc.edu.cn&quot;],
+  &quot;max-concurrent-downloads&quot;: 10,
+  &quot;log-driver&quot;: &quot;json-file&quot;,
+  &quot;log-level&quot;: &quot;warn&quot;,
+  &quot;log-opts&quot;: {
+    &quot;max-size&quot;: &quot;10m&quot;,
+    &quot;max-file&quot;: &quot;3&quot;
+    },
+  &quot;graph&quot;: &quot;/opt/docker&quot;
+}
+</code></pre>
+
+<blockquote>
+<p>以上有关docker的基本概念和原理，只是在本人目前掌握的知识层面整理的，如有问题下方留意，欢迎指正!</p>
+</blockquote>
+
+
+                <hr>
+
+                <ul class="pager">
+                    
+                    
+                    <li class="next">
+                        <a href="/2018/12/06/kubernetes%201.11%e5%8d%87%e7%ba%a71.12/" data-toggle="tooltip" data-placement="top" title="kubernetes 1.11升级1.12">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+            
+
+<div id="git-comments"></div>
+<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+  var gitment = new Gitment({
+    id: '2018-12-08-docker基本概念和原理',  
+    owner: 'li-sen',
+    repo: 'li-sen.github.io',
+    oauth: {
+      client_id: 'f883741f73f7876b684a',
+      client_secret: '3819694d4750165c05238c933cca53c42ff16020',
+    }
+  })
+  gitment.render('git-comments')
+</script>
+
+
+
+            </div>
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                     
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                            <a href="/tags/kubernetes" title="kubernetes">
+                                kubernetes
+                            </a>
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                    </div>
+                </section>
+
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+                    
+                        <li><a target="_blank" href="https://jimmysong.io/">宋净超的博客</a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                   
+                   <li>
+                       <a href="" rel="alternate" type="application/rss+xml" title="Lisen Blog" >
+                           <span class="fa-stack fa-lg">
+                               <i class="fa fa-circle fa-stack-2x"></i>
+                               <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+                           </span>
+                       </a>
+                   </li>
+                   
+                    
+                    <li>
+                        <a href="mailto:lisen2023@gmail.com">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-envelope fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    
+                    
+                    
+
+                    
+
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/blog/wechat.jpeg">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-wechat fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/li-sen">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+		    
+                    
+                </ul>
+		<p class="copyright text-muted">
+                    Copyright &copy; Lisen Blog , 2018
+                    <br>
+                    <a href="https://themes.gohugo.io/hugo-theme-cleanwhite">CleanWhite Hugo Theme</a> by <a href="https://zhaohuabing.com">Huabing</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=zhaohuabing&repo=hugo-theme-cleanwhite&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+
+
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+
+
+
+
+
+<script>
+    
+    if($('#tag_cloud').length !== 0){
+        async("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+
+<script>
+    async("https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https'){
+       bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      }
+      else{
+      bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+
+
+
+
+
+
+</body>
+</html>
