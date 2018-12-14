@@ -362,17 +362,16 @@
 
 <h4 id="架构对比">架构对比</h4>
 
-<pre><code>1. docker 架构
-![docker架构](https://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/docker/docker01.png)
-2. vm 架构
-![vm架构](https://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/docker/docker02.png)
-</code></pre>
+<ol>
+<li><p>docker 架构
+<img src="https://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/docker/docker01.png" alt="docker架构" /></p></li>
 
-<blockquote>
-<p>很明显docker 与 vm 最大的区别是:
+<li><p>vm 架构
+<img src="https://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/docker/docker02.png" alt="vm架构" />
+&gt; 很明显docker 与 vm 最大的区别是:
 vm 需要先去虚拟一堆硬件，然后在此之上新建一个os，还得去部署运行环境才能运行应用，
-docker 直接通过 LXC 与 宿主机 共享内核 在操作系统级别进行虚拟，隔离 ，下镜像后直接运行应用，而且性能接近原生。</p>
-</blockquote>
+docker 直接通过 LXC 与 宿主机 共享内核 在操作系统级别进行虚拟，隔离 ，下镜像后直接运行应用，而且性能接近原生。</p></li>
+</ol>
 
 <h4 id="容器优势">容器优势</h4>
 
