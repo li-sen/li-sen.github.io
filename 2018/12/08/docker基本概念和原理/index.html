@@ -174,7 +174,6 @@
 <ul>
 <li><a href="#什么是docker">什么是docker</a>
 <ul>
-<li><a href="#一个使用docker的场景">一个使用docker的场景</a></li>
 <li><a href="#namespace-cgroup">namespace、cgroup</a></li>
 </ul></li>
 <li><a href="#docker-vs-vm">docker vs vm</a>
@@ -206,26 +205,38 @@
 
 <h3 id="什么是docker">什么是docker</h3>
 
-<h4 id="一个使用docker的场景">一个使用docker的场景</h4>
+<blockquote>
+<p>先说一个使用docker的场景：要部署运行一个tomcat应用</p>
+</blockquote>
 
-<p>目的：运行一个tomcat应用</p>
+<p><strong>传统方式</strong>：</p>
 
-<p>传统方式：</p>
-
-<pre><code class="language-text">去官网下载jdk的，配置jdk，去官网下载tomcat 配置tomcat 。。。
-不同的人有不同的习惯，每个人的配置参数甚至存放路径都不一样，无法标准化，导致，A安装的Mysql，让B来管理，无从下手。
+<pre><code class="language-text">1. 准备基础系统，针对tomcat优化系统环境
+2. 下载jdk的，安装配置jdk
+3. 下载tomcat 安装配置tomcat 。。。
+4. 拷贝war包 运行应用
 </code></pre>
 
-<p>容器方式：</p>
+<blockquote>
+<p>不同的人有不同的习惯，如果没有很好的规范化操作手册，每个人的部署tomcat环境
+可能jdk版本、端口配置、基本参数、甚至存放路径都不一样，无法标准化，尤其是A安装的应用，
+如果让B来管理，他肯定无从下手。</p>
+</blockquote>
 
-<pre><code class="language-text">安装Docker 命令行运行 docker run -v /xxx/xx.war:/usr/local/tomcat/webapps -p 8080:8080 tomcat 
-一条命令就完成了部署！！快速部署这仅仅是docker魅力之一。。。
+<p><strong>容器方式</strong>：</p>
+
+<pre><code class="language-text">1. 准备基础系统，安装Docker
+2. docker run -v /xxx/xx.war:/usr/local/tomcat/webapps -p 8080:8080 tomcat 
 </code></pre>
 
-<p>docker 中文意思为 码头工人，有点类似集装箱的概念, 也是虚拟化的一种实现，只不过是更轻量级的容器虚拟化；主要利用linux内核中的Namespaces
+<blockquote>
+<p>一条命令就完成了部署！！而快速部署这仅仅是docker魅力之一。。。</p>
+</blockquote>
+
+<p>docker 中文意思为 码头工人，把应用当集装箱的概念, 它其实也是虚拟化的一种实现，只不过是更轻量级的容器虚拟化；主要利用linux内核中的Namespaces
 以及Cgroup，进行内核级别的资源隔离以及限制。</p>
 
-<p>简单的说 docker将应用以及对应的系统环境（基本的操作系统，以及运行环境）打成一个包，这个包就叫做镜像，把这个包也就是镜像
+<p>简单的来说 docker容器技术就是将应用以及对应的系统环境（基本的操作系统，以及运行环境）打成一个包，这个包就叫做镜像，把镜像
 扔进docker引擎中就可以直接运行了，比如将mysql跟centos打成一个镜像，在有docker引擎的机器上，直接docker run就完成mysql的部署了</p>
 
 <h4 id="namespace-cgroup">namespace、cgroup</h4>

@@ -17,7 +17,7 @@
       <pubDate>Sat, 08 Dec 2018 00:00:00 +0000</pubDate>
       
       <guid>https://li-sen.github.io/2018/12/08/docker%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5%E5%92%8C%E5%8E%9F%E7%90%86/</guid>
-      <description>什么是docker 一个使用docker的场景 目的：运行一个tomcat应用 传统方式： 去官网下载jdk的，配置jdk，去官网下载tomcat 配</description>
+      <description>什么是docker 先说一个使用docker的场景：要部署运行一个tomcat应用 传统方式： 1. 准备基础系统，针对tomcat优化系统环境 2. 下载</description>
     </item>
     
     <item>
