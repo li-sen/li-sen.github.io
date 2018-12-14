@@ -179,13 +179,11 @@
 </ul></li>
 <li><a href="#docker-vs-vm">docker vs vm</a>
 <ul>
-<li><a href="#两者对比图">两者对比图：</a>
-<ul>
+<li><a href="#两者对比图">两者对比图：</a></li>
 <li><a href="#架构对比">架构对比</a></li>
 <li><a href="#容器优势">容器优势</a></li>
-</ul></li>
-</ul></li>
 <li><a href="#一个容器一个程序-进程">一个容器一个程序（进程）</a></li>
+</ul></li>
 <li><a href="#docker基本概念">docker基本概念</a></li>
 <li><a href="#docker运行架构">docker运行架构</a></li>
 <li><a href="#docker镜像">docker镜像</a>
@@ -221,9 +219,7 @@
 <p>容器方式：</p>
 
 <pre><code class="language-text">安装Docker 命令行运行 docker run -v /xxx/xx.war:/usr/local/tomcat/webapps -p 8080:8080 tomcat 
-
 一条命令就完成了部署！！快速部署这仅仅是docker魅力之一。。。
-
 </code></pre>
 
 <p>docker 中文意思为 码头工人，有点类似集装箱的概念, 也是虚拟化的一种实现，只不过是更轻量级的容器虚拟化；主要利用linux内核中的Namespaces
@@ -237,60 +233,60 @@
 <p>关于namespace以及cgroup 做下简单说明，如果需要深入 请自行谷歌百度</p>
 
 <ul>
-<li>namespace ：简单来讲就是可以实现每个容器只能看到和使用它自己的资源(资源隔离)。</li>
+<li><strong>namespace</strong> ：简单来讲就是可以实现每个容器只能看到和使用它自己的资源(资源隔离)。</li>
 </ul>
 
 <table>
 <thead>
 <tr>
-<th align="center">namespace</th>
-<th align="center">内核版本</th>
-<th align="center">隔离内容</th>
-<th align="center">隔离效果</th>
+<th>namespace</th>
+<th>内核版本</th>
+<th>隔离内容</th>
+<th>隔离效果</th>
 </tr>
 </thead>
 
 <tbody>
 <tr>
-<td align="center">Mount</td>
-<td align="center">2.4.19</td>
-<td align="center">文件系统挂接点</td>
-<td align="center">每个容器能看到不同的文件系统层次结构</td>
+<td>Mount</td>
+<td>2.4.19</td>
+<td>文件系统挂接点</td>
+<td>每个容器能看到不同的文件系统层次结构</td>
 </tr>
 
 <tr>
-<td align="center">UTS</td>
-<td align="center">2.6.19</td>
-<td align="center">主机名和域名</td>
-<td align="center">每个容器可以有自己的 hostname 和 domainame</td>
+<td>UTS</td>
+<td>2.6.19</td>
+<td>主机名和域名</td>
+<td>每个容器可以有自己的 hostname 和 domainame</td>
 </tr>
 
 <tr>
-<td align="center">IPC</td>
-<td align="center">2.6.19</td>
-<td align="center">信号量、消息队列和共享内存</td>
-<td align="center">只有在同一个 IPC namespace 的进程之间才能互相通信</td>
+<td>IPC</td>
+<td>2.6.19</td>
+<td>信号量、消息队列和共享内存</td>
+<td>只有在同一个 IPC namespace 的进程之间才能互相通信</td>
 </tr>
 
 <tr>
-<td align="center">PID</td>
-<td align="center">2.6.24</td>
-<td align="center">进程ID</td>
-<td align="center">每个容器有独立的PID</td>
+<td>PID</td>
+<td>2.6.24</td>
+<td>进程ID</td>
+<td>每个容器有独立的PID</td>
 </tr>
 
 <tr>
-<td align="center">Network</td>
-<td align="center">2.6.29</td>
-<td align="center">网络相关的系统资源</td>
-<td align="center">每个容器用有其独立的网络设备，IP地址，IP路由表，端口号等等</td>
+<td>Network</td>
+<td>2.6.29</td>
+<td>网络相关的系统资源</td>
+<td>每个容器用有其独立的网络设备，IP地址，IP路由表，端口号等等</td>
 </tr>
 
 <tr>
-<td align="center">User</td>
-<td align="center">3.8</td>
-<td align="center">用户和用户组</td>
-<td align="center">每个容器有独立的用户和用户组</td>
+<td>User</td>
+<td>3.8</td>
+<td>用户和用户组</td>
+<td>每个容器有独立的用户和用户组</td>
 </tr>
 </tbody>
 </table>
@@ -301,7 +297,7 @@
 </blockquote>
 
 <ul>
-<li>cgroup : 通过 cgroup 来控制容器使用的资源配额，包括 CPU、内存、磁盘三大方面，基本覆盖了常见的资源配额和使用量控制。</li>
+<li><strong>cgroup</strong> : 通过 cgroup 来控制容器使用的资源配额，包括 CPU、内存、磁盘三大方面，基本覆盖了常见的资源配额和使用量控制。</li>
 </ul>
 
 <table>
@@ -364,20 +360,21 @@
 
 <h4 id="两者对比图">两者对比图：</h4>
 
-<h5 id="架构对比">架构对比</h5>
+<h4 id="架构对比">架构对比</h4>
 
 <pre><code>1. docker 架构
-![docker架构](https://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/docker/docker01.png
+![docker架构](https://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/docker/docker01.png)
+2. vm 架构
+![vm架构](https://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/docker/docker02.png)
 </code></pre>
 
-<p>)
-    2. vm 架构
-    <img src="https://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/docker/docker02.png" alt="vm架构" />
-&gt; 很明显docker 与 vm 最大的区别是:
+<blockquote>
+<p>很明显docker 与 vm 最大的区别是:
 vm 需要先去虚拟一堆硬件，然后在此之上新建一个os，还得去部署运行环境才能运行应用，
 docker 直接通过 LXC 与 宿主机 共享内核 在操作系统级别进行虚拟，隔离 ，下镜像后直接运行应用，而且性能接近原生。</p>
+</blockquote>
 
-<h5 id="容器优势">容器优势</h5>
+<h4 id="容器优势">容器优势</h4>
 
 <table>
 <thead>
@@ -426,7 +423,7 @@ docker 直接通过 LXC 与 宿主机 共享内核 在操作系统级别进行�
 这一问题肯定会得到很好的解决，瑕不掩瑜。</p>
 </blockquote>
 
-<h3 id="一个容器一个程序-进程">一个容器一个程序（进程）</h3>
+<h4 id="一个容器一个程序-进程">一个容器一个程序（进程）</h4>
 
 <p>容器有个默认规范或约定，就是一个容器 只运行一个程序或进程，这是一个很nice的设计哲学，这体现在：
 1. 安全隔离：一个程序用一个容器，挂了、被入侵了可以很好的隔离，对其他程序无影响
