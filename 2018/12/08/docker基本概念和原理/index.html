@@ -234,7 +234,7 @@
 </blockquote>
 
 <p>docker 中文意思为 码头工人，把应用当集装箱的概念, 它其实也是虚拟化的一种实现，只不过是更轻量级的容器虚拟化；主要利用linux内核中的Namespaces
-以及Cgroup，进行内核级别的资源隔离以及限制。</p>
+以及Cgroup，沙箱机制、进行内核级别的资源隔离以及限制。</p>
 
 <p>简单的来说 docker容器技术就是将应用以及对应的系统环境（基本的操作系统，以及运行环境）打成一个包，这个包就叫做镜像，把镜像
 扔进docker引擎中就可以直接运行了，比如将mysql跟centos打成一个镜像，在有docker引擎的机器上，直接docker run就完成mysql的部署了</p>
@@ -566,6 +566,10 @@ docker info
                 <hr>
 
                 <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2018/12/16/docker%e5%b8%b8%e7%94%a8%e5%9f%ba%e7%a1%80%e5%91%bd%e4%bb%a4/" data-toggle="tooltip" data-placement="top" title="docker常用基础命令">&larr; Previous Post</a>
+                    </li>
                     
                     
                     <li class="next">
