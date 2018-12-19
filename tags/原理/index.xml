@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>原理 on Lisen Blog</title>
+    <link>https://li-sen.github.io/tags/%E5%8E%9F%E7%90%86/</link>
+    <description>Recent content in 原理 on Lisen Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sat, 08 Dec 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://li-sen.github.io/tags/%E5%8E%9F%E7%90%86/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>docker基本概念和原理</title>
+      <link>https://li-sen.github.io/2018/12/08/docker%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5%E5%92%8C%E5%8E%9F%E7%90%86/</link>
+      <pubDate>Sat, 08 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://li-sen.github.io/2018/12/08/docker%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5%E5%92%8C%E5%8E%9F%E7%90%86/</guid>
+      <description>什么是docker 先说一个使用docker的场景：要部署运行一个tomcat应用 传统方式： 1. 准备基础系统，针对tomcat优化系统环境 2. 下载</description>
+    </item>
+    
+  </channel>
+</rss>

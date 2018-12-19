@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Container on Lisen Blog</title>
+    <link>https://li-sen.github.io/tags/container/</link>
+    <description>Recent content in Container on Lisen Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Wed, 19 Dec 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://li-sen.github.io/tags/container/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>docker网络详解</title>
+      <link>https://li-sen.github.io/2018/12/19/docker%E7%BD%91%E7%BB%9C%E8%AF%A6%E8%A7%A3/</link>
+      <pubDate>Wed, 19 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://li-sen.github.io/2018/12/19/docker%E7%BD%91%E7%BB%9C%E8%AF%A6%E8%A7%A3/</guid>
+      <description>前言</description>
+    </item>
+    
+    <item>
+      <title>docker常用基础命令</title>
+      <link>https://li-sen.github.io/2018/12/16/docker%E5%B8%B8%E7%94%A8%E5%9F%BA%E7%A1%80%E5%91%BD%E4%BB%A4/</link>
+      <pubDate>Sun, 16 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://li-sen.github.io/2018/12/16/docker%E5%B8%B8%E7%94%A8%E5%9F%BA%E7%A1%80%E5%91%BD%E4%BB%A4/</guid>
+      <description>在这里记录下docker常用的基础命令，一些不常用的参数我这就不一一写了。 dokcer 版本信息 1. docker version # 查看docker 版本信息 docker version 2. docker info # 查看宿主机d</description>
+    </item>
+    
+    <item>
+      <title>docker基本概念和原理</title>
+      <link>https://li-sen.github.io/2018/12/08/docker%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5%E5%92%8C%E5%8E%9F%E7%90%86/</link>
+      <pubDate>Sat, 08 Dec 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://li-sen.github.io/2018/12/08/docker%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5%E5%92%8C%E5%8E%9F%E7%90%86/</guid>
+      <description>什么是docker 先说一个使用docker的场景：要部署运行一个tomcat应用 传统方式： 1. 准备基础系统，针对tomcat优化系统环境 2. 下载</description>
+    </item>
+    
+  </channel>
+</rss>
