@@ -177,6 +177,10 @@
 <li>
 <ul>
 <li><a href="#前言">前言</a></li>
+<li><a href="#docker网络模式">docker网络模式</a>
+<ul>
+<li><a href="#host">host</a></li>
+</ul></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -185,6 +189,19 @@
 		
 
 <h3 id="前言">前言</h3>
+
+<p>docker 拥有多方面很好的特性如镜像技术、轻量快速、性能好，目前来说最大的短板应该是 网络以及 隔离方面，今天来说说docker 网络。</p>
+
+<h3 id="docker网络模式">docker网络模式</h3>
+
+<h4 id="host">host</h4>
+
+<p>容器与宿主机共用一个network namespace，也是说跟宿主机共用网卡 路由等</p>
+
+<p>使用–net=host指定。
+- container模式:使用–net=container:NAME_or_ID指定。
+- none模式:使用–net=none指定。
+- bridge模式:使用–net=bridge指定，默认设置。</p>
 
 
                 <hr>

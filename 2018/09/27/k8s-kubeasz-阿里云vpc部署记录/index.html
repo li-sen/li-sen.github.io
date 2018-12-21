@@ -737,8 +737,17 @@ PROXY_MODE: &quot;ipvs&quot;
 # Kubelet 根目录
 KUBELET_ROOT_DIR: &quot;/opt/kubelet&quot;
 
-# node节点最大pod 数
-MAX_PODS: 110
+# node节点最大pod 数，大家根据实际情况更改
+MAX_PODS: 30
+
+# 增加kubelet 参数 对node节点进行资源限制，大家根据实际情况更改
+  --authentication-token-webhook=true \
+  --authorization-mode=Webhook \
+  --cgroup-driver=cgroupfs \
+  --kube-reserved=cpu=500m,memory=1Gi,ephemeral-storage=10Gi \
+  --system-reserved=cpu=1,memory=2Gi,ephemeral-storage=10Gi \
+  --eviction-hard=memory.available&lt;1Gi,nodefs.available&lt;10% \
+
 
 ansible kube-cluster  -a 'mkdir -p /opt/kubelet'
 
