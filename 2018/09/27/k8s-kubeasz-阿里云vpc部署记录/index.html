@@ -741,6 +741,7 @@ KUBELET_ROOT_DIR: &quot;/opt/kubelet&quot;
 MAX_PODS: 30
 
 # 增加kubelet 参数 对node节点进行资源限制，大家根据实际情况更改
+vim /etc/ansible/roles/kube-node/templates/kubelet.service.j2
   --authentication-token-webhook \
   --authorization-mode=Webhook \
   --cgroup-driver=cgroupfs \
