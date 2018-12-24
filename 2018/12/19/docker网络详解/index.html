@@ -191,8 +191,8 @@
 <li><a href="#创建容器网络">创建容器网络</a></li>
 <li><a href="#bridge网络拓扑图">bridge网络拓扑图</a></li>
 <li><a href="#链接另一个容器">链接另一个容器</a></li>
-<li><a href="#bridge网络连通性">bridge网络连通性</a></li>
 </ul></li>
+<li><a href="#bridge网络连通性">bridge网络连通性</a></li>
 <li><a href="#docker跨主机通信">docker跨主机通信</a></li>
 </ul></li>
 </ul></li>
@@ -219,7 +219,7 @@
 
 <h3 id="docker网络模式">docker网络模式</h3>
 
-<p>我们创建docker容器时，可以用 &ndash;network string 参数 来指定四种网络模式：host、container、bridge（默认）、none。</p>
+<p>我们创建docker容器时，可以用 --network string 参数 来指定四种网络模式：host、container、bridge（默认）、none。</p>
 
 <pre><code class="language-bash"># container 此处没有展现
 [root@app001 ~]# docker network ls
@@ -233,7 +233,7 @@ NETWORK ID          NAME                DRIVER              SCOPE
 
 <h4 id="host">host</h4>
 
-<p>之前介绍过，docker 是用过 namespace 对容器进行 资源隔离，每个容器都有独立的 PID、Mount 等等，&ndash;network host 表示 容器与宿主机共用一个network namespace，
+<p>之前介绍过，docker 是用过 namespace 对容器进行 资源隔离，每个容器都有独立的 PID、Mount 等等，--network host 表示 容器与宿主机共用一个network namespace，
 也是说跟宿主机共用网卡 路由等。</p>
 
 <pre><code class="language-bash"># --network host
@@ -536,7 +536,7 @@ docker run --name my_db -e MYSQL_ROOT_PASSWORD=123456 -d mysql
 docker run --name myweb --link my_db:mysql -p 8001:80 -d nginx
 </code></pre>
 
-<h4 id="bridge网络连通性">bridge网络连通性</h4>
+<h3 id="bridge网络连通性">bridge网络连通性</h3>
 
 <ul>
 <li><p>不通的bridge之间默认不通的，要相通，采取以下措施：</p>
