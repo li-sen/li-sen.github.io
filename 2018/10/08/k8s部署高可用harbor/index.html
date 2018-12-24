@@ -661,16 +661,13 @@ redis:
 </code></pre>
 
 <blockquote>
-<p>需要修改的是:</p>
+<p>需要修改的:
+- ingress 域名， harbor-test.xxx.com notary-test.xxx.com做好解析
+- 持久化存储storageclass
+- 根据实际情况调整各组件存储大小
+- 最重要的更改harbor密码
+- 我这里数据库跟redis都用了内部的，有条件可以用外部高可用集群</p>
 </blockquote>
-
-<ul>
-<li>ingress 域名， harbor-test.xxx.com notary-test.xxx.com做好解析</li>
-<li>持久化存储storageclass</li>
-<li>根据实际情况调整各组件存储大小</li>
-<li>最重要的更改harbor密码</li>
-<li>我这里数据库跟redis都用了内部的，有条件可以用外部高可用集群</li>
-</ul>
 
 <h4 id="部署">部署</h4>
 
