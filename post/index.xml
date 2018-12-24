@@ -17,7 +17,7 @@
       <pubDate>Wed, 19 Dec 2018 00:00:00 +0000</pubDate>
       
       <guid>https://li-sen.github.io/2018/12/19/docker%E7%BD%91%E7%BB%9C%E8%AF%A6%E8%A7%A3/</guid>
-      <description>前言 docker 拥有多方面很好的特性如镜像技术、轻量快速、性能好，目前来说最大的短板应该是 网络以及 隔离方面，今天来说说docker 网络。 docker网</description>
+      <description>前言 docker 拥有多方面很好的特性如镜像技术、轻量快速、移植性好等等，目前来说最大的短板应该是 网络以及 隔离方面，今天来说说docker 网络。 docker 网络实</description>
     </item>
     
     <item>

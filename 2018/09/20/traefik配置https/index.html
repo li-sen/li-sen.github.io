@@ -211,13 +211,35 @@ openssl rsa -in rsa_private_key.pem -pubout -out rsa_public_key.pem
 
 openssl req -new -out ca-req.csr -key rsa_private_key.pem
 
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [XX]:CN
+State or Province Name (full name) []:ZJ
+Locality Name (eg, city) [Default City]:HZ
+Organization Name (eg, company) [Default Company Ltd]:FR
+Organizational Unit Name (eg, section) []:TECH
+Common Name (eg, your name or your server's hostname) []:*.xxx.cn
+Email Address []:lisen@xxx.cn
+
+Please enter the following 'extra' attributes
+to be sent with your certificate request
+A challenge password []:
+An optional company name []:
+
 openssl x509 -req -in ca-req.csr -out ca-cert.pem -signkey rsa_private_key.pem -days 3650
+
 </code></pre>
 
 <h2 id="新增cm">新增cm</h2>
 
 <pre><code class="language-bash"># 配置traefik-cert cm
 kubectl create secret generic traefik-cert --from-file=rsa_private_key.pem --from-file=ca-cert.pem -n kube-system
+
 # 配置traefik.toml
 [root@by-deploy01 ingress]# cat traefik.toml
 defaultEntryPoints = [&quot;http&quot;,&quot;https&quot;]

@@ -177,10 +177,23 @@
 <li>
 <ul>
 <li><a href="#前言">前言</a></li>
+<li><a href="#docker-网络实现">docker 网络实现</a></li>
 <li><a href="#docker网络模式">docker网络模式</a>
 <ul>
 <li><a href="#host">host</a></li>
+<li><a href="#container">container</a></li>
+<li><a href="#none">none</a></li>
+<li><a href="#bridge">bridge</a></li>
 </ul></li>
+<li><a href="#bridge模式网络实现">bridge模式网络实现</a>
+<ul>
+<li><a href="#创建docker0虚拟网桥">创建docker0虚拟网桥</a></li>
+<li><a href="#创建容器网络">创建容器网络</a></li>
+<li><a href="#bridge网络拓扑图">bridge网络拓扑图</a></li>
+<li><a href="#链接另一个容器">链接另一个容器</a></li>
+<li><a href="#bridge网络连通性">bridge网络连通性</a></li>
+</ul></li>
+<li><a href="#docker跨主机通信">docker跨主机通信</a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -190,18 +203,367 @@
 
 <h3 id="前言">前言</h3>
 
-<p>docker 拥有多方面很好的特性如镜像技术、轻量快速、性能好，目前来说最大的短板应该是 网络以及 隔离方面，今天来说说docker 网络。</p>
+<p>docker 拥有多方面很好的特性如镜像技术、轻量快速、移植性好等等，目前来说最大的短板应该是 网络以及 隔离方面，今天来说说docker 网络。</p>
+
+<h3 id="docker-网络实现">docker 网络实现</h3>
+
+<p>docker现有的网络模型主要是通过使用network namespace、linux Bridge、iptables、veth pair等技术实现的。</p>
+
+<p>network namespace：主要提供了关于网络资源的隔离，包括网络设备、IPv4和IPv6协议栈、IP路由表、防火墙、/proc/net目录、/sys/class/net目录、端口（socket）等。</p>
+
+<p>linux Bridge：功能相当于物理交换机，为连在其上的设备（容器）转发数据帧。如docker0网桥。</p>
+
+<p>iptables：主要为容器提供NAT以及容器网络安全。</p>
+
+<p>veth pair：两个虚拟网卡组成的数据通道。在Docker中，用于连接Docker容器和Linux Bridge。一端在容器中作为eth0网卡，另一端在Linux Bridge中作为网桥的一个端口。</p>
 
 <h3 id="docker网络模式">docker网络模式</h3>
 
+<p>我们创建docker容器时，可以用 &ndash;network string 参数 来指定四种网络模式：host、container、bridge（默认）、none。</p>
+
+<pre><code class="language-bash"># container 此处没有展现
+[root@app001 ~]# docker network ls
+NETWORK ID          NAME                DRIVER              SCOPE
+26760ef96e10        bridge              bridge              local
+62ace721e9c6        host                host                local
+44f0735d2a7d        none                null                local
+</code></pre>
+
+<p>那接下来我们就简单了解下这四种模式。</p>
+
 <h4 id="host">host</h4>
 
-<p>容器与宿主机共用一个network namespace，也是说跟宿主机共用网卡 路由等</p>
+<p>之前介绍过，docker 是用过 namespace 对容器进行 资源隔离，每个容器都有独立的 PID、Mount 等等，&ndash;network host 表示 容器与宿主机共用一个network namespace，
+也是说跟宿主机共用网卡 路由等。</p>
 
-<p>使用–net=host指定。
-- container模式:使用–net=container:NAME_or_ID指定。
-- none模式:使用–net=none指定。
-- bridge模式:使用–net=bridge指定，默认设置。</p>
+<pre><code class="language-bash"># --network host
+[root@app001 ~]# docker run -itd --name my-web --network host  nginx
+6205f8c5b91f122be6ce4a9b017dcfe80fc673830cd47de39bc8061a5af4470d
+[root@app001 ~]# netstat -lnpt|grep 80
+tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN      13067/nginx: master
+# 也可以进容器看下ip地址 容器ip 是跟 宿主机ip 一致。
+[root@app001 ~]# docker exec -it my-web bash
+root@app001:/# ifconfig eth0
+eth0: flags=4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu 1500
+        inet 192.168.0.234  netmask 255.255.255.0  broadcast 192.168.0.255
+        ether 00:16:3e:14:69:89  txqueuelen 1000  (Ethernet)
+        RX packets 8769906  bytes 5816538203 (5.4 GiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 5732760  bytes 12237794673 (11.3 GiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+root@app001:/# exit
+exit
+[root@app001 ~]# ifconfig eth0
+eth0: flags=4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu 1500
+        inet 192.168.0.234  netmask 255.255.255.0  broadcast 192.168.0.255
+        ether 00:16:3e:14:69:89  txqueuelen 1000  (Ethernet)
+        RX packets 8769961  bytes 5816542722 (5.4 GiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 5732792  bytes 12237806084 (11.3 GiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+</code></pre>
+
+<h4 id="container">container</h4>
+
+<p>容器模式，跟host模式类似，只不过其网络命名空间共享的对象为一个容器而非宿主机。</p>
+
+<pre><code class="language-bash"># --network &quot;container:name/ID&quot;
+[root@app001 ~]# docker run  -itd --name test01 busybox
+[root@app001 ~]# docker run  -itd --name test02  --network &quot;container:test01&quot; busybox
+[root@app001 ~]# docker exec -it test02 sh
+/ # ifconfig eth0
+eth0      Link encap:Ethernet  HWaddr 02:42:AC:11:00:02
+          inet addr:172.17.0.2  Bcast:172.17.255.255  Mask:255.255.0.0
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+/ # exit
+[root@app001 ~]# docker exec -it test01 sh
+/ # ifconfig eth0
+eth0      Link encap:Ethernet  HWaddr 02:42:AC:11:00:02
+          inet addr:172.17.0.2  Bcast:172.17.255.255  Mask:255.255.0.0
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+/ #
+</code></pre>
+
+<h4 id="none">none</h4>
+
+<p>none 表示容器默认有自己的network namespace，但不为Docker容器进行任何网络配置，
+这将所有网络创建操作完全自定义，实现更加灵活复杂的网络。</p>
+
+<pre><code class="language-bash"># --network none
+[root@app001 ~]# docker run  -itd --name test01  --network none busybox
+6ca8ad797625a46d3a5af4af4bc13605b6677507e551f81a19ef3d0f15e0496d
+# 只会看到lo 网络信息
+[root@app001 ~]# docker exec -it test01 sh
+/ # ls
+bin   dev   etc   home  proc  root  sys   tmp   usr   var
+/ # ifconfig
+lo        Link encap:Local Loopback
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+/ #
+</code></pre>
+
+<h4 id="bridge">bridge</h4>
+
+<p>桥接模式，docker run 默认模式，此模式会为容器分配network namespace、设置IP等，
+并将容器桥接到一个虚拟网桥docker0上，可以和同一宿主机上桥接模式的其他容器进行通信。</p>
+
+<pre><code class="language-bash"># --network bridge (默认方式，可以不用指明)
+[root@app001 ~]# docker run -itd --name test01 busybox
+482e701f3f3dc07b4602e7261ac4917433d2fc491bc501a766e9e4636d6d6591
+[root@app001 ~]# ifconfig eth0
+eth0: flags=4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu 1500
+        inet 192.168.0.234  netmask 255.255.255.0  broadcast 192.168.0.255
+        ether 00:16:3e:14:69:89  txqueuelen 1000  (Ethernet)
+        RX packets 8784552  bytes 5826618359 (5.4 GiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 5739538  bytes 12240873302 (11.4 GiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+# ping 宿主机是通的，ping 同一bridge上的其他容器也是通的
+[root@app001 ~]# docker exec -it test01 sh
+/ # ping 192.168.0.234
+PING 192.168.0.234 (192.168.0.234): 56 data bytes
+64 bytes from 192.168.0.234: seq=0 ttl=64 time=0.103 ms
+64 bytes from 192.168.0.234: seq=1 ttl=64 time=0.076 ms
+64 bytes from 192.168.0.234: seq=2 ttl=64 time=0.075 ms
+64 bytes from 192.168.0.234: seq=3 ttl=64 time=0.081 ms
+^C
+--- 192.168.0.234 ping statistics ---
+4 packets transmitted, 4 packets received, 0% packet loss
+round-trip min/avg/max = 0.075/0.083/0.103 ms
+/ #
+</code></pre>
+
+<h3 id="bridge模式网络实现">bridge模式网络实现</h3>
+
+<blockquote>
+<ul>
+<li>虚拟网桥：可以理解成物理交换机</li>
+<li>veth pair：可以理解成一根虚拟网线的两端，成对出现的数据通道。它有一个特性就是:数据从这边进，肯定会从另一端出，所以veth设备常用来连接两个网络设备。</li>
+</ul>
+</blockquote>
+
+<h4 id="创建docker0虚拟网桥">创建docker0虚拟网桥</h4>
+
+<pre><code class="language-bash">docker server 启动--&gt; 创建docker0虚拟网桥--&gt;分配私网地址例如172.17.0.1/16(选择与宿主机网络不同的网段)
+
+[root@app001 ~]# ifconfig docker0
+docker0: flags=4099&lt;UP,BROADCAST,MULTICAST&gt;  mtu 1500
+        inet 172.17.0.1  netmask 255.255.0.0  broadcast 0.0.0.0
+        ether 02:42:bf:72:76:96  txqueuelen 0  (Ethernet)
+        RX packets 32772  bytes 1857581 (1.7 MiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 76910  bytes 251083015 (239.4 MiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+[root@app001 ~]# docker network inspect bridge
+[
+    {
+        &quot;Name&quot;: &quot;bridge&quot;,
+        &quot;Id&quot;: &quot;26760ef96e1038a0671b7678185987965332a73741a9642ee0223db01b17bff4&quot;,
+        &quot;Created&quot;: &quot;2018-12-13T10:26:48.508623339+08:00&quot;,
+        &quot;Scope&quot;: &quot;local&quot;,
+        &quot;Driver&quot;: &quot;bridge&quot;,
+        &quot;EnableIPv6&quot;: false,
+        &quot;IPAM&quot;: {
+            &quot;Driver&quot;: &quot;default&quot;,
+            &quot;Options&quot;: null,
+            &quot;Config&quot;: [
+                {
+                    &quot;Subnet&quot;: &quot;172.17.0.0/16&quot;,
+                    &quot;Gateway&quot;: &quot;172.17.0.1&quot;
+                }
+            ]
+        },
+        &quot;Internal&quot;: false,
+        &quot;Attachable&quot;: false,
+        &quot;Ingress&quot;: false,
+        &quot;ConfigFrom&quot;: {
+            &quot;Network&quot;: &quot;&quot;
+        },
+        &quot;ConfigOnly&quot;: false,
+        &quot;Containers&quot;: {},
+        &quot;Options&quot;: {
+            &quot;com.docker.network.bridge.default_bridge&quot;: &quot;true&quot;,
+            &quot;com.docker.network.bridge.enable_icc&quot;: &quot;true&quot;,
+            &quot;com.docker.network.bridge.enable_ip_masquerade&quot;: &quot;true&quot;,
+            &quot;com.docker.network.bridge.host_binding_ipv4&quot;: &quot;0.0.0.0&quot;,
+            &quot;com.docker.network.bridge.name&quot;: &quot;docker0&quot;,
+            &quot;com.docker.network.driver.mtu&quot;: &quot;1500&quot;
+        },
+        &quot;Labels&quot;: {}
+    }
+]
+</code></pre>
+
+<blockquote>
+<p>这里可以看出docker bridge的默认ip为172.17.0.1/16，上面已连接了0个容器（&rdquo;Containers&rdquo;: {}）</p>
+</blockquote>
+
+<h4 id="创建容器网络">创建容器网络</h4>
+
+<p>当我们docker run 一个容器时，会第一时间创建一对veth pair设备：一端放入创建的容器中，重命名为eth0，然后在172.17.0.0/16网段中分配一个ip地址
+并设置docker0的ip地址为容器网关，另一端放入docker0 的虚拟网桥上，从而实现容器与docker0网桥通信。</p>
+
+<pre><code class="language-bash"># 起初docker0 bridge 上没有接口
+[root@app001 ~]# brctl show
+bridge name	bridge id		STP enabled	interfaces
+docker0		8000.0242bf727696	no
+
+# 创建一个容器
+[root@app001 ~]# docker run -itd --name test01 busybox
+9f0dfa02b23794adde393dd32bf268230f61610554f498ec7082abd0079186e3
+
+# 查看docker0 bridge上 多了一个test01的容器
+[root@app001 ~]# docker network inspect bridge
+[
+    {
+        &quot;Name&quot;: &quot;bridge&quot;,
+        &quot;Id&quot;: &quot;26760ef96e1038a0671b7678185987965332a73741a9642ee0223db01b17bff4&quot;,
+        &quot;Created&quot;: &quot;2018-12-13T10:26:48.508623339+08:00&quot;,
+        &quot;Scope&quot;: &quot;local&quot;,
+        &quot;Driver&quot;: &quot;bridge&quot;,
+        &quot;EnableIPv6&quot;: false,
+        &quot;IPAM&quot;: {
+            &quot;Driver&quot;: &quot;default&quot;,
+            &quot;Options&quot;: null,
+            &quot;Config&quot;: [
+                {
+                    &quot;Subnet&quot;: &quot;172.17.0.0/16&quot;,
+                    &quot;Gateway&quot;: &quot;172.17.0.1&quot;
+                }
+            ]
+        },
+        &quot;Internal&quot;: false,
+        &quot;Attachable&quot;: false,
+        &quot;Ingress&quot;: false,
+        &quot;ConfigFrom&quot;: {
+            &quot;Network&quot;: &quot;&quot;
+        },
+        &quot;ConfigOnly&quot;: false,
+        &quot;Containers&quot;: {
+            &quot;9f0dfa02b23794adde393dd32bf268230f61610554f498ec7082abd0079186e3&quot;: {
+                &quot;Name&quot;: &quot;test01&quot;,
+                &quot;EndpointID&quot;: &quot;4528c1aa442c0e038c073352b236a58b1c891854fd9f61081e0602daa5d387d5&quot;,
+                &quot;MacAddress&quot;: &quot;02:42:ac:11:00:02&quot;,
+                &quot;IPv4Address&quot;: &quot;172.17.0.2/16&quot;,
+                &quot;IPv6Address&quot;: &quot;&quot;
+            }
+        },
+        &quot;Options&quot;: {
+            &quot;com.docker.network.bridge.default_bridge&quot;: &quot;true&quot;,
+            &quot;com.docker.network.bridge.enable_icc&quot;: &quot;true&quot;,
+            &quot;com.docker.network.bridge.enable_ip_masquerade&quot;: &quot;true&quot;,
+            &quot;com.docker.network.bridge.host_binding_ipv4&quot;: &quot;0.0.0.0&quot;,
+            &quot;com.docker.network.bridge.name&quot;: &quot;docker0&quot;,
+            &quot;com.docker.network.driver.mtu&quot;: &quot;1500&quot;
+        },
+        &quot;Labels&quot;: {}
+    }
+]
+
+# docker0 bridge上多了一个veth pair设备
+[root@app001 ~]# brctl show
+bridge name	bridge id		STP enabled	interfaces
+docker0		8000.0242bf727696	no		vethae526de
+[root@app001 ~]# ip addr show vethae526de
+84: vethae526de@if83: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue master docker0 state UP
+    link/ether 8a:e3:07:f5:39:21 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+    
+# 测试连通性
+[root@app001 ~]# docker exec -it test01 sh
+/ # ip addr show
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+83: eth0@if84: &lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&gt; mtu 1500 qdisc noqueue
+    link/ether 02:42:ac:11:00:02 brd ff:ff:ff:ff:ff:ff
+    inet 172.17.0.2/16 brd 172.17.255.255 scope global eth0
+       valid_lft forever preferred_lft forever
+/ # ping 172.17.0.1
+PING 172.17.0.1 (172.17.0.1): 56 data bytes
+64 bytes from 172.17.0.1: seq=0 ttl=64 time=0.103 ms
+64 bytes from 172.17.0.1: seq=1 ttl=64 time=0.085 ms
+64 bytes from 172.17.0.1: seq=2 ttl=64 time=0.083 ms
+64 bytes from 172.17.0.1: seq=3 ttl=64 time=0.093 ms
+64 bytes from 172.17.0.1: seq=4 ttl=64 time=0.077 ms
+64 bytes from 172.17.0.1: seq=5 ttl=64 time=0.077 ms
+64 bytes from 172.17.0.1: seq=6 ttl=64 time=0.090 ms
+^C
+--- 172.17.0.1 ping statistics ---
+7 packets transmitted, 7 packets received, 0% packet loss
+round-trip min/avg/max = 0.077/0.086/0.103 ms
+/ #
+</code></pre>
+
+<blockquote>
+<p>如果找不到brctl，yum install bridge-utils</p>
+</blockquote>
+
+<h4 id="bridge网络拓扑图">bridge网络拓扑图</h4>
+
+<p><img src="https://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/docker/docker04.png" alt="网络拓扑" />
+&gt; 借图一张，这里docker0分配的ip为172.17.42.1/16，而非上面演示的172.17.0.1/16，能说明问题即可。</p>
+
+<p>由于docker0 bridge上的所有容器都在同一网段中，所以此bridge上的容器可以成功通信，
+如果有安全要求，可以在DOCKER_OPTS变量中设置–icc=false，禁止它们之间通信，这样只有使用&ndash;link才能使两个容器通信。</p>
+
+<h4 id="链接另一个容器">链接另一个容器</h4>
+
+<p>我们可以使用&ndash;link使用另一个容器的服务。</p>
+
+<pre><code class="language-bash"># 创建mysql容器
+docker run --name my_db -e MYSQL_ROOT_PASSWORD=123456 -d mysql
+
+#创建一个应用，并使用刚才创建的mysql容器服务（网络是连通的）
+docker run --name myweb --link my_db:mysql -p 8001:80 -d nginx
+</code></pre>
+
+<h4 id="bridge网络连通性">bridge网络连通性</h4>
+
+<ul>
+<li><p>不通的bridge之间默认不通的，要相通，采取以下措施：</p>
+
+<ol>
+<li>host开启路由转发: net.ipv4.ip_forward = 1</li>
+<li>为 需要跟其他网桥通信的容器添加一块 指定该网桥 的网卡，这个可以通过docker network connect 命令实现。
+或者修改iptables规则: iptables DROP 掉了网桥 docker0 与 其他网桥 之间双向的流量（不推荐修改）
+&gt; 不过 一般已经分成了多个网桥了，目的就是为了隔离通信，基本很少做这种多余操作。</li>
+</ol></li>
+
+<li><p>默认可以访问外网<br />
+主机上有有iptables NAT规则：
+-A POSTROUTING -s 172.17.0.0/16 ! -o docker0 -j MASQUERADE</p></li>
+
+<li><p>外部访问容器<br />
+DNAT端口映射: docker run -p 80:80 nginx
+host 都会启动一个 docker-proxy 进程来处理访问DNAT的流量</p></li>
+</ul>
+
+<h3 id="docker跨主机通信">docker跨主机通信</h3>
+
+<p>docker容器 跨主机通信可以通过 host 这种方式，也可以通过 bridge NAT方式，
+不过这种方式很容易端口冲突，也难管理，并且有比较大的性能损耗，更是无法做到网络隔离，基本不建议使用。</p>
+
+<p>目前docker跨主机通信主流方式是Overlay网络，具体的项目有：Flannel、Calico 等等，不过在这里我就不细讲，
+后续会在k8s部分详解这两个主流方案。</p>
 
 
                 <hr>
