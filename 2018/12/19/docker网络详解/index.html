@@ -519,11 +519,7 @@ round-trip min/avg/max = 0.077/0.086/0.103 ms
 
 <h4 id="bridge网络拓扑图">bridge网络拓扑图</h4>
 
-<p><img src="https://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/docker/docker04.png" alt="网络拓扑" /></p>
-
-<blockquote>
-<p>借图一张，这里docker0分配的ip为172.17.42.1/16，而非上面演示的172.17.0.1/16，能说明问题即可。</p>
-</blockquote>
+<p><img src="https://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/kubernetes/docker/docker_network.png" alt="网络拓扑" /></p>
 
 <p>由于docker0 bridge上的所有容器都在同一网段中，所以此bridge上的容器可以成功通信，
 如果有安全要求，可以在DOCKER_OPTS变量中设置–icc=false，禁止它们之间通信，这样只有使用&ndash;link才能使两个容器通信。</p>
