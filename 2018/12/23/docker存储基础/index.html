@@ -13,9 +13,9 @@
     <meta name="keyword"  content="李森, Lisen, 李森的博客, Lisen Blog, 博客, 个人网站, 互联网, Web, 云原生, PaaS, Istio, Kubernetes, 微服务, Microservice">
     <link rel="shortcut icon" href="https://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/blog/favicon.ico">
 
-    <title>原理-李森的博客 | Lisen Blog</title>
+    <title>docker存储基础-李森的博客 | Lisen Blog</title>
 
-    <link rel="canonical" href="https://li-sen.github.io/tags/%E5%8E%9F%E7%90%86/">
+    <link rel="canonical" href="https://li-sen.github.io/2018/12/23/docker%E5%AD%98%E5%82%A8%E5%9F%BA%E7%A1%80/">
 
     <link rel="stylesheet" href="https://li-sen.github.io/css/iDisqus.min.css"/>
 	
@@ -116,14 +116,41 @@
 
 
 
-<header class="intro-header" style="background-image: url('https://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/blog/home-bg-ride.jpg')">
+
+<style type="text/css">
+    header.intro-header{
+        background-image: url('https://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/blog/post-bg-1.jpg')
+    }
+</style>
+<header class="intro-header" >
     <div class="container">
         <div class="row">
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 ">
-                <div class="site-heading">
-                    <h1>Lisen Blog </h1>
-                    
-		    <h2>Do the right thing !<h2>
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                       
+                       <a class="tag" href="/tags/docker" title="docker">
+                           docker
+                        </a>
+                        
+                       <a class="tag" href="/tags/docker%E5%AD%98%E5%82%A8" title="docker存储">
+                           docker存储
+                        </a>
+                        
+                       <a class="tag" href="/tags/volume" title="volume">
+                           volume
+                        </a>
+                        
+                       <a class="tag" href="/tags/container" title="container">
+                           container
+                        </a>
+                        
+                    </div>
+                    <h1>docker存储基础</h1>
+                    <h2 class="subheading"></h2>
+                    <span  class="meta">Posted by     &#34;李森&#34; on Sunday, December 23, 2018
+                        
+                    </span>
                 </div>
             </div>
         </div>
@@ -132,213 +159,160 @@
 
 
 
-  
-<div class="container">
-    <div class="row">
-        
-        
-   	    <div class="
-            col-lg-8 col-lg-offset-1
-            col-md-8 col-md-offset-1
-            col-sm-12
-            col-xs-12
-            post-container
-        ">
-            
 
-<div class="post-preview">
-    <a href="https://li-sen.github.io/2018/12/08/docker%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5%E5%92%8C%E5%8E%9F%E7%90%86/">
-        <h2 class="post-title">
-            docker基本概念和原理
-        </h2>
-	
-        <div class="post-content-preview">
-	
-            什么是docker 先说一个使用docker的场景：要部署运行一个tomcat应用 传统方式： 1. 准备基础系统，针对tomcat优化系统环境 2. 下载
-       
-        </div>
-    </a>
-    <p class="post-meta">
-    Posted by 李森 Saturday, December 8, 2018
-    </p>
-</div>
-<hr>
-
+<article>
+    <div class="container">
+        <div class="row">
 
             
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+		
+                <header>
+                <h2>TOC</h2>
+                </header>
+                <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li><a href="#前言">前言</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+		
+		
+
+<h3 id="前言">前言</h3>
 
 
+                <hr>
 
-       	</div>
-        
-
-<div class="
-    col-lg-3 col-lg-offset-0
-    col-md-3 col-md-offset-0
-    col-sm-12
-    col-xs-12
-    sidebar-container
-">
-    
-    
-    <section>
-        <hr class="hidden-sm hidden-xs">
-        <h5>FEATURED TAGS</h5>
-        <div class="tags">
-             
-            
-                
-                    <a href="/tags/ansible" title="ansible">
-                        ansible
-                    </a>
-                
-            
-                
-            
-                
-            
-                
-                    <a href="/tags/container" title="container">
-                        container
-                    </a>
-                
-            
-                
-                    <a href="/tags/docker" title="docker">
-                        docker
-                    </a>
-                
-            
-                
-            
-                
-            
-                
-            
-                
-            
-                
-            
-                
-            
-                
-            
-                
-            
-                
-                    <a href="/tags/kubernetes" title="kubernetes">
-                        kubernetes
-                    </a>
-                
-            
-                
-            
-                
-            
-                
-            
-                
-            
-                
-            
-                
-            
-                
-                    <a href="/tags/%E5%AE%B9%E5%99%A8" title="容器">
-                        容器
-                    </a>
-                
-            
-        </div>
-    </section>
-    
-
-    
-    <section class="visible-md visible-lg">
-        <hr><h5><a href="">ABOUT ME</a></h5>
-        <div class="short-about">
-            
-            <img src="https://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/blog/touxiang.png" />
-            
-            
-                <p>Open Source Enthusiast and Cycling Enthusiast</p>
-            
-           
-           <ul class="list-inline"> 
-               
-               <li>
-                   <a href="https://li-sen.github.io/tags/%E5%8E%9F%E7%90%86/index.xml" rel="alternate" type="application/rss+xml" title="Lisen Blog" >
-                       <span class="fa-stack fa-lg">
-                           <i class="fa fa-circle fa-stack-2x"></i>
-                           <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
-                       </span>
-                   </a>
-               </li>
-               
-               
-                    <li>
-                        <a href="mailto:lisen2023@gmail.com">
-                            <span class="fa-stack fa-lg">
-                                <i class="fa fa-circle fa-stack-2x"></i>
-                                <i class="fa fa-envelope fa-stack-1x fa-inverse"></i>
-                            </span>
-                        </a>
+                <ul class="pager">
+                    
+                    
+                    <li class="next">
+                        <a href="/2018/12/19/docker%e7%bd%91%e7%bb%9c%e5%9f%ba%e7%a1%80/" data-toggle="tooltip" data-placement="top" title="docker网络基础">Next Post &rarr;</a>
                     </li>
-		    
-               
-               
-               
-               
-               
-               <li>
-                   <a target="_blank" href="https://lisen-imgs.oss-cn-hangzhou.aliyuncs.com/blog/wechat.jpeg">
-                       <span class="fa-stack fa-lg">
-                           <i class="fa fa-circle fa-stack-2x"></i>
-                           <i class="fa fa-wechat fa-stack-1x fa-inverse"></i>
-                       </span>
-                   </a>
-               </li>
-               
-               
-               <li>
-                   <a target="_blank" href="https://github.com/li-sen">
-                       <span class="fa-stack fa-lg">
-                           <i class="fa fa-circle fa-stack-2x"></i>
-                           <i class="fa fa-github fa-stack-1x fa-inverse"></i>
-                       </span>
-                   </a>
-               </li>
-               
-               
+                    
+                </ul>
+
+            
+
+<div id="git-comments"></div>
+<link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+<script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+<script>
+  var gitment = new Gitment({
+    id: '2018-12-23-docker存储基础',  
+    owner: 'li-sen',
+    repo: 'li-sen.github.io',
+    oauth: {
+      client_id: 'f883741f73f7876b684a',
+      client_secret: '3819694d4750165c05238c933cca53c42ff16020',
+    }
+  })
+  gitment.render('git-comments')
+</script>
+
+
+
+            </div>
+            
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                     
+                    
+                        
+                            <a href="/tags/ansible" title="ansible">
+                                ansible
+                            </a>
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                            <a href="/tags/container" title="container">
+                                container
+                            </a>
+                        
+                    
+                        
+                            <a href="/tags/docker" title="docker">
+                                docker
+                            </a>
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                            <a href="/tags/kubernetes" title="kubernetes">
+                                kubernetes
+                            </a>
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                    
+                        
+                            <a href="/tags/%E5%AE%B9%E5%99%A8" title="容器">
+                                容器
+                            </a>
+                        
+                    
+                    </div>
+                </section>
+
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+                    
+                        <li><a target="_blank" href="https://jimmysong.io/">宋净超的博客</a></li>
+                    
                 </ul>
             </div>
-    </section>
-   
-   <hr>
-   <h5>FRIENDS</h5>
-   <ul class="list-inline">
-       
-           <li><a target="_blank" href="https://jimmysong.io/">宋净超的博客</a></li>
-       
-   </ul>
-   
-    
-   <hr>
-   <h5>BOOKMARKS</h5>
-   <ul class="list-inline">
-   
-           <li><a target="_blank" href="http://www.servicemesh.cn">ServiceMesh中文网</a></li>
-       
-           <li><a target="_blank" href="https://servicemesh.gitbooks.io/awesome-servicemesh">Awesome Service Mesh</a></li>
-       
-           <li><a target="_blank" href="https://tinypng.com">Image Compression</a></li>
-       
-   </ul>
-</div>
-
-	</div>
-</div>
-
+        </div>
+    </div>
+</article>
 
 
 
@@ -350,7 +324,7 @@
                 <ul class="list-inline text-center">
                    
                    <li>
-                       <a href="https://li-sen.github.io/tags/%E5%8E%9F%E7%90%86/index.xml" rel="alternate" type="application/rss+xml" title="Lisen Blog" >
+                       <a href="" rel="alternate" type="application/rss+xml" title="Lisen Blog" >
                            <span class="fa-stack fa-lg">
                                <i class="fa fa-circle fa-stack-2x"></i>
                                <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
