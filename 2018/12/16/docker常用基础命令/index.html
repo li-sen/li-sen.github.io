@@ -179,6 +179,7 @@
 <li><a href="#dokcer-版本信息">dokcer 版本信息</a></li>
 <li><a href="#docker-容器操作">docker 容器操作</a></li>
 <li><a href="#docker-镜像操作">docker 镜像操作</a></li>
+<li><a href="#volume管理">volume管理</a></li>
 <li><a href="#其他常用命令">其他常用命令</a></li>
 </ul></li>
 </ul></li>
@@ -351,6 +352,18 @@ docker tag  ubuntu:latest  harbor.xxx.com/pub/ubuntu:latest
 docker push harbor.xxx.com/pub/ubuntu:latest
 </code></pre>
 
+<h3 id="volume管理">volume管理</h3>
+
+<pre><code class="language-bash"># 查看宿主机上所有volume
+docker volume ls
+# 查看某一容器具体的volume信息
+docker inspect &lt;containerid&gt;
+# 删除某一个volume
+docker volume rm &lt;volumeid&gt;
+如果想批量删除孤儿 volume，可以执行：
+docker volume rm $(docker volume ls -q)
+</code></pre>
+
 <h3 id="其他常用命令">其他常用命令</h3>
 
 <pre><code class="language-bash"># docker 查看容器ip
@@ -517,6 +530,8 @@ docker network rm $(docker network ls -q)
                             <a href="/tags/%E5%AE%B9%E5%99%A8" title="容器">
                                 容器
                             </a>
+                        
+                    
                         
                     
                     </div>

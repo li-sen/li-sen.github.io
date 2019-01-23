@@ -193,6 +193,7 @@
 <li><a href="#链接另一个容器">链接另一个容器</a></li>
 </ul></li>
 <li><a href="#bridge网络连通性">bridge网络连通性</a></li>
+<li><a href="#自定义-容器网络">自定义 容器网络</a></li>
 <li><a href="#docker跨主机通信">docker跨主机通信</a></li>
 </ul></li>
 </ul></li>
@@ -556,6 +557,24 @@ DNAT端口映射: docker run -p 80:80 nginx
 host 都会启动一个 docker-proxy 进程来处理访问DNAT的流量</p></li>
 </ul>
 
+<h3 id="自定义-容器网络">自定义 容器网络</h3>
+
+<ul>
+<li>改docker0 网段<br />
+vim /etc/docker/daemon.json: {&ldquo;bip&rdquo;: &ldquo;192.16.5.<sup>1</sup>&frasl;<sub>24</sub>&rdquo;}</li>
+<li>改docker0 dns
+
+<ul>
+<li>docker run &ndash;dns DNS_SERVER: docker run -itd &ndash;dns 8.8.8.8 busybox:latest</li>
+<li>vim /etc/docker/daemon.json: {&ldquo;dns&rdquo;: [&ldquo;8.8.8.8&rdquo;, &ldquo;114.114.114.114&rdquo;]}
+&gt; 注意是json格式 引号为 双引号</li>
+</ul></li>
+</ul>
+
+<blockquote>
+<p>bip: bridge ip，只要改它就行，后面的网段，默认网关会自动计算得出</p>
+</blockquote>
+
 <h3 id="docker跨主机通信">docker跨主机通信</h3>
 
 <p>docker容器 跨主机通信可以通过 host 这种方式，也可以通过 bridge NAT方式，
@@ -674,6 +693,8 @@ host 都会启动一个 docker-proxy 进程来处理访问DNAT的流量</p></li>
                             <a href="/tags/%E5%AE%B9%E5%99%A8" title="容器">
                                 容器
                             </a>
+                        
+                    
                         
                     
                     </div>

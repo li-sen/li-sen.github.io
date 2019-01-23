@@ -17,7 +17,7 @@
       <pubDate>Sun, 23 Dec 2018 00:00:00 +0000</pubDate>
       
       <guid>https://li-sen.github.io/2018/12/23/docker%E5%AD%98%E5%82%A8%E5%9F%BA%E7%A1%80/</guid>
-      <description>前言</description>
+      <description>前言 docker存储目前分两类： - storage driver ： 镜像和容器文件系统 - data volume： 有状态数据保持 下面我们来分开简单介绍下这两类存储 storage driver docker 基本概念和</description>
     </item>
     
     <item>
