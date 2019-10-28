@@ -256,9 +256,12 @@ OverlayFS（overlay2），它可以看做AUFS的升级加强版，两者基本�
 
 <h4 id="volume-type">volume type</h4>
 
-<p>docker中有两种类型的数据卷：
-- bind-mount
-- docker-managed</p>
+<p>docker中有两种类型的数据卷：</p>
+
+<ul>
+<li>bind-mount</li>
+<li>docker-managed</li>
+</ul>
 
 <h5 id="bind-mount">bind-mount</h5>
 
@@ -271,11 +274,14 @@ VOLUMEDIR: 指容器内部路径
 ro: 只读挂载，可省略，默认为读写挂载。
 </code></pre>
 
-<p>使用 bind-mount 注意以下几点：
-- 挂载的对象可以是目录，也可以是文件。
-- -v 可以多个使用，进行多个文件或目录挂载，默认的权限是读写的，可以设置ro<br />
-- bind-mount 如果挂载的是宿主机的目录或文件的时候，这样容器就跟宿主机进行了绑定，也就意味着限制了容器的可移植性。
-- 挂载文件时：host 中的源文件必须要存在，不然会当作一个新目录 bind mount 给容器。</p>
+<p>使用 bind-mount 注意以下几点：</p>
+
+<ul>
+<li>挂载的对象可以是目录，也可以是文件。</li>
+<li>-v 可以多个使用，进行多个文件或目录挂载，默认的权限是读写的，可以设置ro<br /></li>
+<li>bind-mount 如果挂载的是宿主机的目录或文件的时候，这样容器就跟宿主机进行了绑定，也就意味着限制了容器的可移植性。</li>
+<li>挂载文件时：host 中的源文件必须要存在，不然会当作一个新目录 bind mount 给容器。</li>
+</ul>
 
 <h5 id="docker-managed">docker-managed</h5>
 
@@ -339,15 +345,16 @@ ro: 只读挂载，可省略，默认为读写挂载。
 
 <ol>
 <li>bind-mount 方式：直接将目录mount到容器中</li>
+<li>docker-managed 方式：docker cp 将内容拷贝到目标容器中
+<code>bash
+docker cp ./index.html containerid:/opt/html/
+</code></li>
+</ol>
 
-<li><p>docker-managed 方式：docker cp 将内容拷贝到目标容器中</p>
+<h4 id="容器间共享">容器间共享</h4>
 
-<pre><code class="language-bash">docker cp ./index.html containerid:/opt/html/
-</code></pre>
-
-<h4 id="容器间共享">容器间共享</h4></li>
-
-<li><p>挂载宿主机同一个目录到容器中</p></li>
+<ul>
+<li>挂载宿主机同一个目录到容器中</li>
 
 <li><p>volume container
 volume container 是专门为其他容器提供 volume 的容器。它提供的卷可以是 bind mount，也可以是 docker managed volume，
@@ -403,12 +410,16 @@ my nginx!!
 <blockquote>
 <p>使用 data-packed volume container 可以完全解耦 宿主机，具有很强的一致性，不过这种容器间数据共享的场景不多，基本很少使用。</p>
 </blockquote></li>
-</ol>
+</ul>
 
 
                 <hr>
 
                 <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2018/01/16/images/" data-toggle="tooltip" data-placement="top" title="docker镜像">&larr; Previous Post</a>
+                    </li>
                     
                     
                     <li class="next">
@@ -452,6 +463,8 @@ my nginx!!
                      
                     
                         
+                    
+                        
                             <a href="/tags/ansible" title="ansible">
                                 ansible
                             </a>
@@ -490,11 +503,11 @@ my nginx!!
                         
                     
                         
+                    
+                        
                             <a href="/tags/kubernetes" title="kubernetes">
                                 kubernetes
                             </a>
-                        
-                    
                         
                     
                         

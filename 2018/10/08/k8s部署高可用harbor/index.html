@@ -191,6 +191,7 @@
 <li><a href="#分发配置">分发配置</a></li>
 <li><a href="#登录测试">登录测试</a></li>
 </ul></li>
+<li><a href="#升级harbor">升级harbor:</a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -727,6 +728,12 @@ ansible kube-cluster -m copy -a 'src=/etc/hosts dest=/etc/hosts'
 
 <p>至此helm 部署高可用 harbor 完成！</p>
 
+<h3 id="升级harbor">升级harbor:</h3>
+
+<p>默认是会保存pvc的 helm 删除并不会删除数据,升级新版本 持久化存储 指定 已存在pvc即可</p>
+
+<p>升级或操作harbor 最大的一个坑就是 nfs挂载会 夯住 造成 postgres无法启动，需要重启nfs-server！</p>
+
 
                 <hr>
 
@@ -778,6 +785,8 @@ ansible kube-cluster -m copy -a 'src=/etc/hosts dest=/etc/hosts'
                      
                     
                         
+                    
+                        
                             <a href="/tags/ansible" title="ansible">
                                 ansible
                             </a>
@@ -816,11 +825,11 @@ ansible kube-cluster -m copy -a 'src=/etc/hosts dest=/etc/hosts'
                         
                     
                         
+                    
+                        
                             <a href="/tags/kubernetes" title="kubernetes">
                                 kubernetes
                             </a>
-                        
-                    
                         
                     
                         

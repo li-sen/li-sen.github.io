@@ -238,21 +238,20 @@ ansible kube-master -m copy -a 'src=/etc/ansible/bin/ dest=/opt/kube/bin/'
 
 <h3 id="重启服务">重启服务</h3>
 
-<pre><code class="language-bash">ansible kube-node -a 'systemctl restart kubelet'
-ansible kube-node -a 'systemctl restart kube-proxy'
-ansible kube-master -a 'systemctl restart  kube-apiserver'
+<pre><code class="language-bash">ansible kube-master -a 'systemctl restart  kube-apiserver'
 ansible kube-master -a 'systemctl restart  kube-controller-manager'
 ansible kube-master -a 'systemctl restart  kube-scheduler'
+ansible kube-node -a 'systemctl restart kubelet'
+ansible kube-node -a 'systemctl restart kube-proxy'
 </code></pre>
 
 <h3 id="docker">docker</h3>
 
-<p>如要更新 docker 尽量避免中断业务</p>
+<p>就目前k8s 对迁移的支持，升级docker 肯定会对业务有影响的，应尽量避免升级docker！</p>
 
 <pre><code class="language-bash">先分发docker最新二进制到各节点
-待升级节点，先应用kubectl cordon和kubectl drain命令迁移业务pod
-待升级节点执行 systemctl restart docker
-恢复节点可调度 kubectl uncordon
+待升级节点，先应用kubectl drain命令迁移业务pod，然后删除kubectl delete node 
+待升级节点执行 systemctl restart docker   然后systemctl restart kubelet 重新加入集群 
 </code></pre>
 
 <h3 id="验证">验证</h3>
@@ -317,6 +316,8 @@ kubectl version
                      
                     
                         
+                    
+                        
                             <a href="/tags/ansible" title="ansible">
                                 ansible
                             </a>
@@ -355,11 +356,11 @@ kubectl version
                         
                     
                         
+                    
+                        
                             <a href="/tags/kubernetes" title="kubernetes">
                                 kubernetes
                             </a>
-                        
-                    
                         
                     
                         
